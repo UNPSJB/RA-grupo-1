@@ -6,9 +6,11 @@
 
 <br>
 <img align="left" src="README/icon/python.png" />
-<img align="left" src="README/icon/django.png" width="32" height="32"/>
+<img align="left" src="README/icon/fastAPI.png" width="32" height="32"/>
 <img align="left" src="README/icon/SQLite.png" width="32" height="32"/>
-<img align="left" src="README/icon/javascript.png"/>
+<img align="left" src= "README/icon/react.png" widht="32" height="32"/>
+<img align="left" src="README/icon/javascript.png" widht="32" height="32"/>
+<img align="left" src= "README/icon/Tailwind CSS.png" widht="32" height="32"/>
 <img align="left" src="README/icon/html5.png" width="32" height="32"/>
 <img align="left" src="README/icon/CSS3.png" width="32" height="32"/>
 
