@@ -32,10 +32,10 @@ gestión, a partir de la administración de diferentes instrumentos de relevamie
 </p>
 
 ### Autores
-- [Lautaro Lagos]()
-- [Lautaro Moraga]()
-- [Juan Riquelme]()
-- [Agustin Pacheco]()
+- [Lautaro Lagos](https://github.com/FunnLagos2k)
+- [Lautaro Moraga](https://github.com/Moraga1201)
+- [Juan Riquelme](https://github.com/Juanownn)
+- [Agustin Pacheco](https://github.com/aguspacheco)
 
 ## Elementos
 - Python 3.13.7  
