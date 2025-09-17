@@ -42,8 +42,6 @@ app.add_middleware(
 app.include_router(personas_router)
 app.include_router(encuestas_router)
 
-
-
 @app.get("/")
 def read_root():
     return {"message": "Backend de Reporte de encuestas 🚀"}

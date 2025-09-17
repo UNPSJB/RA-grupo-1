@@ -4,11 +4,8 @@ from sqlalchemy.orm import Session
 from src.encuestas.models import Encuesta
 from src.encuestas import schemas, exceptions
 
-# CRUD:
-
 def listar_encuestas(db:Session) -> List[schemas.Encuesta]:
     return db.scalars(select(Encuesta)).all()
-
 
 def crear_encuesta(db: Session, encuesta: schemas.EncuestaCreate) -> schemas.Encuesta:
     _encuesta = Encuesta(**encuesta.model_dump())
@@ -23,7 +20,6 @@ def leer_encuesta(db: Session, encuesta_id: int)-> schemas.Encuesta:
         raise exceptions.EncuestaNoEncontrada()
     return db_encuesta
 
-
 def modificar_encuesta(
     db: Session, encuesta_id: int, encuesta: schemas.EncuestaUpdate) -> Encuesta:
     db_encuesta = leer_encuesta(db, encuesta_id)
@@ -31,7 +27,6 @@ def modificar_encuesta(
     db.commit()
     db.refresh(db_encuesta)
     return db_encuesta
-
 
 def eliminar_encuesta(db: Session, encuesta_id: int) -> dict:
     db_encuesta = leer_encuesta(db, encuesta_id)

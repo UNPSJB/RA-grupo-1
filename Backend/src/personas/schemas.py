@@ -1,9 +1,9 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
+from typing import List
 
 class PersonaBase(BaseModel):
     nombre: str
-    edad: int
-    correo: str
+    email: EmailStr
 
 class PersonaCreate(PersonaBase):
     pass
