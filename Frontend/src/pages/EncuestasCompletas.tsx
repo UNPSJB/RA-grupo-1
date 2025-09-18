@@ -1,6 +1,6 @@
 import { Card, Button, Badge, Spinner, Alert, Row, Col, Container } from 'react-bootstrap';
 import { useEncuestas } from '../hooks/useEncuestas';
-import '../styles/EncuestasIncompletas.css';
+import '../styles/EncuestasCompletas.css'; 
 
 enum EstadoEncuesta {
   ABIERTA = "abierta",
@@ -18,15 +18,15 @@ interface Encuesta {
     asignatura: string;
     cursado: Cursado;
     estado: EstadoEncuesta;  
-    fecha_fin: string;
+    fecha_fin: number;
 }
 
-export default function EncuestasIncompletas() {
+export default function EncuestasCompletas() {
     const { encuestas, loading, error, refetch } = useEncuestas();
-
-    const getBadgeVariant = (estado: EstadoEncuesta) => {
-        return estado === EstadoEncuesta.ABIERTA ? 'success' : 'danger';
-    };
+    
+    const encuestasCompletas = encuestas.filter(encuesta => {
+        return encuesta.estado === EstadoEncuesta.CERRADA;
+    });
 
     const getCursadoBadgeVariant = (cursado: Cursado) => {
         switch (cursado) {
@@ -48,7 +48,7 @@ export default function EncuestasIncompletas() {
                     <Spinner animation="border" role="status" className="mb-3" variant="primary">
                         <span className="visually-hidden">Cargando...</span>
                     </Spinner>
-                    <p className="loading-text">Cargando las encuestas...</p>
+                    <p className="loading-text">Cargando las encuestas completadas...</p>
                 </div>
             </Container>
         );
@@ -71,35 +71,35 @@ export default function EncuestasIncompletas() {
     return (
         <Container className="encuestas-container">
             <div className="header-section">
-                <h1 className="titulo">
-                    <i className="bi bi-clipboard-data me-3"></i>
-                    Encuestas Incompletas
+                <h1 className="page-title">
+                    <i className="bi bi-check-circle me-3"></i>
+                    Encuestas Completadas
                 </h1>
-                <p className="subtitulo">
-                    Listado de encuestas pendientes de completar
+                <p className="page-subtitle">
+                    Listado de encuestas que completaste
                 </p>
             </div>
 
-            {encuestas.length === 0 ? (
+            {encuestasCompletas.length === 0 ? (
                 <div className="empty-state">
                     <div className="empty-icon">
-                        <i className="bi bi-inbox"></i>
+                        <i className="bi bi-clipboard-check"></i>
                     </div>
-                    <h3>No hay encuestas disponibles</h3>
-                    <p>No se encontraron encuestas en el sistema.</p>
+                    <h3>No tenes encuestas completadas</h3>
+                    <p>Aún no has completado ninguna encuesta.</p>
                 </div>
             ) : (
                 <Row>
-                    {encuestas.map((encuesta) => (
+                    {encuestasCompletas.map((encuesta) => (
                         <Col md={6} lg={4} key={encuesta.id} className="mb-4">
                             <Card className="encuesta-card h-100">
                                 <Card.Header className="card-header-custom">
                                     <div className="d-flex justify-content-between align-items-center">
                                         <Badge 
-                                            bg={getBadgeVariant(encuesta.estado)}
+                                            bg="success"
                                             className="estado-badge"
                                         >
-                                            {encuesta.estado.toUpperCase()}
+                                            COMPLETADA
                                         </Badge>
                                         <Badge 
                                             bg={getCursadoBadgeVariant(encuesta.cursado)}
@@ -117,12 +117,23 @@ export default function EncuestasIncompletas() {
                                     
                                     <div className="encuesta-details">
                                         <div className="detail-item">
-                                            <i className="bi bi-calendar-event me-2"></i>
-                                            <strong>Fecha límite:</strong>
+                                            <i className="bi bi-calendar-check me-2"></i>
+                                            <strong>Completada el:</strong>
                                             <span className="ms-2">{encuesta.fecha_fin}</span>
                                         </div>
                                     </div>
                                 </Card.Body>
+                                
+                                <Card.Footer className="card-footer-custom">
+                                    <div className="d-grid gap-2">
+                                        <Button 
+                                            variant="outline-primary"
+                                            className="action-btn"
+                                        >
+                                            Ver Respuestas
+                                        </Button>
+                                    </div>
+                                </Card.Footer>
                             </Card>
                         </Col>
                     ))}
