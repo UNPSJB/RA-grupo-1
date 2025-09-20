@@ -1,3 +1,4 @@
+
 import { Card, Button, Badge, Spinner, Alert, Row, Col, Container } from 'react-bootstrap';
 import { useEncuestas } from '../hooks/useEncuestas';
 import '../styles/EncuestasIncompletas.css';
@@ -23,6 +24,8 @@ interface Encuesta {
 
 export default function EncuestasIncompletas() {
     const { encuestas, loading, error, refetch } = useEncuestas();
+
+    const encuestasIncompletas = encuestas.filter(encuesta => encuesta.estado === EstadoEncuesta.ABIERTA);
 
     const getBadgeVariant = (estado: EstadoEncuesta) => {
         return estado === EstadoEncuesta.ABIERTA ? 'success' : 'danger';
@@ -80,7 +83,7 @@ export default function EncuestasIncompletas() {
                 </p>
             </div>
 
-            {encuestas.length === 0 ? (
+            {encuestasIncompletas.length === 0 ? (
                 <div className="empty-state">
                     <div className="empty-icon">
                         <i className="bi bi-inbox"></i>
@@ -90,7 +93,7 @@ export default function EncuestasIncompletas() {
                 </div>
             ) : (
                 <Row>
-                    {encuestas.map((encuesta) => (
+                    {encuestasIncompletas.map((encuesta) => (
                         <Col md={6} lg={4} key={encuesta.id} className="mb-4">
                             <Card className="encuesta-card h-100">
                                 <Card.Header className="card-header-custom">
@@ -114,7 +117,7 @@ export default function EncuestasIncompletas() {
                                     <Card.Title className="asignatura-title">
                                         {encuesta.asignatura}
                                     </Card.Title>
-                                    
+            
                                     <div className="encuesta-details">
                                         <div className="detail-item">
                                             <i className="bi bi-calendar-event me-2"></i>

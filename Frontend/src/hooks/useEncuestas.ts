@@ -19,8 +19,7 @@ export interface Encuesta {
     fecha_fin: number;
 }
 
-export function useEncuestas(){
-
+export function useEncuestas() {
     const[encuestas, setEncuestas] = useState<Encuesta[]>([]);
     const[loading, setLoading] = useState<boolean>(true);
     const[error, setError] = useState<string | null>(null);
@@ -43,7 +42,6 @@ export function useEncuestas(){
             setLoading(false);
         }
     }    
-
 
 useEffect(() => {
     fetchEncuestas();
