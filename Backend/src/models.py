@@ -1,8 +1,7 @@
-from datetime import datetime
-from sqlalchemy import DateTime, func
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
+
 
 def keyvalgen(obj):
     """Genera pares nombre/valor, quitando/filtrando los atributos de SQLAlchemy."""
@@ -10,6 +9,7 @@ def keyvalgen(obj):
     for k, v in vars(obj).items():
         if not k.startswith("_") and not any(hasattr(v, a) for a in excl):
             yield k, v
+
 
 class ModeloBase(Base):
     """Modelo base para los módulos de nuestra app."""
