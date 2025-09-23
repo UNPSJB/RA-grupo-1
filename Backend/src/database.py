@@ -1,27 +1,22 @@
-import os
-from dotenv import load_dotenv
-from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, Session
+# URL de la base de datos (puede ser SQLite por simplicidad)
+SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
+# Para PostgreSQL sería algo como:
+# SQLALCHEMY_DATABASE_URL = "postgresql://user:password@localhost:5432/midb"
 
-load_dotenv()
-
-# URL de la base de datos SQLite
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./database.db")
-
-# Crear el motor de la base de datos
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, 
-    connect_args={"check_same_thread": False}  
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}  # connect_args solo para SQLite
 )
 
-# Crear la sesión
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Dependency
+Base = declarative_base()
+
+# Dependencia para obtener la sesión de DB
 def get_db():
     db = SessionLocal()
-    # Para usar restricciones de FK en SQLite, debemos habilitar la siguiente opción:
-    db.execute(text("PRAGMA foreign_keys = ON"))
     try:
         yield db
     finally:
