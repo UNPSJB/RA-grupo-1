@@ -71,11 +71,11 @@ export default function EncuestasCompletas() {
     return (
         <Container className="encuestas-container">
             <div className="header-section">
-                <h1 className="page-title">
+                <h1 className="titulo">
                     <i className="bi bi-check-circle me-3"></i>
                     Encuestas Completadas
                 </h1>
-                <p className="page-subtitle">
+                <p className="subtitulo">
                     Listado de encuestas que completaste
                 </p>
             </div>
@@ -86,7 +86,7 @@ export default function EncuestasCompletas() {
                         <i className="bi bi-clipboard-check"></i>
                     </div>
                     <h3>No tenes encuestas completadas</h3>
-                    <p>Aún no has completado ninguna encuesta.</p>
+                    <p>Se completaron todas las encuestas.</p>
                 </div>
             ) : (
                 <Row>
