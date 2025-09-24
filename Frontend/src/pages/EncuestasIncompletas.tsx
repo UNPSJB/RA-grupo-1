@@ -24,9 +24,9 @@ interface Encuesta {
 export default function EncuestasIncompletas() {
     const { encuestas, loading, error, refetch } = useEncuestas();
 
-    const getBadgeVariant = (estado: EstadoEncuesta) => {
-        return estado === EstadoEncuesta.ABIERTA ? 'success' : 'danger';
-    };
+    const encuestasIncompletas = encuestas.filter(encuesta => {
+        return encuesta.estado === EstadoEncuesta.ABIERTA;
+    });
 
     const getCursadoBadgeVariant = (cursado: Cursado) => {
         switch (cursado) {
@@ -48,7 +48,7 @@ export default function EncuestasIncompletas() {
                     <Spinner animation="border" role="status" className="mb-3" variant="primary">
                         <span className="visually-hidden">Cargando...</span>
                     </Spinner>
-                    <p className="loading-text">Cargando las encuestas...</p>
+                    <p className="loading-text">Cargando las encuestas incompletas...</p>
                 </div>
             </Container>
         );
@@ -71,8 +71,8 @@ export default function EncuestasIncompletas() {
     return (
         <Container className="encuestas-container">
             <div className="header-section">
-                <h1 className="titulo">
-                    <i className="bi bi-clipboard-data me-3"></i>
+                <h1 className="page-title">
+                    <i className="bi bi-check-circle me-3"></i>
                     Encuestas Incompletas
                 </h1>
                 <p className="subtitulo">
@@ -80,26 +80,26 @@ export default function EncuestasIncompletas() {
                 </p>
             </div>
 
-            {encuestas.length === 0 ? (
+            {encuestasIncompletas.length === 0 ? (
                 <div className="empty-state">
                     <div className="empty-icon">
                         <i className="bi bi-inbox"></i>
                     </div>
-                    <h3>No hay encuestas disponibles</h3>
+                    <h3>No tenes encuestas incompletas</h3>
                     <p>No se encontraron encuestas en el sistema.</p>
                 </div>
             ) : (
                 <Row>
-                    {encuestas.map((encuesta) => (
+                    {encuestasIncompletas.map((encuesta) => (
                         <Col md={6} lg={4} key={encuesta.id} className="mb-4">
                             <Card className="encuesta-card h-100">
                                 <Card.Header className="card-header-custom">
                                     <div className="d-flex justify-content-between align-items-center">
                                         <Badge 
-                                            bg={getBadgeVariant(encuesta.estado)}
-                                            className="estado-badge"
+                                            bg="success"
+                                            className='estado-badge'
                                         >
-                                            {encuesta.estado.toUpperCase()}
+                                            INCOMPLETAS
                                         </Badge>
                                         <Badge 
                                             bg={getCursadoBadgeVariant(encuesta.cursado)}
