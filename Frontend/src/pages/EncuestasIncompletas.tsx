@@ -2,6 +2,7 @@ import { Card, Button, Badge, Spinner, Alert, Row, Col, Container } from 'react-
 import { useEncuestas } from '../hooks/useEncuestas';
 import '../styles/EncuestasIncompletas.css';
 
+
 enum EstadoEncuesta {
   ABIERTA = "abierta",
   CERRADA = "cerrada",
@@ -18,26 +19,30 @@ interface Encuesta {
     asignatura: string;
     cursado: Cursado;
     estado: EstadoEncuesta;  
-    fecha_fin: string;
+    fecha_fin: string; 
 }
 
 export default function EncuestasIncompletas() {
     const { encuestas, loading, error, refetch } = useEncuestas();
 
-    const encuestasIncompletas = encuestas.filter(encuesta => {
-        return encuesta.estado === EstadoEncuesta.ABIERTA;
-    });
+    const encuestasIncompletas = encuestas.filter(encuesta => encuesta.estado === EstadoEncuesta.ABIERTA);
 
+   
+    const getBadgeVariant = (estado: EstadoEncuesta) => {
+        return estado === EstadoEncuesta.ABIERTA ? 'danger' : 'success';
+    };
+
+    
     const getCursadoBadgeVariant = (cursado: Cursado) => {
         switch (cursado) {
             case Cursado.PrimerCuatrimestre:
                 return 'primary';
             case Cursado.SegundoCuatrimestre:
-                return 'info';
+                return 'secondary';
             case Cursado.Anual:
                 return 'warning';
             default:
-                return 'secondary';
+                return 'dark';
         }
     };
 
@@ -48,7 +53,7 @@ export default function EncuestasIncompletas() {
                     <Spinner animation="border" role="status" className="mb-3" variant="primary">
                         <span className="visually-hidden">Cargando...</span>
                     </Spinner>
-                    <p className="loading-text">Cargando las encuestas incompletas...</p>
+                    <p className="loading-text">Cargando encuestas...</p>
                 </div>
             </Container>
         );
@@ -71,11 +76,11 @@ export default function EncuestasIncompletas() {
     return (
         <Container className="encuestas-container">
             <div className="header-section">
-                <h1 className="page-title">
-                    <i className="bi bi-check-circle me-3"></i>
-                    Encuestas Incompletas
+                <h1 className="titulo">
+                    <i className="bi bi-exclamation-circle me-3"></i>
+                        Encuestas Incompletas
                 </h1>
-                <p className="subtitulo">
+                <p className="page-subtitle">
                     Listado de encuestas pendientes de completar
                 </p>
             </div>
@@ -85,8 +90,8 @@ export default function EncuestasIncompletas() {
                     <div className="empty-icon">
                         <i className="bi bi-inbox"></i>
                     </div>
-                    <h3>No tenes encuestas incompletas</h3>
-                    <p>No se encontraron encuestas en el sistema.</p>
+                    <h3>No hay encuestas incompletas</h3>
+                    <p>Todas las encuestas han sido completadas o no hay encuestas abiertas en el sistema.</p>
                 </div>
             ) : (
                 <Row>
@@ -96,10 +101,10 @@ export default function EncuestasIncompletas() {
                                 <Card.Header className="card-header-custom">
                                     <div className="d-flex justify-content-between align-items-center">
                                         <Badge 
-                                            bg="success"
-                                            className='estado-badge'
+                                            bg={getBadgeVariant(encuesta.estado)}
+                                            className="estado-badge"
                                         >
-                                            INCOMPLETAS
+                                            {encuesta.estado.toUpperCase()}
                                         </Badge>
                                         <Badge 
                                             bg={getCursadoBadgeVariant(encuesta.cursado)}
@@ -117,12 +122,23 @@ export default function EncuestasIncompletas() {
                                     
                                     <div className="encuesta-details">
                                         <div className="detail-item">
-                                            <i className="bi bi-calendar-event me-2"></i>
+                                            <i className="bi bi-calendar-x me-2"></i>
                                             <strong>Fecha límite:</strong>
                                             <span className="ms-2">{encuesta.fecha_fin}</span>
                                         </div>
                                     </div>
                                 </Card.Body>
+                                
+                                <Card.Footer className="card-footer-custom">
+                                    <div className="d-grid gap-2">
+                                        <Button 
+                                            variant="primary"
+                                            className="action-btn"
+                                        >
+                                            Completar Encuesta
+                                        </Button>
+                                    </div>
+                                </Card.Footer>
                             </Card>
                         </Col>
                     ))}

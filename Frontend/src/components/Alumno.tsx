@@ -1,18 +1,18 @@
 import { Link, Outlet } from "react-router-dom";
 import { Container, Navbar, Nav } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../styles/Schema.css";
+import "../styles/Alumno.css";
 import { usePersona } from "../hooks/usePersona";
 
-interface SchemaProps {
+interface SalumnoProps {
   children?: React.ReactNode;
 }
 
-export default function Schema({ children }: SchemaProps) {
+export default function Alumno({ children }: AlumnoProps) {
   const { persona, loading, error } = usePersona();
 
   return (
-    <div className="schema">
+    <div className="alumno">
       <Navbar bg="light" variant="light" expand="lg" className="shadow-sm navbar-custom">
         <Container>
          <Navbar.Brand className="fw-bold brand-custom d-flex align-items-center">
@@ -33,15 +33,14 @@ export default function Schema({ children }: SchemaProps) {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link as={Link} to="/encuestas-incompletas" className="nav-link-custom">
+              <Nav.Link as={Link} to="/alumno/incompletas" className="nav-link-custom">
                 Encuestas Incompletas
               </Nav.Link>
-              <Nav.Link as={Link} to="/encuestas-completas" className="nav-link-custom">
+              <Nav.Link as={Link} to="/alumno/completadas" className="nav-link-custom">
                 Encuestas Completadas 
               </Nav.Link>
             </Nav>
             
-            {/* Perfil de usuario - Solo nombre y avatar */}
             <Nav className="ms-auto">
               {loading ? (
                 <Nav.Item className="d-flex align-items-center user-profile">
@@ -79,7 +78,6 @@ export default function Schema({ children }: SchemaProps) {
         </Container>
       </Navbar>
 
-      {/* Main Content */}
       <main className="main-content">
         <Container className="content-container">
           <Outlet />
@@ -87,7 +85,6 @@ export default function Schema({ children }: SchemaProps) {
         </Container>
       </main>
 
-      {/* Footer */}
       <footer className="footer">
         <Container>
           <div className="footer-content">

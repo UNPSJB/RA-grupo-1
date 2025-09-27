@@ -1,2 +1,69 @@
-@import './EncuestasIncompletas.css';
+/* Sección del encabezado */
+.header-section {
+    text-align: center;
+}
+
+/* Cards de encuestas */
+.encuesta-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px #0000001a;
+    transition: all 0.3s ease;
+}
+
+.encuesta-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px #00000026;
+}
+
+.estado-badge, .cursado-badge {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+}
+
+.card-body-custom {
+    padding: 1.5rem 1.25rem;
+}
+
+.asignatura-title {
+    font-size: 1.40rem;
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: 1.5rem;
+    line-height: 1.3;
+}
+
+.encuesta-details {
+    margin-bottom: 1rem;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.detail-item i {
+    color: #e21a1a;
+    font-size: 1rem;
+}
+
+/* Estados de cargando y error */
+.loading-text {
+    font-size: 1.1rem;
+    color: #6c757d;
+    margin: 0;
+}
+
+.error-alert {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 4px 12px #dc354533;
+}
+
+
+
 
