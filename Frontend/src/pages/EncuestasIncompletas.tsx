@@ -94,55 +94,62 @@ export default function EncuestasIncompletas() {
                     <p>Todas las encuestas han sido completadas o no hay encuestas abiertas en el sistema.</p>
                 </div>
             ) : (
-                <Row>
+                <div className="encuestas-list">
                     {encuestasIncompletas.map((encuesta) => (
-                        <Col md={6} lg={4} key={encuesta.id} className="mb-4">
-                            <Card className="encuesta-card h-100">
-                                <Card.Header className="card-header-custom">
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <Badge 
-                                            bg={getBadgeVariant(encuesta.estado)}
-                                            className="estado-badge"
-                                        >
-                                            {encuesta.estado.toUpperCase()}
-                                        </Badge>
-                                        <Badge 
-                                            bg={getCursadoBadgeVariant(encuesta.cursado)}
-                                            className="cursado-badge"
-                                        >
-                                            {encuesta.cursado}
-                                        </Badge>
-                                    </div>
-                                </Card.Header>
-                                
-                                <Card.Body className="card-body-custom">
-                                    <Card.Title className="asignatura-title">
-                                        {encuesta.asignatura}
-                                    </Card.Title>
-                                    
-                                    <div className="encuesta-details">
-                                        <div className="detail-item">
-                                            <i className="bi bi-calendar-x me-2"></i>
-                                            <strong>Fecha límite:</strong>
-                                            <span className="ms-2">{encuesta.fecha_fin}</span>
+                        <Card key={encuesta.id} className="encuesta-card-horizontal mb-3">
+                            <Card.Body className="card-body-horizontal">
+                                <Row className="align-items-center">
+                                    <Col xs={12} md={1} className="text-center mb-2 mb-md-0">
+                                         <div className="encuesta-icon-excel">
+                                            <i className="bi bi-file-earmark-excel"></i>
                                         </div>
-                                    </div>
-                                </Card.Body>
-                                
-                                <Card.Footer className="card-footer-custom">
-                                    <div className="d-grid gap-2">
+                                    </Col>
+                                    
+                                    <Col xs={12} md={6} className="mb-2 mb-md-0">
+                                        <div className="encuesta-info">
+                                            <h5 className="asignatura-title-horizontal mb-1">
+                                                {encuesta.asignatura}
+                                            </h5>
+                                            <div className="encuesta-meta">
+                                                <div className="fecha-vence mt-1">
+                                                    <i className="bi bi-calendar-x me-2"></i>
+                                                    <span>Vence el: {encuesta.fecha_fin}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Col>
+                                    
+                                    <Col xs={12} md={3} className="mb-2 mb-md-0">
+                                        <div className="badges-container">
+                                            <Badge 
+                                                bg={getCursadoBadgeVariant(encuesta.cursado)}
+                                                className="cursado-badge-horizontal me-2"
+                                            >
+                                                {encuesta.cursado}
+                                            </Badge>
+                                             <Badge 
+                                                bg="danger"
+                                                className="estado-badge-horizontal"
+                                                >
+                                                INCOMPLETA
+                                            </Badge>
+                                        </div>
+                                    </Col>
+                                    
+                                    <Col xs={12} md={2} className="text-end">
                                         <Button 
                                             variant="primary"
-                                            className="action-btn"
+                                            className="action-btn-horizontal"
+                                            size="sm"
                                         >
                                             Completar Encuesta
                                         </Button>
-                                    </div>
-                                </Card.Footer>
-                            </Card>
-                        </Col>
+                                    </Col>
+                                </Row>
+                            </Card.Body>
+                        </Card>
                     ))}
-                </Row>
+                </div>
             )}
         </Container>
     );
