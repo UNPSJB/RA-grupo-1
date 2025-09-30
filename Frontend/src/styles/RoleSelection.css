@@ -1,0 +1,79 @@
+/* Contenedor principal */
+.role-selection-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    display: flex;
+    align-items: center;
+}
+
+.bienvenida-card {
+    text-align: center;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: #ffffffe6;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px #0000001a;
+}
+
+.icono-bienvenida {
+    margin-bottom: 1rem;
+}
+
+.icono-bienvenida i {
+    font-size: 3rem;
+    color: #4285f4;
+}
+
+.titulo {
+    color: #2c3e50;
+    font-weight: 400;
+    margin-bottom: 1rem;
+    font-size: 2rem;
+}
+
+.role-card::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    opacity: 0.8;
+}
+
+/* Iconos */
+.role-icon-container {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.role-card:hover .role-icon-container {
+    transform: scale(1.1);
+    background: var(--card-color);
+}
+
+.role-icon {
+    font-size: 2.2rem;
+    transition: all 0.3s ease;
+}
+
+.role-card:hover .role-icon {
+    color: white !important;
+    transform: scale(1.1);
+}
+
+/* Botones */
+.role-button {
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    border: none;
+    transition: all 0.3s ease;
+    text-transform: none;
+    box-shadow: 0 4px 15px #00000033;
+}

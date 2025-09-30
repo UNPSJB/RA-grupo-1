@@ -11,16 +11,9 @@
     transition: all 0.3s ease;
 }
 
-.navbar-logo:hover {
-    transform: scale(1.05);
-}
-
 .brand-custom {
     font-size: 1.4rem;
-    font-weight: 700;
     transition: all 0.3s ease;
-    color: #212529;
-    text-decoration: none;
 }
 
 .brand-custom:hover {

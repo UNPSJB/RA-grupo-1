@@ -1,21 +1,47 @@
-from sqlalchemy.orm import declarative_base
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
+from datetime import datetime
+from .database import Base
 
-Base = declarative_base()
+class Estudiante(Base):
+    __tablename__ = "estudiantes"
+    id = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String, nullable=False)
+
+    respuestas = relationship("RespuestaEstudiante", back_populates="estudiante")
 
 
-def keyvalgen(obj):
-    """Genera pares nombre/valor, quitando/filtrando los atributos de SQLAlchemy."""
-    excl = ("_sa_adapter", "_sa_instance_state")
-    for k, v in vars(obj).items():
-        if not k.startswith("_") and not any(hasattr(v, a) for a in excl):
-            yield k, v
+class Materia(Base):
+    __tablename__ = "materias"
+    id = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    encuestas = relationship("Encuesta", back_populates="materia")
 
 
-class ModeloBase(Base):
-    """Modelo base para los módulos de nuestra app."""
-    __abstract__ = True
+class Encuesta(Base):
+    __tablename__ = "encuestas"
+    id = Column(Integer, primary_key=True, index=True)
+    titulo = Column(String, nullable=False)
+    fecha_inicio = Column(DateTime, nullable=False)
+    fecha_fin = Column(DateTime, nullable=False)
+    activa = Column(Boolean, default=True)
+    materia_id = Column(Integer, ForeignKey("materias.id"))
+    created_at = Column(DateTime, default=datetime.utcnow)
 
-    def __repr__(self):
-        # Define un formato de representacion como cadena para el modelo base.
-        params = ", ".join(f"{k}={v}" for k, v in keyvalgen(self))
-        return f"{self.__class__.__name__}({params})"
+    materia = relationship("Materia", back_populates="encuestas")
+    respuestas = relationship("RespuestaEstudiante", back_populates="encuesta")
+
+
+class RespuestaEstudiante(Base):
+    __tablename__ = "respuestas_estudiantes"
+    id = Column(Integer, primary_key=True, index=True)
+    estudiante_id = Column(Integer, ForeignKey("estudiantes.id"))
+    encuesta_id = Column(Integer, ForeignKey("encuestas.id"))
+    respuesta_texto = Column(String, nullable=True)  # respuesta libre
+    opcion_multiple = Column(String, nullable=True) # ej: "A,B,D"
+    progreso = Column(Integer, default=0)            # % de avance
+
+    estudiante = relationship("Estudiante", back_populates="respuestas")
+    encuesta = relationship("Encuesta", back_populates="respuestas")
