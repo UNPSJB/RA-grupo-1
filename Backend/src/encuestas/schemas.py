@@ -1,34 +1,35 @@
 from pydantic import BaseModel
-from typing import List
-from enum import Enum
-from src.encuestas.models import EstadoEncuesta, Cursado
-
-# Los siguientes schemas contienen atributos sin muchas restricciones de tipo.
-# Podemos crear atributos con ciertas reglas mediante el uso de un "Field" adecuado.
-# https://docs.pydantic.dev/latest/concepts/fields/
-
+from datetime import datetime
+from typing import Optional
 
 class EncuestaBase(BaseModel):
-    asignatura: str
-    año: int
-    estado: EstadoEncuesta
-    cursado: Cursado
-    fecha_inicio: str
-    fecha_fin: str
-    carrera: str
-    sede: str
-    
+    titulo: str
+    fecha_inicio: datetime
+    fecha_fin: datetime
+    activa: bool
+    materia_id: int
+
 class EncuestaCreate(EncuestaBase):
     pass
 
-
-class EncuestaUpdate(EncuestaBase):
-    pass
-
-
-class Encuesta(EncuestaBase):
+class EncuestaResponse(EncuestaBase):
     id: int
+    created_at: datetime
 
-    # from_atributes=True permite que Pydantic trabaje con modelos SQLAlchemy
-    # más info.: https://docs.pydantic.dev/latest/api/config/#pydantic.config.ConfigDict.from_attributes
-    model_config = {"from_attributes": True}
+    class Config:
+        orm_mode = True
+
+class RespuestaCreate(BaseModel):
+    estudiante_id: int
+    encuesta_id: int
+    respuesta_texto: Optional[str] = None
+
+class RespuestaResponse(BaseModel):
+    id: int
+    estudiante_id: int
+    encuesta_id: int
+    respuesta_texto: Optional[str]
+    progreso: int
+
+    class Config:
+        orm_mode = True
