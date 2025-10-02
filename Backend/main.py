@@ -6,6 +6,7 @@ from src.database import engine
 from src.models import ModeloBase
 from src.alumnos.router import router as alumnos_router
 from src.encuestas.router import router as encuestas_router
+from src.docentes.router import router as docentes_router
 from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
@@ -42,6 +43,7 @@ app.add_middleware(
 #app.include_router(comerciantes_router)
 app.include_router(alumnos_router)
 app.include_router(encuestas_router)
+app.include_router(docentes_router)
 
 @app.get("/")
 def read_root():

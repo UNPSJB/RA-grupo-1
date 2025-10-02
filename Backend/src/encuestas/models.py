@@ -1,18 +1,8 @@
-from typing import Optional, List
-from sqlalchemy import Integer, String, Enum as SQLEnum
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import Integer, String, Boolean, DateTime, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from datetime import datetime
 from src.models import ModeloBase
-from enum import Enum
-
-class Cursado(str, Enum):
-    cuatrimestre1 = "cuatrimestre 1"
-    cuatrimestre2 = "cuatrimestre 2"
-    anual= "anual"
-
-
-class EstadoEncuesta(str, Enum):
-    abierta = "abierta"
-    cerrada = "cerrada"
+from src.vinculaciones.models import alumno_encuesta
 
 class Encuesta(ModeloBase):
     __tablename__ = "encuestas"
@@ -26,3 +16,39 @@ class Encuesta(ModeloBase):
     fecha_inicio: Mapped[str] = mapped_column(String, index=True)
     fecha_fin: Mapped[str] = mapped_column(String, index=True) 
     estado: Mapped[EstadoEncuesta] = mapped_column(SQLEnum(EstadoEncuesta), nullable=False, default=EstadoEncuesta.abierta)
+    titulo: Mapped[str] = mapped_column(String, nullable=False)
+    fecha_inicio: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    fecha_fin: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    activa: Mapped[bool] = mapped_column(Boolean, default=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    
+    
+    asignatura_id: Mapped[int] = mapped_column(Integer, ForeignKey("asignaturas.id"))
+    
+    
+    asignatura: Mapped["Asignatura"] = relationship(
+        "Asignatura", back_populates="encuestas"
+    )
+
+    
+    alumnos: Mapped[list["Alumno"]] = relationship(
+        "Alumno", secondary=alumno_encuesta, back_populates="encuestas"
+    )
+
+
+""" class EncuestaAlumno(ModeloBase):
+    __tablename__ = "encuesta_alumno"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    alumno_id: Mapped[int] = mapped_column(ForeignKey("alumnos.id"))
+    encuesta_id: Mapped[int] = mapped_column(ForeignKey("encuestas.id"))
+    fecha_respuesta: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+    alumno: Mapped["Alumno"] = relationship("Alumno", back_populates="encuestas")
+    encuesta: Mapped["Encuesta"] = relationship("Encuesta", back_populates="alumnos") """
+
+
+class EstadoEncuesta(str, Enum):
+    abierta = "abierta"
+    cerrada = "cerrada"

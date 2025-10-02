@@ -13,3 +13,7 @@ def crear_persona(db: Session, persona: schemas.PersonaCreate) -> schemas.Person
 
 def listar_personas(db: Session) -> List[schemas.Persona]:
     return db.scalars(select(Persona)).all()
+
+
+def leer_personas(db: Session, persona_id: int) -> schemas.Persona:
+    return db.scalar(select(Persona).where(Persona.id == persona_id))

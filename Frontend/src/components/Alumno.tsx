@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/Alumno.css";
 import { usePersona } from "../hooks/usePersona";
 
-interface SalumnoProps {
+interface alumnoProps {
   children?: React.ReactNode;
 }
 
