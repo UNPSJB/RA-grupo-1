@@ -1,8 +1,12 @@
-from sqlalchemy import Integer, String, Boolean, DateTime, ForeignKey
+from sqlalchemy import Integer, String, Boolean, DateTime, ForeignKey, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
 from src.models import ModeloBase
-from src.vinculaciones.models import alumno_encuesta
+from src.vinculaciones.models import alumno_encuesta, Duracion
+
+class EstadoEncuesta(str, Enum):
+    abierta = "abierta"
+    cerrada = "cerrada"
 
 class Encuesta(ModeloBase):
     __tablename__ = "encuestas"
@@ -10,12 +14,12 @@ class Encuesta(ModeloBase):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     carrera: Mapped[str] = mapped_column(String, index=True)
     asignatura: Mapped[str] = mapped_column(String, index=True)
-    cursado: Mapped[Cursado] = mapped_column(SQLEnum(Cursado), nullable=False)
+    cursado: Mapped[Duracion] = mapped_column(Enum(Duracion), nullable=False)
     año: Mapped[int] = mapped_column(Integer, index=True)
     sede: Mapped[str] = mapped_column(String, index=True)    
     fecha_inicio: Mapped[str] = mapped_column(String, index=True)
     fecha_fin: Mapped[str] = mapped_column(String, index=True) 
-    estado: Mapped[EstadoEncuesta] = mapped_column(SQLEnum(EstadoEncuesta), nullable=False, default=EstadoEncuesta.abierta)
+    estado: Mapped[EstadoEncuesta] = mapped_column(Enum(EstadoEncuesta), nullable=False, default=EstadoEncuesta.abierta)
     titulo: Mapped[str] = mapped_column(String, nullable=False)
     fecha_inicio: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     fecha_fin: Mapped[datetime] = mapped_column(DateTime, nullable=False)
@@ -49,6 +53,3 @@ class Encuesta(ModeloBase):
     encuesta: Mapped["Encuesta"] = relationship("Encuesta", back_populates="alumnos") """
 
 
-class EstadoEncuesta(str, Enum):
-    abierta = "abierta"
-    cerrada = "cerrada"
