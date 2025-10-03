@@ -3,8 +3,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
 from src.models import ModeloBase
 from src.vinculaciones.models import alumno_encuesta, Duracion
+from enum import StrEnum
 
-class EstadoEncuesta(str, Enum):
+class EstadoEncuesta(StrEnum):
     abierta = "abierta"
     cerrada = "cerrada"
 

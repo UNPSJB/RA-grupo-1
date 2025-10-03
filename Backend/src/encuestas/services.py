@@ -1,8 +1,10 @@
 from typing import List
+from datetime import datetime
 from sqlalchemy import delete, select, update
 from sqlalchemy.orm import Session
 from src.encuestas.models import Encuesta
-from src.encuestas import schemas, exceptions
+from src.encuestas import schemas, exceptions, models
+from src.respuestas.schemas import RespuestaCreate
 
 def listar_encuestas(db:Session) -> List[schemas.Encuesta]:
     return db.scalars(select(Encuesta)).all()
@@ -36,7 +38,7 @@ def eliminar_encuesta(db: Session, encuesta_id: int) -> dict:
     db.commit()
     return {"message": f"Encuesta {nombre_encuesta} eliminada"}
 
-def responder_encuesta(db: Session, respuesta: schemas.RespuestaCreate):
+def responder_encuesta(db: Session, respuesta: RespuestaCreate):
     encuesta = db.query(models.Encuesta).filter(models.Encuesta.id == respuesta.encuesta_id).first()
     if not encuesta or not encuesta.activa:
         raise Exception("Encuesta no activa o no encontrada")
