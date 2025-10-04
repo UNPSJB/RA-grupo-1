@@ -1,8 +1,8 @@
 from typing import List
 from sqlalchemy.orm import Session
 from sqlalchemy import delete, select, update
-from src.pregunta.models import Pregunta, Opcion
-from src.pregunta import schemas, exceptions
+from src.preguntas.models import Pregunta, Opcion
+from src.preguntas import schemas, exceptions
 from src.opciones.models import Opcion
 
 def crear_abierta(db: Session, pregunta: schemas.CrearPreguntaAbierta) -> Pregunta:
@@ -22,13 +22,13 @@ def crear_cerrada(db: Session, pregunta: schemas.CrearPreguntaCerrada) -> Pregun
     if len(opciones_validas) != len(pregunta.opciones):
         raise exceptions.PreguntaSinOpciones("Alguna de las opciones que brindaste no son las correctas.")
     
-     nuevaPregunta = Pregunta(texto=pregunta.texto, tipo="Cerrada")
-     nuevaPregunta.opciones = opciones_validas
+    nuevaPregunta = Pregunta(texto=pregunta.texto, tipo="Cerrada")
+    nuevaPregunta.opciones = opciones_validas
 
-     db.add(nuevaPregunta)
-     db.commit()
-     db.refresh(nuevaPregunta)
-     return nuevaPregunta
+    db.add(nuevaPregunta)
+    db.commit()
+    db.refresh(nuevaPregunta)
+    return nuevaPregunta
 
 def listar_preguntas(db: Session) -> List[schemas.Pregunta]:
     return db.scalars(select(Pregunta)).all()

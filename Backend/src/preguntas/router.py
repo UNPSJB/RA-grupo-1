@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from src.database import get_db 
-from src.pregunta import services, schemas
+from src.preguntas import services, schemas
 router = APIRouter(prefix="/preguntas", tags=["preguntas"]) 
 
 @router.post("/cerrada")

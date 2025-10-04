@@ -34,6 +34,7 @@ from src.informes.router import router as informes_router
 from src.opciones.router import router as opciones_router
 from src.respuestas.router import router as respuestas_router
 from src.roles.router import router as roles_router
+from src.preguntas.router import router as preguntas_router
 
 
 from fastapi.middleware.cors import CORSMiddleware
@@ -66,14 +67,15 @@ app.add_middleware(
 )
 
 
-app.include_router(personas_router)
-app.include_router(encuestas_router)
-app.include_router(docentes_router)
 app.include_router(asignaturas_router)
+app.include_router(encuestas_router)
 app.include_router(carreras_router)
 app.include_router(departamentos_router)
+app.include_router(docentes_router)
 app.include_router(informes_router)
 app.include_router(opciones_router)
+app.include_router(personas_router)
+app.include_router(preguntas_router)
 app.include_router(respuestas_router)
 app.include_router(roles_router)
 
