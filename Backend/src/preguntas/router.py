@@ -5,11 +5,11 @@ from src.preguntas import services, schemas
 router = APIRouter(prefix="/preguntas", tags=["preguntas"]) 
 
 @router.post("/cerrada")
-def pregunta_cerrada(pregunta: schemas.PreguntaCerradaCreate, db: Session = Depends(get_db)):
+def pregunta_cerrada(pregunta: schemas.CrearPreguntaCerrada, db: Session = Depends(get_db)):
     return services.pregunta_cerrada(db, pregunta)
 
 @router.post("/abierta", response_model=schemas.Pregunta) 
-def pregunta_abierta(pregunta: schemas.PreguntaAbiertaCreate, db: Session = Depends(get_db)):
+def pregunta_abierta(pregunta: schemas.CrearPreguntaAbierta, db: Session = Depends(get_db)):
     return services.pregunta_abierta(db, pregunta)
 
 @router.get("/", response_model=list[schemas.Pregunta])

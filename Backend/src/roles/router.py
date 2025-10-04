@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from src.database import get_db
 from src.roles import schemas, services
 
-router = APIRouter(prefix="/roles", tags=["Roles"])
+router = APIRouter(prefix="/roles", tags=["roles"])
 
 @router.get("/", response_model=list[schemas.Rol])
 def read_roles(db: Session = Depends(get_db)):

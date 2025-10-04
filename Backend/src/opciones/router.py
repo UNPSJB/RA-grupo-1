@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from src.database import get_db
 from src.opciones import services, schemas
 
-router = APIRouter(prefix="/opciones", tags=["Opciones"])
+router = APIRouter(prefix="/opciones", tags=["opciones"])
 
 @router.post("/", response_model=schemas.Opcion)
 def crear_opcion(opcion: schemas.OpcionCreate, db: Session = Depends(get_db)):
