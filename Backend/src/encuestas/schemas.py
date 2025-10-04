@@ -1,7 +1,9 @@
 from pydantic import BaseModel
 from typing import List
 from enum import Enum
-from src.encuestas.models import EstadoEncuesta, Duracion
+from datetime import datetime
+from src.encuestas.models import EstadoEncuesta
+from src.vinculaciones.models import Duracion
 
 # Los siguientes schemas contienen atributos sin muchas restricciones de tipo.
 # Podemos crear atributos con ciertas reglas mediante el uso de un "Field" adecuado.
@@ -9,14 +11,17 @@ from src.encuestas.models import EstadoEncuesta, Duracion
 
 
 class EncuestaBase(BaseModel):
-    asignatura: str
     año: int
     estado: EstadoEncuesta
     cursado: Duracion
-    fecha_inicio: str
-    fecha_fin: str
+    fecha_inicio: datetime
+    fecha_fin: datetime
     carrera: str
     sede: str
+    titulo: str
+    activa: bool
+    created_at: datetime
+    asignatura_id: int
     
 class EncuestaCreate(EncuestaBase):
     pass

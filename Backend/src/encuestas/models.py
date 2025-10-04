@@ -14,12 +14,9 @@ class Encuesta(ModeloBase):
     
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     carrera: Mapped[str] = mapped_column(String, index=True)
-    asignatura: Mapped[str] = mapped_column(String, index=True)
     cursado: Mapped[Duracion] = mapped_column(Enum(Duracion), nullable=False)
     año: Mapped[int] = mapped_column(Integer, index=True)
     sede: Mapped[str] = mapped_column(String, index=True)    
-    fecha_inicio: Mapped[str] = mapped_column(String, index=True)
-    fecha_fin: Mapped[str] = mapped_column(String, index=True) 
     estado: Mapped[EstadoEncuesta] = mapped_column(Enum(EstadoEncuesta), nullable=False, default=EstadoEncuesta.abierta)
     titulo: Mapped[str] = mapped_column(String, nullable=False)
     fecha_inicio: Mapped[datetime] = mapped_column(DateTime, nullable=False)
