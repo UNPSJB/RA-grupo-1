@@ -41,8 +41,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
-ENV = os.getenv("ENV")
-ROOT_PATH = os.getenv(f"ROOT_PATH_{ENV.upper()}")
+ENV = os.getenv("ENV", "development")
+ROOT_PATH = os.getenv(f"ROOT_PATH_{ENV.upper()}", "")
 
 
 @asynccontextmanager
