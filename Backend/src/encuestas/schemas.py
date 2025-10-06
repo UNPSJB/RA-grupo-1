@@ -9,7 +9,7 @@ from src.encuestas.models import EstadoEncuesta, Cursado
 
 
 class EncuestaBase(BaseModel):
-    asignatura: str
+    asignatura: int
     año: int
     estado: EstadoEncuesta
     cursado: Cursado

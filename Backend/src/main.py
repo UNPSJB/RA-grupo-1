@@ -9,6 +9,8 @@ from src.personas.models import Persona
 # importamos los routers desde nuestros modulos
 from src.personas.router import router as personas_router
 from src.encuestas.router import router as encuestas_router
+from src.respuestas.router import router as respuestas_router
+from src.materias.router import router as materias_router
 from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
@@ -41,6 +43,8 @@ app.add_middleware(
 
 app.include_router(personas_router)
 app.include_router(encuestas_router)
+app.include_router(respuestas_router)
+app.include_router(materias_router)
 
 @app.get("/")
 def read_root():

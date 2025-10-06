@@ -3,6 +3,7 @@ from sqlalchemy import delete, select, update
 from sqlalchemy.orm import Session
 from src.encuestas.models import Encuesta
 from src.encuestas import schemas, exceptions
+#from src.alumnos.models import Alumno
 
 def listar_encuestas(db:Session) -> List[schemas.Encuesta]:
     return db.scalars(select(Encuesta)).all()

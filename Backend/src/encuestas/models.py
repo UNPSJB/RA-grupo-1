@@ -19,7 +19,7 @@ class Encuesta(ModeloBase):
     
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     carrera: Mapped[str] = mapped_column(String, index=True)
-    asignatura: Mapped[str] = mapped_column(String, index=True)
+    asignatura: Mapped[int] = mapped_column(Integer, index=True)
     cursado: Mapped[Cursado] = mapped_column(SQLEnum(Cursado), nullable=False)
     año: Mapped[int] = mapped_column(Integer, index=True)
     sede: Mapped[str] = mapped_column(String, index=True)    
