@@ -4,8 +4,8 @@ from enum import auto, StrEnum
 
 class Duracion(StrEnum):
     ANUAL = "ANUAL"
-    CUATRIMESTRE_1 = "PRIMER_CUATRIMESTRE"
-    CUATRIMESTRE_2 = "SEGUNDO_CUATRIMESTRE"
+    CUATRIMESTRE_1 = "PRIMER CUATRIMESTRE"
+    CUATRIMESTRE_2 = "SEGUNDO CUATRIMESTRE"
 
 alumno_asignatura = Table(
     "alumno_asignatura",

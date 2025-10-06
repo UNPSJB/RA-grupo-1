@@ -16,7 +16,7 @@ export interface Encuesta {
     asignatura: string;
     cursado: Cursado;
     estado: EstadoEncuesta;  
-    fecha_fin: number;
+    fecha_fin: Date;
 }
 
 export function useEncuestas(){

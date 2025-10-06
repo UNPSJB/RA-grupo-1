@@ -1,11 +1,9 @@
-// App.tsx
 import { Routes, Route } from 'react-router-dom';
-import Alumno from './components/Alumno';
+import Alumno from './components/rol/Alumno';
 import RoleSelection from './components/RoleSelection';
-import EncuestasIncompletas from './pages/EncuestasIncompletas';
-import EncuestasCompletas from './pages/EncuestasCompletas'
+import EncuestasIncompletas from './components/encuesta/EncuestasIncompletas'
+import EncuestasCompletas from './components/encuesta/EncuestasCompletas'
 import 'bootstrap-icons/font/bootstrap-icons.css';
-
 
 function App() {
   return (

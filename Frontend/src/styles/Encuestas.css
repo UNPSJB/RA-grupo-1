@@ -1,24 +1,22 @@
-/* Sección del encabezado */
 .header-section {
     text-align: center;
     margin-bottom: 1rem;
 }
 
-/* Cards de encuestas horizontales */
-.encuesta-card-horizontal {
+.encuesta-card {
     border: none;
     border-radius: 12px;
     box-shadow: 0 2px 8px #0000001a;
     transition: all 0.3s ease;
     background-color: #f8f9fa;
+    padding: 1rem;
 }
 
-.encuesta-card-horizontal:hover {
+.encuesta-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px #00000026;
+    box-shadow: 0 6px 16px #00000026;
 }
 
-/* Icono de Excel con borde rojo */
 .encuesta-icon-excel {
     width: 40px;
     height: 40px;
@@ -31,7 +29,7 @@
     background-color: #fff;
 }
 
-.encuesta-icon-excel i {
+.fecha-vence {
     font-size: 1.2rem;
     color: #dc3545;
 }
@@ -60,7 +58,6 @@
     font-size: 0.9rem;
 }
 
-/* Badges */
 .badges-container {
     text-align: center;
 }
@@ -72,7 +69,6 @@
     border-radius: 8px;
 }
 
-/* Botón de acción */
 .action-btn-horizontal {
     font-size: 0.8rem;
     font-weight: 200;
@@ -80,12 +76,10 @@
     border-radius: 8px;
 }
 
-/* Lista de encuestas */
 .encuestas-list {
     max-width: 100%;
 }
 
-/* Estados de cargando y error */
 .loading-text {
     font-size: 1.1rem;
     color: #6c757d;
@@ -98,7 +92,6 @@
     box-shadow: 0 4px 12px #dc354533;
 }
 
-/* Estado vacío */
 .empty-state {
     text-align: center;
     padding: 3rem 1rem;

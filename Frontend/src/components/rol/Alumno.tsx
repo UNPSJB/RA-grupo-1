@@ -1,8 +1,8 @@
 import { Link, Outlet } from "react-router-dom";
 import { Container, Navbar, Nav } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../styles/Alumno.css";
-import { usePersona } from "../hooks/usePersona";
+import "../../styles/Alumno.css";
+import { usePersona } from "../../hooks/usePersona";
 
 interface SalumnoProps {
   children?: React.ReactNode;

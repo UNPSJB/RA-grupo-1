@@ -8,11 +8,12 @@ class Alumno(ModeloBase):
     __tablename__ = "alumnos"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    persona_id: Mapped[int] = mapped_column(ForeignKey("personas.id"), unique=True)
     CUIL: Mapped[String] = mapped_column(String, index=True)
-    nombre: Mapped[String] = mapped_column(String, index=True)
-    apellido: Mapped[String] = mapped_column(String, index=True)
     usuario: Mapped[String] = mapped_column(String, index=True)
     clave: Mapped[String] = mapped_column(String, index=True)
+
+    persona: Mapped["Persona"] = relationship("Persona", back_populates="alumno")
     
     asignaturas: Mapped[Optional[List["Asignatura"]]] = relationship(
         "Asignatura",
