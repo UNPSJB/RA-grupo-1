@@ -5,6 +5,7 @@ class PersonaBase(BaseModel):
     nombre: str
     apellido: str
     email: EmailStr
+    dni: int
     rol_id: int
     legajo: int
 
@@ -12,6 +13,9 @@ class PersonaCreate(PersonaBase):
     pass
 
 class PersonaUpdate(PersonaBase):
+    pass
+
+class PersonaConRol(PersonaBase):
     pass
 
 class Persona(PersonaBase):

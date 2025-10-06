@@ -10,6 +10,13 @@ router = APIRouter(prefix="/personas", tags=["personas"])
 def create_persona(persona: schemas.PersonaCreate, db: Session = Depends(get_db)):
     return services.crear_persona(db, persona)
 
+@router.post("/crear-con-rol", response_model=schemas.PersonaConRol)
+def crear_persona_con_rol(
+    persona_data: schemas.PersonaConRol,
+    db: Session = Depends(get_db)
+):
+    return services.crear_persona_con_rol(db, persona_data)
+
 
 @router.get("/", response_model=list[schemas.Persona])
 def read_personas(db: Session = Depends(get_db)):
