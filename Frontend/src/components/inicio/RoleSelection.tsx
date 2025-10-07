@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import '../styles/RoleSelection.css';
+import '../../styles/RoleSelection.css';
 
 function SeccionBienvenida() {
     return (
@@ -62,7 +62,6 @@ export default function RoleSelection() {
         <div className="role-selection-container">
             <Container className="py-5">
                 <SeccionBienvenida />
-                {/* Role Cards */}
                 <Row className="g-4 justify-content-center">
                     {roles.map((role) => (
                         <Col key={role.id} lg={3} md={6} sm={12}>

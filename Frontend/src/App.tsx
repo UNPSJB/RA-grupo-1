@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import Alumno from './components/rol/Alumno';
-import RoleSelection from './components/RoleSelection';
+import RoleSelection from './components/inicio/RoleSelection'
 import EncuestasIncompletas from './components/encuesta/EncuestasIncompletas'
 import EncuestasCompletas from './components/encuesta/EncuestasCompletas'
 import 'bootstrap-icons/font/bootstrap-icons.css';

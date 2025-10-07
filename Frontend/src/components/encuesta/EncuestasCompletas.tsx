@@ -10,6 +10,10 @@ export default function EncuestasCompletas() {
         return encuesta.estado === EstadoEncuesta.CERRADA;
     });
 
+    const formatearFecha = (fecha: string) => {
+        return new Date(fecha).toLocaleDateString('es-ES');
+    };
+
     const getCursadoBadgeVariant = (cursado: Cursado) => {
         switch (cursado) {
             case Cursado.PrimerCuatrimestre:
@@ -50,71 +54,78 @@ export default function EncuestasCompletas() {
         );
     }
 
-   return (
-    <Container className="encuestas-container">
-        <div className="header-section">
-            <h1 className="titulo">
-                <i className="bi bi-check-circle me-3"></i>
-                Encuestas Completadas
-            </h1>
-            <p className="page-subtitle">
-                Listado de encuestas que completaste
-            </p>
-        </div>
-
-        {encuestasCompletas.length === 0 ? (
-            <div className="empty-state">
-                <div className="empty-icon">
-                    <i className="bi bi-clipboard-check"></i>
-                </div>
-                <h3>No tenes encuestas completadas</h3>
-                <p>Se completaron todas las encuestas.</p>
+    return (
+        <Container className="encuestas-container">
+            <div className="header-section">
+                <h1 className="page-title">
+                    <i className="bi bi-check-circle-fill me-3 text-success"></i>
+                    Encuestas Completas
+                </h1>
+                <p className="page-subtitle">
+                    Listado de encuestas que completaste
+                </p>
             </div>
-        ) : (
-            <Row xs={1} sm={2} md={3} lg={4} className="g-4">
-                {encuestasCompletas.map((encuesta) => (
-                    <Col key={encuesta.id}>
-                        <Card className="encuesta-card text-center h-100">
-                            <Card.Body>
-                                <div className="encuesta-icon-completada mb-3">
-                                    <i className="bi bi-check-circle-fill fs-2 text-success"></i>
-                                </div>
 
-                                <Card.Title className="asignatura-title mb-2">
-                                    {encuesta.asignatura}
-                                </Card.Title>
-
-                                <div className="encuesta-meta mb-2">
-                                    <i className="bi bi-calendar-check me-2"></i>
-                                    <span>Completada el: {encuesta.fecha_fin}</span>
-                                </div>
-
-                                <div className="mb-3">
-                                    <Badge 
-                                        bg={getCursadoBadgeVariant(encuesta.cursado)}
-                                        className="me-2"
-                                    >
-                                        {encuesta.cursado}
-                                    </Badge>
-                                    <Badge bg="success">
-                                        COMPLETADA
-                                    </Badge>
-                                </div>
-
-                                <Button 
-                                    variant="outline-primary"
-                                    size="sm"
-                                    className="w-100"
-                                >
-                                    Ver Respuestas
-                                </Button>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                ))}
-            </Row>
-        )}
-    </Container>
-);
-
+            {encuestasCompletas.length === 0 ? (
+                <div className="empty-state">
+                    <div className="empty-icon">
+                        <i className="bi bi-calendar-check"></i>
+                    </div>
+                    <h3>No hay encuestas completas</h3>
+                    <p>No has completado ninguna encuesta todavía.</p>
+                </div>
+            ) : (
+                <Row>
+                    {encuestasCompletas.map((encuesta) => (
+                        <Col md={6} lg={4} key={encuesta.id} className="mb-4">
+                            <Card className="encuesta-card h-100">
+                                <Card.Header className="card-header-custom">
+                                    <div className="d-flex justify-content-between align-items-center">
+                                        <Badge 
+                                            bg="success"
+                                            className="estado-badge"
+                                        >
+                                            COMPLETADA
+                                        </Badge>
+                                        <Badge 
+                                            bg={getCursadoBadgeVariant(encuesta.cursado)}
+                                            className="cursado-badge"
+                                        >
+                                            {encuesta.cursado}
+                                        </Badge>
+                                    </div>
+                                </Card.Header>
+                                
+                                <Card.Body className="card-body-custom">
+                                    <Card.Title className="asignatura-title">
+                                        {encuesta.asignatura}
+                                    </Card.Title>
+                                    
+                                    <div className="encuesta-details">
+                                        <div className="detail-item">
+                                            <i className="bi bi-calendar-event me-2"></i>
+                                            <strong>Fecha límite:</strong>
+                                            <span className="ms-2">{formatearFecha(encuesta.fecha_fin)}</span>
+                                        </div>
+                                    </div>
+                                </Card.Body>
+                                
+                                <Card.Footer className="card-footer-custom">
+                                    <div className="d-grid gap-2">
+                                        <Button 
+                                            variant="primary"
+                                            className="action-btn"
+                                        >
+                                            <i className="bi bi-check-circle me-2"></i>
+                                            Ver encuesta
+                                        </Button>
+                                    </div>
+                                </Card.Footer>
+                            </Card>
+                        </Col>
+                    ))}
+                </Row>
+            )}
+        </Container>
+    );
 }

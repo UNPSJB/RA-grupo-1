@@ -2,17 +2,16 @@ import { Card, Button, Badge, Spinner, Alert, Row, Col, Container } from 'react-
 import { useEncuestas } from '../../hooks/useEncuestas';
 import '../../styles/Encuestas.css';
 import { EstadoEncuesta, Cursado, Encuesta } from '../../types/types';
+
 export default function EncuestasIncompletas() {
     const { encuestas, loading, error, refetch } = useEncuestas();
 
     const encuestasIncompletas = encuestas.filter(encuesta => encuesta.estado === EstadoEncuesta.ABIERTA);
 
-   
     const getBadgeVariant = (estado: EstadoEncuesta) => {
         return estado === EstadoEncuesta.ABIERTA ? 'danger' : 'success';
     };
 
-    
     const getCursadoBadgeVariant = (cursado: Cursado) => {
         switch (cursado) {
             case Cursado.PrimerCuatrimestre:
@@ -24,6 +23,10 @@ export default function EncuestasIncompletas() {
             default:
                 return 'dark';
         }
+    };
+
+    const formatearFecha = (fecha: string) => {
+        return new Date(fecha).toLocaleDateString('es-ES');
     };
 
     if (loading) {
@@ -39,71 +42,95 @@ export default function EncuestasIncompletas() {
         );
     }
 
+    if (error) {
+        return (
+            <Container className="mt-4">
+                <Alert variant="danger">
+                    <i className="bi bi-exclamation-triangle me-2"></i>
+                    Error al cargar las encuestas: {error}
+                </Alert>
+                <Button variant="outline-primary" onClick={refetch}>
+                    Reintentar
+                </Button>
+            </Container>
+        );
+    }
+
     return (
-    <Container className="encuestas-container">
-        <div className="header-section">
-            <h1 className="titulo">
-                <i className="bi bi-exclamation-circle me-3"></i>
-                 Encuestas Incompletadas
-            </h1>
-            <p className="page-subtitle">
-                Listado de encuestas que tenes pendientes por contestar
-            </p>
-        </div>
-
-        {encuestasIncompletas.length === 0 ? (
-            <div className="empty-state">
-                <div className="empty-icon">
-                    <i className="bi bi-clipboard-check"></i>
-                </div>
-                <h3>No tenes encuestas Incompletas</h3>
-                <p>Se completaron todas las encuestas.</p>
+        <Container className="encuestas-container">
+            <div className="header-section">
+                <h1 className="page-title">
+                    <i className="bi bi-clipboard-data me-3"></i>
+                    Encuestas Incompletas
+                </h1>
+                <p className="page-subtitle">
+                    Listado de encuestas pendientes de completar
+                </p>
             </div>
-        ) : (
-            <Row xs={1} sm={2} md={3} lg={4} className="g-4">
-                {encuestasIncompletas.map((encuesta) => (
-                    <Col key={encuesta.id}>
-                        <Card className="encuesta-card text-center h-100">
-                            <Card.Body>
-                                <div className="encuesta-icon-Incompletada mb-3">
-                                    <i className="bi bi-clipboard2-x-fill text-danger fs-1" text-success></i>
-                                </div>
 
-                                <Card.Title className="asignatura-title mb-2">
-                                    {encuesta.asignatura}
-                                </Card.Title>
-
-                                <div className="encuesta-meta mb-2 fecha-vence">
-                                    <i className="bi bi-calendar-x"></i>
-                                    <span> Se vence el: {encuesta.fecha_fin}</span>
-                                </div>
-
-                                <div className="mb-3">
-                                    <Badge 
-                                        bg={getCursadoBadgeVariant(encuesta.cursado)}
-                                        className="me-2"
-                                    >
-                                        {encuesta.cursado}
-                                    </Badge>
-                                    <Badge bg="danger">
-                                        INCOMPLETA
-                                    </Badge>
-                                </div>
-
-                                <Button 
-                                    variant="primary"
-                                    size="sm"
-                                    className="w-100"
-                                >
-                                    Responder encuesta
-                                </Button>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                ))}
-            </Row>
-        )}
-    </Container>
-);
-
+            {encuestasIncompletas.length === 0 ? (
+                <div className="empty-state">
+                    <div className="empty-icon">
+                        <i className="bi bi-inbox"></i>
+                    </div>
+                    <h3>No hay encuestas incompletas</h3>
+                    <p>Todas las encuestas están completadas o no hay encuestas abiertas.</p>
+                </div>
+            ) : (
+                <Row>
+                    {encuestasIncompletas.map((encuesta) => (
+                        <Col md={6} lg={4} key={encuesta.id} className="mb-4">
+                            <Card className="encuesta-card h-100">
+                                <Card.Header className="card-header-custom">
+                                    <div className="d-flex justify-content-between align-items-center">
+                                        <Badge 
+                                            bg={getBadgeVariant(encuesta.estado)}
+                                            className="estado-badge"
+                                        >
+                                            {encuesta.estado.toUpperCase()}
+                                        </Badge>
+                                        <Badge 
+                                            bg={getCursadoBadgeVariant(encuesta.cursado)}
+                                            className="cursado-badge"
+                                        >
+                                            {encuesta.cursado}
+                                        </Badge>
+                                    </div>
+                                </Card.Header>
+                                
+                                <Card.Body className="card-body-custom">
+                                    <Card.Title className="asignatura-title">
+                                        {encuesta.asignatura}
+                                    </Card.Title>
+                                    
+                                    <div className="encuesta-details">
+                                        <div className="detail-item">
+                                            <i className="bi bi-calendar-event me-2"></i>
+                                            <strong>Fecha límite:</strong>
+                                            <span className="ms-2">{formatearFecha(encuesta.fecha_fin)}</span>
+                                        </div>
+                                    </div>
+                                </Card.Body>
+                                
+                                <Card.Footer className="card-footer-custom">
+                                    <div className="d-grid gap-2">
+                                        <Button 
+                                            variant={encuesta.estado === EstadoEncuesta.ABIERTA ? "primary" : "secondary"}
+                                            disabled={encuesta.estado === EstadoEncuesta.CERRADA}
+                                            className="action-btn"
+                                        >
+                                            {encuesta.estado === EstadoEncuesta.ABIERTA 
+                                                ? "Completar Encuesta" 
+                                                : "Encuesta Cerrada"
+                                            }
+                                        </Button>
+                                    </div>
+                                </Card.Footer>
+                            </Card>
+                        </Col>
+                    ))}
+                </Row>
+            )}
+        </Container>
+    );
 }
