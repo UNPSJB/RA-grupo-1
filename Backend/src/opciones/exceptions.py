@@ -8,3 +8,11 @@ class OpcionNoEncontrada(NotFound):
 
 class OpcionSuprimible(NotFound):
     DETAIL = ErrorMessage.OPCION_INMODIFICABLE
+
+class TextoOpcionVacioError(ValueError):
+    # Cuando el texto de la opción está vacío
+    pass
+
+class TextoOpcionDemasiadoLargoError(ValueError):
+    # cuando el texto excede el límite
+    pass

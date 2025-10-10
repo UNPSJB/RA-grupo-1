@@ -4,8 +4,11 @@ from src.roles.models import Rol
 from src.alumnos.models import Alumno
 from src.docentes.models import Docente
 from src.asignaturas.models import Asignatura
-from src.encuestas.models import Encuesta  
+from src.encuestas.models import Encuesta 
+from src.respuestas.models import Respuesta
+from src.preguntas.models import Pregunta 
 from src.vinculaciones.asignatura_docente.models import AsignaturaDocente
+from src.vinculaciones.models import alumno_encuesta, alumno_asignatura, pregunta_opcion
 
 __all__ = [
     "ModeloBase",

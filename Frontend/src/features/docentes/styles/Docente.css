@@ -1,0 +1,132 @@
+.docente {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.user-profile-dropdown {
+    background: transparent !important;
+    padding: 0.5rem 1rem;
+    border-radius: 50px !important;
+    transition: all 0.3s ease;
+}
+
+.user-profile-dropdown:hover {
+    background: #0000000d !important;
+    transform: translateY(-1px);
+}
+
+.user-profile-dropdown:focus {
+    box-shadow: 0 0 0 0.2rem #0d6efd40 !important;
+}
+
+.user-info {
+    min-width: 120px;
+}
+
+.user-role {
+    font-size: 0.75rem;
+    display: block;
+    line-height: 1.2;
+}
+
+.dropdown-menu-custom {
+    border: none;
+    box-shadow: 0 4px 15px #0000001a;
+    border-radius: 12px;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    border: 1px solid #0000001a;
+}
+
+.dropdown-header {
+    padding: 0.75rem 1rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+
+.dropdown-item-custom {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin: 0.125rem 0;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    color: #495057;
+    text-decoration: none;
+}
+
+.dropdown-item-custom:hover {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+    color: white;
+    transform: translateX(5px);
+}
+
+.dropdown-item-custom.text-danger:hover {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    color: white;
+}
+
+.main-content {
+    flex: 1;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    min-height: calc(100vh - 140px);
+}
+
+.content-container {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+}
+
+.nav-link-custom.active {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%) !important;
+    color: white !important;
+    border-radius: 8px;
+}
+
+.nav-link-custom.active::before {
+    display: none;
+}
+
+.nav-link-custom i {
+    font-size: 0.9em;
+    opacity: 0.9;
+}
+
+/* Estilos específicos para Mis Materias */
+.materia-card {
+  transition: all 0.3s ease;
+  border: 1px solid #00000014 !important;
+}
+
+.materia-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px #00000026 !important;
+  border-color: #0d6efd !important;
+}
+
+/* Progress bar personalizada */
+.progress {
+  background-color: #e9ecef;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  border-radius: 10px;
+  background: linear-gradient(90deg, #198754, #20c997);
+  transition: width 0.6s ease;
+}
+
+.border-end {
+  border-color: #dee2e6 !important;
+}
+
+.card-body h4 {
+  transition: all 0.3s ease;
+}
+
+.materia-card:hover .card-body h4 {
+  color: #0d6efd !important;
+}

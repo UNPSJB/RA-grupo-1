@@ -1,0 +1,227 @@
+/* src/styles/RespuestasAbiertas.css */
+
+.respuestas-abiertas-container {
+  padding: 1rem 0;
+}
+
+/* Header */
+.respuestas-header {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #212529;
+  margin: 0;
+}
+
+.page-subtitle {
+  font-size: 1rem;
+  color: #6c757d;
+  font-weight: 400;
+}
+
+.stats-badge {
+  display: flex;
+  align-items: center;
+}
+
+/* Filtros */
+.filtros-card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+}
+
+.filtros-card .form-control,
+.filtros-card .form-select {
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  padding: 0.6rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.filtros-card .form-control:focus,
+.filtros-card .form-select:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+/* Alert de anonimato */
+.anonimato-alert {
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #e7f3ff 0%, #cfe2ff 100%);
+  border-left: 4px solid #0d6efd;
+}
+
+/* Tarjetas de respuestas */
+.respuesta-card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.respuesta-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.respuesta-header {
+  border-bottom: 2px solid #f8f9fa;
+  padding-bottom: 1rem;
+}
+
+.pregunta-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #212529;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.asignatura-badge,
+.categoria-badge,
+.sentimiento-badge {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.fecha-badge {
+  font-size: 0.85rem;
+  color: #6c757d;
+  font-weight: 500;
+  white-space: nowrap;
+  background: #f8f9fa;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+}
+
+/* Contenido de la respuesta */
+.respuesta-content {
+  padding: 1rem 0;
+}
+
+.respuesta-quote {
+  position: relative;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border-left: 4px solid #0d6efd;
+}
+
+.quote-icon {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  font-size: 2rem;
+  color: #0d6efd;
+  opacity: 0.2;
+}
+
+.respuesta-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #495057;
+  padding-left: 2.5rem;
+  font-weight: 400;
+  margin: 0;
+}
+
+.respuesta-footer {
+  padding-top: 1rem;
+  border-top: 1px solid #f8f9fa;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.empty-icon {
+  font-size: 4rem;
+  color: #adb5bd;
+  margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+  font-size: 1rem;
+  color: #6c757d;
+  margin-bottom: 1.5rem;
+}
+
+/* Loading */
+.loading-text {
+  font-size: 1.1rem;
+  color: #6c757d;
+}
+
+/* Badges de sentimiento - colores mejorados */
+.badge.bg-success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+}
+
+.badge.bg-danger {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+}
+
+.badge.bg-warning {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  color: #ffffff !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 1.5rem;
+  }
+
+  .respuesta-quote {
+    padding: 1rem;
+  }
+
+  .respuesta-text {
+    font-size: 0.95rem;
+    padding-left: 1.5rem;
+  }
+
+  .quote-icon {
+    font-size: 1.5rem;
+    top: 0.75rem;
+    left: 0.75rem;
+  }
+
+  .pregunta-text {
+    font-size: 1rem;
+  }
+
+  .asignatura-badge,
+  .categoria-badge,
+  .sentimiento-badge {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+  }
+}

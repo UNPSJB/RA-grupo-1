@@ -4,3 +4,9 @@ from src.exceptions import NotFound, BadRequest
 
 class DocenteNoEncontrado(NotFound):
     DETAIL = ErrorCode.DOCENTE_NO_ENCONTRADO
+
+class AsignaturaYaAsignada(Exception):
+    pass
+
+class PersonaNoEncontrada(Exception):
+    pass

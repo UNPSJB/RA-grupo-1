@@ -8,7 +8,7 @@ from src.asignaturas import schemas, exceptions
 def listar_asignatura(db: Session) -> List[schemas.Asignatura]:
     return db.scalars(select(Asignatura)).all()
 
-def leer_asignatura(db: Session, materia_id: int) -> schemas.Asignatura:
+def leer_asignatura(db: Session, asignatura_id: int) -> schemas.Asignatura:
     db_asignatura = db.scalar(select(Asignatura).where(Asignatura.id == asignatura_id))
     if db_asignatura is None:
         raise exceptions.AsignaturaNoEncontrada()

@@ -11,7 +11,7 @@ class Opcion(ModeloBase):
     __tablename__ = "opciones"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    texto: Mapped[str] = mapped_column(String(100),primary_key=False, nullable=False)
+    texto: Mapped[str] = mapped_column(String(100), nullable=False)
 
     preguntas: Mapped[list["Pregunta"]] = relationship(
         "Pregunta",

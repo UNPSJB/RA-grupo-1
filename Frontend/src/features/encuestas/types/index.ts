@@ -27,3 +27,19 @@ interface Props {
   fechaPrefix?: string;       
   onPrimaryAction?: (encuesta: Encuesta) => void;
 }
+export interface RespuestaAbierta {
+  id: number;
+  pregunta: string;
+  respuesta: string;
+  asignatura: string;
+  asignaturaId: number;
+  fecha: string;
+  sentimiento?: 'positivo' | 'neutral' | 'negativo';
+  categoria?: string;
+}
+
+export interface FiltrosRespuestas {
+  asignaturaId: number | null;
+  sentimiento: string | null;
+  busqueda: string;
+}

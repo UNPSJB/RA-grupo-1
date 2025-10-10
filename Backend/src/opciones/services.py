@@ -1,6 +1,6 @@
 from typing import List
 from sqlalchemy.orm import Session
-from sqlalchemy import delete, select, update
+from sqlalchemy import select
 from src.opciones.models import Opcion
 from src.opciones import schemas, exceptions
 
@@ -22,7 +22,10 @@ def recibir_opcion(db: Session, opcion_id: int) -> schemas.Opcion:
 
 def cambiar_opcion(db: Session, opcion_id: int, opcion: schemas.OpcionUpdate) -> schemas.Opcion:
     db_opcion = recibir_opcion(db, opcion_id)
-    db.execute(update(Opcion).where(Opcion.id == opcion_id).values(**opcion.model_dump()))
+     # Actualiza atributos directamente en el objeto
+    for field, value in opcion.model_dump().items():
+        setattr(db_opcion, field, value)
+    
     db.commit()
     db.refresh(db_opcion)
     return db_opcion
@@ -30,8 +33,12 @@ def cambiar_opcion(db: Session, opcion_id: int, opcion: schemas.OpcionUpdate) ->
 def eliminar_opcion(db: Session, opcion_id: int) -> schemas.OpcionDelete:
     db_opcion = recibir_opcion(db, opcion_id)
 
+    # Valida que no tenga preguntas asociadas
     if db_opcion.preguntas and len(db_opcion.preguntas) > 0:
         raise exceptions.OpcionNoEliminable()
+    
+    # Crea respuesta antes de eliminar
+    respuesta = schemas.OpcionDelete(id=db_opcion.id)
 
     db.delete(db_opcion)
     db.commit()

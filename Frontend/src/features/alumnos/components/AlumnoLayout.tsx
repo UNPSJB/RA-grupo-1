@@ -1,14 +1,14 @@
 import { Link, Outlet } from "react-router-dom";
 import { Container, Navbar, Nav } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../../styles/Alumno.css";
-import { usePersona } from "../../hooks/usePersona";
+import "../styles/Alumno.css"
+import { usePersona } from "../../../hooks/usePersona";
 
-interface SalumnoProps {
+interface AlumnoLayoutProps {
   children?: React.ReactNode;
 }
 
-export default function Alumno({ children }: AlumnoProps) {
+export const AlumnoLayout = ({ children }: AlumnoLayoutProps) => {
   const { persona, loading, error } = usePersona();
 
   return (

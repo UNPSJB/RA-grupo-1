@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from src.database import get_db
 from src.opciones import services, schemas
@@ -15,13 +15,22 @@ def leer_opciones(db: Session = Depends(get_db)) -> list[schemas.Opcion]:
 
 @router.get("/{opcion_id}", response_model=schemas.Opcion)
 def leer_opcion(opcion_id: int, db: Session = Depends(get_db)) -> schemas.Opcion:
-    return services.obtener_opcion(db, opcion_id)
+    opcion = services.obtener_opcion(db, opcion_id)
+    if not opcion:
+        raise HTTPException(status_code=404, detail="Opción no encontrada")
+    return opcion
 
 @router.put("/{opcion_id}", response_model=schemas.Opcion)
 def renovar_opcion(opcion_id: int, opcion: schemas.OpcionUpdate, db: Session = Depends(get_db)) -> schemas.Opcion:
-    return services.renovar_opcion(db, opcion_id, opcion)
+    opcion_actualizada = services.renovar_opcion(db, opcion_id, opcion)
+    if not opcion_actualizada:
+        raise HTTPException(status_code=404, detail="Opción no encontrada")
+    return opcion_actualizada
 
 @router.delete("/{opcion_id}", response_model=schemas.OpcionDelete)
 def borrar_opcion(opcion_id: int, db: Session = Depends(get_db)) -> schemas.OpcionDelete:
-    return services.eliminar_opcion(db, opcion_id)
+    opcion_eliminada = services.eliminar_opcion(db, opcion_id)
+    if not opcion_eliminada:
+        raise HTTPException(status_code=404, detail="Opción no encontrada")
+    return opcion_eliminada
 
