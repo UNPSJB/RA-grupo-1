@@ -2,6 +2,7 @@ from sqlalchemy import Integer, String, ForeignKey, Table
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.database import Base
 
+#unciclo puede tener muchas respuestas, pero un respuesta pertence  un ciclo
 
 class Respuesta(Base):
     __tablename__ = "respuestas_estudiantes"
@@ -11,3 +12,5 @@ class Respuesta(Base):
     opcion_multiple: Mapped[str] = mapped_column(String, nullable=True)
     progreso: Mapped[int] = mapped_column(Integer, default=0)
     pregunta_id: Mapped[int] = mapped_column(Integer, ForeignKey("preguntas.id"), nullable=False)
+    ciclo_id: Mapped[int] = mapped_column(Integer, ForeignKey("ciclos_encuesta.id"), nullable=True)
+    ciclo = relationship("CicloEncuesta", back_populates="respuestas")

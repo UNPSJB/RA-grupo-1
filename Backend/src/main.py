@@ -24,6 +24,7 @@ from src.ciclos.models import CicloEncuesta
 from src.vinculaciones.models import alumno_asignatura, pregunta_opcion
 from src.vinculaciones.asignatura_docente.models import AsignaturaDocente
 
+
 # Routers
 from src.personas.router import router as personas_router
 from src.encuestas.router import router as encuestas_router
@@ -79,7 +80,8 @@ app.include_router(personas_router)
 app.include_router(preguntas_router)
 app.include_router(respuestas_router)
 app.include_router(roles_router)
-app.include_router(ciclos_router)
+app.include_router(ciclos_router, prefix="/api/ciclos") #ver esto despues causaba problemas con el fetch del front
+
 
 @app.get("/")
 def read_root():

@@ -14,8 +14,8 @@ export function useCiclos() {
     try {
       setLoading(true);
       setError(null);
-      const res = await fetch("/api/ciclos"); 
-      if (!res.ok) throw new Error("Error al cargar los ciclos ");
+      const res = await fetch("http://127.0.0.1:8000/api/ciclos"); // preguntar esto despues
+      if (!res.ok) throw new Error("Error al cargar los ciclos");
       const data: Ciclo[] = await res.json();
       setCiclos(data);
     } catch (err) {
