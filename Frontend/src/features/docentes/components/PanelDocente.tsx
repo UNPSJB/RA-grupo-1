@@ -3,32 +3,17 @@ import { Link } from 'react-router-dom';
 import { docenteService, DocenteStats } from '../services/docenteService';
 
 export const PanelDocente: React.FC = () => {
-  // Datos de ejemplo 
+  // Datos de ejemplo aca despues se llama a la api
   const docenteData = {
     materias: 3,
-    semestre: "2024-2",
-    estudiantes: 105,
+    semestre: "2024",
+    alumnos: 105,
     encuestasCompletadas: 85,
     evaluacionPromedio: 3.7
   };
 
   return (
     <div className="container-fluid">
-      {/* Header del Panel */}
-      <div className="row mb-4">
-        <div className="col-12">
-          <div className="card border-0 bg-light">
-            <div className="card-body py-4">
-              <div className="row align-items-center">
-                <div className="col-md-8">
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Estadísticas Principales */}
       <div className="row mb-4">
         <div className="col-xl-3 col-md-6 mb-4">
           <div className="card border-0 shadow-sm h-100">
@@ -52,8 +37,8 @@ export const PanelDocente: React.FC = () => {
             <div className="card-body">
               <div className="d-flex justify-content-between align-items-start">
                 <div>
-                  <h6 className="card-title text-muted text-uppercase small">Total Estudiantes</h6>
-                  <h2 className="fw-bold text-success mb-1">{docenteData.estudiantes}</h2>
+                  <h6 className="card-title text-muted text-uppercase small">Total alumnos</h6>
+                  <h2 className="fw-bold text-success mb-1">{docenteData.alumnos}</h2>
                   <small className="text-muted">Todas las materias</small>
                 </div>
                 <div className="bg-success bg-opacity-10 p-3 rounded">
@@ -72,7 +57,7 @@ export const PanelDocente: React.FC = () => {
                   <h6 className="card-title text-muted text-uppercase small">Encuestas Completadas</h6>
                   <h2 className="fw-bold text-warning mb-1">{docenteData.encuestasCompletadas}</h2>
                   <small className="text-muted">
-                    de {docenteData.estudiantes} estudiantes
+                    de {docenteData.alumnos} alumnos
                   </small>
                 </div>
                 <div className="bg-warning bg-opacity-10 p-3 rounded">
@@ -101,34 +86,6 @@ export const PanelDocente: React.FC = () => {
         </div>
       </div>
 
-      {/* Navegación entre secciones */}
-      <div className="row mb-4">
-        <div className="col-12">
-          <div className="card border-0 shadow-sm">
-            <div className="card-body py-3">
-              <div className="row text-center">
-                <div className="col-md-4 mb-2 mb-md-0">
-                  <Link to="/docente/materias" className="text-decoration-none">
-                    <button className="btn btn-outline-primary w-100 py-3 fw-semibold">
-                      <i className="bi bi-journal-text me-2"></i>
-                      Mis Materias
-                    </button>
-                  </Link>
-                </div>
-                <div className="col-md-4 mb-2 mb-md-0">
-                  <Link to="/docente/reportes" className="text-decoration-none">
-                    <button className="btn btn-outline-success w-100 py-3 fw-semibold">
-                      <i className="bi bi-graph-up me-2"></i>
-                      Reportes
-                    </button>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div className="row">
         <div className="col-lg-6 mb-4">
           <div className="card border-0 shadow-sm h-100">
@@ -146,11 +103,7 @@ export const PanelDocente: React.FC = () => {
                 </div>
                 <div className="list-group-item border-0 px-0 py-2">
                   <small className="text-muted">Ayer</small>
-                  <p className="mb-1">15 estudiantes completaron encuesta de Física</p>
-                </div>
-                <div className="list-group-item border-0 px-0 py-2">
-                  <small className="text-muted">2 días</small>
-                  <p className="mb-1">Actualización del sistema completada</p>
+                  <p className="mb-1">15 alumnos completaron encuesta de Algebra</p>
                 </div>
               </div>
             </div>

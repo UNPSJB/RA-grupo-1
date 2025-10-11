@@ -5,6 +5,7 @@ import { DocenteLayout } from '../features/docentes/components/DocenteLayout';
 import { EncuestasIncompletas } from '../features/encuestas/components/EncuestasIncompletas';
 import { EncuestasCompletas } from '../features/encuestas/components/EncuestasCompletas';
 import { PanelDocente } from '../features/docentes/components/PanelDocente';
+import { MisMaterias } from '../features/docentes/components/MisMaterias';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
@@ -22,6 +23,7 @@ function App() {
       <Route path="/docente" element={<DocenteLayout />}>
         <Route index element={<PanelDocente />} /> 
         <Route path="reportes" element={<div>Reportes de Encuestas</div>} />
+        <Route path="mis-materias" element={<MisMaterias />} />
       </Route>
     </Routes>
   );

@@ -23,13 +23,8 @@ export const Navbar = ({
   const [showDropdown, setShowDropdown] = useState(false);
 
   const handleLogout = () => {
-    // Aquí puedes agregar lógica para limpiar tokens, localStorage, etc.
-    console.log('Cerrando sesión...');
-    
-    // Redirigir al panel principal de selección de rol
     navigate('/');
-    
-    // Cerrar el dropdown
+    // Cierra el dropdown
     setShowDropdown(false);
   };
 

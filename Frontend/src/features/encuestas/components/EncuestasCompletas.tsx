@@ -104,7 +104,7 @@ export const EncuestasCompletas = () => {
                                     <div className="encuesta-details">
                                         <div className="detail-item">
                                             <i className="bi bi-calendar-event me-2"></i>
-                                            <strong>Fecha límite:</strong>
+                                            <strong>Completada el:</strong>
                                             <span className="ms-2">{formatearFecha(encuesta.fecha_fin)}</span>
                                         </div>
                                     </div>

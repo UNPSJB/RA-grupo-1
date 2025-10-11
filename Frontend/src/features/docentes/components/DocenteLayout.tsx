@@ -6,7 +6,8 @@ import { Footer } from "../../../components/layout/Footer/Footer";
 export const DocenteLayout = ({ children }) => {
   const docenteNavLinks = [
     { to: "/docente", label: "Panel Principal" },
-    { to: "/docente/reportes", label: "Reportes" }
+    { to: "/docente/reportes", label: "Reportes" },
+    { to: "/docente/mis-materias", label: "Mis Materias"}
   ];
 
   return (
