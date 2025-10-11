@@ -24,7 +24,6 @@ from src.ciclos.models import CicloEncuesta
 from src.vinculaciones.models import alumno_asignatura, pregunta_opcion
 from src.vinculaciones.asignatura_docente.models import AsignaturaDocente
 
-
 # Routers
 from src.personas.router import router as personas_router
 from src.encuestas.router import router as encuestas_router
@@ -38,6 +37,7 @@ from src.respuestas.router import router as respuestas_router
 from src.roles.router import router as roles_router
 from src.preguntas.router import router as preguntas_router
 from src.ciclos.router import router as ciclos_router
+
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -80,7 +80,7 @@ app.include_router(personas_router)
 app.include_router(preguntas_router)
 app.include_router(respuestas_router)
 app.include_router(roles_router)
-app.include_router(ciclos_router, prefix="/api/ciclos") #ver esto despues causaba problemas con el fetch del front
+app.include_router(ciclos_router)
 
 
 @app.get("/")

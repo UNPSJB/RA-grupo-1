@@ -14,7 +14,7 @@ export function useCiclos() {
     try {
       setLoading(true);
       setError(null);
-      const res = await fetch("http://127.0.0.1:8000/api/ciclos"); // preguntar esto despues
+      const res = await fetch("http://127.0.0.1:8000/ciclos"); 
       if (!res.ok) throw new Error("error al cargar los ciclos");
       const data: Ciclo[] = await res.json();
       setCiclos(data);
@@ -26,7 +26,7 @@ export function useCiclos() {
   }
 
   async function updateCicloHook(id: number, formData: Partial<Ciclo>) {
-    await fetch(`/api/ciclos/${id}`, {
+    await fetch(`http://127.0.0.1:8000/ciclos/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
@@ -35,7 +35,7 @@ export function useCiclos() {
   }
 
   async function createCicloHook(data: Ciclo) {
-    await fetch("/api/ciclos", {
+    await fetch("http://127.0.0.1:8000/ciclos", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),

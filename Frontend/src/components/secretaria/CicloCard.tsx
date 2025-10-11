@@ -65,7 +65,7 @@ const CicloCard: React.FC<CicloCardProps> = ({ ciclo, onUpdate, onDuplicate }) =
 
         <div className="d-flex gap-2">
           <Button variant={editable ? "secondary" : "primary"} onClick={() => setEditable(!editable)}>
-            {editable ? "Cancelar" : "Editar"}
+            {editable ? "cancelar" : "editar"}
           </Button>
           {editable && (
             <Button variant="success" onClick={() => onUpdate(ciclo.id, formData)}>
