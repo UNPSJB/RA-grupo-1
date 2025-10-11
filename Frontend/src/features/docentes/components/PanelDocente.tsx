@@ -21,16 +21,6 @@ export const PanelDocente: React.FC = () => {
             <div className="card-body py-4">
               <div className="row align-items-center">
                 <div className="col-md-8">
-                  <h1 className="h3 mb-1 text-dark fw-bold">Panel de Docente</h1>
-                  <p className="text-muted mb-0">
-                    {docenteData.nombre} – Legajo: {docenteData.legajo}
-                  </p>
-                </div>
-                <div className="col-md-4 text-end">
-                  <button className="btn btn-outline-danger">
-                    <i className="bi bi-box-arrow-right me-2"></i>
-                    Cerrar Sesión
-                  </button>
                 </div>
               </div>
             </div>
@@ -130,14 +120,6 @@ export const PanelDocente: React.FC = () => {
                     <button className="btn btn-outline-success w-100 py-3 fw-semibold">
                       <i className="bi bi-graph-up me-2"></i>
                       Reportes
-                    </button>
-                  </Link>
-                </div>
-                <div className="col-md-4">
-                  <Link to="/docente/analisis" className="text-decoration-none">
-                    <button className="btn btn-outline-info w-100 py-3 fw-semibold">
-                      <i className="bi bi-bar-chart me-2"></i>
-                      Análisis
                     </button>
                   </Link>
                 </div>

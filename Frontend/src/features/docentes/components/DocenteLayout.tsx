@@ -13,6 +13,7 @@ export const DocenteLayout = ({ children }) => {
     <div className="docente-layout">
       <Navbar navLinks={docenteNavLinks} />
       
+      
       <main className="main-content">
         <Container className="content-container">
           <Outlet />

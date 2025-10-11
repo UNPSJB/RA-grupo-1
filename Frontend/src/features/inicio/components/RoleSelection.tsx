@@ -1,5 +1,8 @@
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { Navbar } from "../../../components/layout/Navbar/Navbar";
+import { Footer } from "../../../components/layout/Footer/Footer";
+import '../styles/RoleSelection.css';
 
 export const RoleSelection = () => {
   const navigate = useNavigate();
@@ -40,47 +43,47 @@ export const RoleSelection = () => {
   ];
 
   return (
-    <Container fluid className="role-selection-container">
-      <Row className="justify-content-center align-items-center min-vh-100">
-        <Col xs={12} md={8} lg={6}>
-          <div className="text-center mb-5">
-            <h1 className="display-4 fw-bold text-primary mb-3">
-              Sistema de Encuestas
-            </h1>
-            <p className="lead text-muted">
-              Selecciona tu rol para acceder al sistema
-            </p>
-          </div>
+    <div className="role-selection-page">
+      {/* Navbar sin info de usuario */}
+      <Navbar navLinks={[]} showUserInfo={false} />
+      
+      <Container fluid className="role-selection-container py-5">
+        <Row className="justify-content-center">
+          <Col xs={12} className="text-center mb-5">
           
-          <Row className="g-4">
-            {roles.map((role) => (
-              <Col key={role.id} xs={12} sm={6}>
-                <Card className="role-card h-100 shadow-sm border-0">
-                  <Card.Body className="text-center p-4">
-                    <div className="role-icon mb-3">
-                      <i className={`bi ${role.icon} display-4 text-${role.variant}`}></i>
-                    </div>
-                    <Card.Title className="h5 fw-bold mb-3">
-                      {role.title}
-                    </Card.Title>
-                    <Card.Text className="text-muted mb-4">
-                      {role.description}
-                    </Card.Text>
-                    <Button
-                      variant={role.variant}
-                      size="lg"
-                      className="w-100"
-                      onClick={() => navigate(role.path)}
-                    >
-                      Acceder como {role.title}
-                    </Button>
-                  </Card.Body>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        </Col>
-      </Row>
-    </Container>
+          </Col>
+        </Row>
+
+        <Row className="justify-content-center g-4">
+          {roles.map((role) => (
+            <Col key={role.id} xs={12} sm={6} md={3}>
+              <Card className="role-card h-100 shadow-sm border-0 text-center">
+                <Card.Body className="p-4 d-flex flex-column">
+                  <div className="role-icon mb-3">
+                    <i className={`bi ${role.icon} display-4 text-${role.variant}`}></i>
+                  </div>
+                  <Card.Title className="h5 fw-bold mb-3">
+                    {role.title}
+                  </Card.Title>
+                  <Card.Text className="text-muted mb-4 flex-grow-1">
+                    {role.description}
+                  </Card.Text>
+                  <Button
+                    variant={role.variant}
+                    size="lg"
+                    className="w-100 mt-auto"
+                    onClick={() => navigate(role.path)}
+                  >
+                    Acceder como {role.title}
+                  </Button>
+                </Card.Body>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      </Container>
+
+      <Footer />
+    </div>
   );
 };

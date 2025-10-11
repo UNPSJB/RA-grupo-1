@@ -33,3 +33,5 @@ class Asignatura(ModeloBase):
         "Encuesta", 
         back_populates="asignatura"
     )
+
+    
