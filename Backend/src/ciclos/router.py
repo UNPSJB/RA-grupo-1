@@ -3,10 +3,7 @@ from sqlalchemy.orm import Session
 from src.database import get_db
 from src.ciclos import services, schemas
 
-router = APIRouter(
-    prefix="/ciclos",
-    tags=["ciclos encuesta"]
-)
+router = APIRouter(prefix="/ciclos", tags=["ciclos encuesta"])
 
 @router.post("/", response_model=schemas.CicloOut)
 def create_ciclo(ciclo: schemas.CicloCreate, db: Session = Depends(get_db)):
