@@ -61,4 +61,3 @@ class Encuesta(ModeloBase):
     alumno: Mapped["Alumno"] = relationship("Alumno", back_populates="encuestas")
     encuesta: Mapped["Encuesta"] = relationship("Encuesta", back_populates="alumnos") """
 
-
