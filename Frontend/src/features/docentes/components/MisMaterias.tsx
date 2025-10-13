@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Spinner, Alert, Badge } from 'react-bootstrap';
-import '../styles/MisMaterias.css';
+import '../styles/DetalleMateria.css';
 
 interface Materia {
   id: number;
-  nombre: string;
   codigo: string;
   carrera: string;
   cantidadAlumnos: number;
@@ -13,11 +13,16 @@ interface Materia {
 }
 
 export const MisMaterias = () => {
+  const navigate = useNavigate();
   const [materias, setMaterias] = useState<Materia[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Simulación de datos - en tu caso vendrá de tu API
+  const handleVerDetalles = (materiaId: number) => {
+    navigate(`/docente/materia/${materiaId}`);
+  }; 
+
+  // Simulación de datos 
   useEffect(() => {
     const fetchMaterias = async () => {
       try {
@@ -30,40 +35,28 @@ export const MisMaterias = () => {
         const materiasData: Materia[] = [
           {
             id: 1,
-            nombre: "Programación I",
-            codigo: "IF003",
-            carrera: "Ingeniería en Sistemas",
+            codigo: "IF001",
+            carrera: "Algoritmica y programacion 1",
             cantidadAlumnos: 45,
             encuestasContestadas: 38,
             porcentajeCompletado: 84
           },
           {
             id: 2,
-            nombre: "Base de Datos 1",
             codigo: "IF007",
-            carrera: "Ingeniería en Sistemas",
+            carrera: "Base de Datos 1",
             cantidadAlumnos: 32,
             encuestasContestadas: 25,
             porcentajeCompletado: 78
           },
           {
             id: 3,
-            nombre: "Arquitectura de Computadoras",
             codigo: "IF005",
-            carrera: "Ingeniería en Sistemas",
+            carrera: "Arquitectura de Computadoras",
             cantidadAlumnos: 28,
             encuestasContestadas: 15,
             porcentajeCompletado: 54
           },
-          {
-            id: 4,
-            nombre: "Sistemas Operativos",
-            codigo: "IF011",
-            carrera: "Ingeniería en Sistemas",
-            cantidadAlumnos: 40,
-            encuestasContestadas: 40,
-            porcentajeCompletado: 100
-          }
         ];
         
         setMaterias(materiasData);
@@ -160,7 +153,7 @@ export const MisMaterias = () => {
                     
                     <div className="stat-item">
                       <i className="bi bi-check-circle me-2 text-success"></i>
-                      <strong>Encuestas contestadas:</strong>
+                      <strong>Encuestas contestadas :</strong>
                       <span className="stat-value">{materia.encuestasContestadas}</span>
                     </div>
                     
@@ -183,7 +176,7 @@ export const MisMaterias = () => {
                   <div className="d-grid gap-2">
                     <button 
                       className="btn btn-outline-primary btn-sm"
-                      onClick={() => console.log('Ver detalles de:', materia.nombre)}
+                      onClick={() => handleVerDetalles(materia.id)}
                     >
                       <i className="bi bi-eye me-2"></i>
                       Ver Detalles

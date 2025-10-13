@@ -7,7 +7,7 @@
 
 .role-selection-container {
   flex: 1;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #00000033
 }
 
 .role-card {
@@ -18,7 +18,7 @@
 
 .role-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 15px 35px #00000033 !important;
 }
 
 .role-icon {
@@ -29,9 +29,8 @@
   transform: scale(1.2);
 }
 
-/* Asegurar que el texto sea legible sobre el fondo gradient */
 .role-selection-container h1,
 .role-selection-container .lead {
   color: white !important;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 2px 4px #0000004d;
 }
