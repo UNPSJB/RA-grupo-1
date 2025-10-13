@@ -122,3 +122,35 @@
   border: none;
   box-shadow: 0 4px 6px #0000001a;
 }
+
+.filters-card {
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.filters-card .card-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 15px 15px 0 0 !important;
+  font-weight: 600;
+}
+
+.results-info {
+  font-size: 0.9rem;
+}
+
+/* Estilos para los badges de estado */
+.estado-badge {
+  font-size: 0.7rem;
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+
+.fechas-info {
+  margin-bottom: 15px;
+  padding: 8px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  font-size: 0.85rem;
+}

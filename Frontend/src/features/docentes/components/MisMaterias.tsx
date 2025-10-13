@@ -1,28 +1,42 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, Row, Col, Card, Spinner, Alert, Badge } from 'react-bootstrap';
-import '../styles/DetalleMateria.css';
+import { 
+  Container, Row, Col, Card, Spinner, Alert, Badge, 
+  Form, InputGroup, Button 
+} from 'react-bootstrap';
+import '../styles/MisMaterias.css';
 
 interface Materia {
   id: number;
+  nombre: string;
   codigo: string;
   carrera: string;
   cantidadAlumnos: number;
   encuestasContestadas: number;
   porcentajeCompletado: number;
+  fechaInicio: string;
+  fechaFin: string;
+  estadoEncuesta: 'completada' | 'en-progreso' | 'no-iniciada';
 }
 
 export const MisMaterias = () => {
   const navigate = useNavigate();
   const [materias, setMaterias] = useState<Materia[]>([]);
+  const [materiasFiltradas, setMateriasFiltradas] = useState<Materia[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Estados para los filtros
+  const [filtroMateria, setFiltroMateria] = useState('');
+  const [filtroEstado, setFiltroEstado] = useState<string>('todos');
+  const [filtroFechaInicio, setFiltroFechaInicio] = useState('');
+  const [filtroFechaFin, setFiltroFechaFin] = useState('');
+
   const handleVerDetalles = (materiaId: number) => {
     navigate(`/docente/materia/${materiaId}`);
-  }; 
+  };
 
-  // Simulación de datos 
+  // Simulación de datos - en tu caso vendrá de tu API
   useEffect(() => {
     const fetchMaterias = async () => {
       try {
@@ -35,31 +49,44 @@ export const MisMaterias = () => {
         const materiasData: Materia[] = [
           {
             id: 1,
-            codigo: "IF001",
-            carrera: "Algoritmica y programacion 1",
+            nombre: "Programación I",
+            codigo: "IF003",
+            carrera: "Ingeniería en Sistemas",
             cantidadAlumnos: 45,
             encuestasContestadas: 38,
-            porcentajeCompletado: 84
+            porcentajeCompletado: 84,
+            fechaInicio: "2024-03-01",
+            fechaFin: "2024-07-15",
+            estadoEncuesta: 'completada'
           },
           {
             id: 2,
+            nombre: "Base de Datos 1",
             codigo: "IF007",
-            carrera: "Base de Datos 1",
+            carrera: "Ingeniería en Sistemas",
             cantidadAlumnos: 32,
             encuestasContestadas: 25,
-            porcentajeCompletado: 78
+            porcentajeCompletado: 78,
+            fechaInicio: "2024-03-01",
+            fechaFin: "2024-07-20",
+            estadoEncuesta: 'en-progreso'
           },
           {
             id: 3,
+            nombre: "Arquitectura de Computadoras",
             codigo: "IF005",
-            carrera: "Arquitectura de Computadoras",
+            carrera: "Ingeniería en Sistemas",
             cantidadAlumnos: 28,
             encuestasContestadas: 15,
-            porcentajeCompletado: 54
+            porcentajeCompletado: 54,
+            fechaInicio: "2024-03-15",
+            fechaFin: "2024-07-30",
+            estadoEncuesta: 'en-progreso'
           },
         ];
         
         setMaterias(materiasData);
+        setMateriasFiltradas(materiasData);
         setLoading(false);
       } catch (err) {
         setError("Error al cargar las materias");
@@ -69,6 +96,49 @@ export const MisMaterias = () => {
 
     fetchMaterias();
   }, []);
+
+  // Función para aplicar filtros
+  const aplicarFiltros = () => {
+    let resultados = [...materias];
+
+    // Filtro por nombre o código de materia
+    if (filtroMateria) {
+      resultados = resultados.filter(materia =>
+        materia.nombre.toLowerCase().includes(filtroMateria.toLowerCase()) ||
+        materia.codigo.toLowerCase().includes(filtroMateria.toLowerCase())
+      );
+    }
+
+    // Filtro por estado de encuesta
+    if (filtroEstado !== 'todos') {
+      resultados = resultados.filter(materia => materia.estadoEncuesta === filtroEstado);
+    }
+
+    // Filtro por rango de fechas
+    if (filtroFechaInicio) {
+      resultados = resultados.filter(materia => materia.fechaInicio >= filtroFechaInicio);
+    }
+
+    if (filtroFechaFin) {
+      resultados = resultados.filter(materia => materia.fechaFin <= filtroFechaFin);
+    }
+
+    setMateriasFiltradas(resultados);
+  };
+
+  // Función para limpiar filtros
+  const limpiarFiltros = () => {
+    setFiltroMateria('');
+    setFiltroEstado('todos');
+    setFiltroFechaInicio('');
+    setFiltroFechaFin('');
+    setMateriasFiltradas(materias);
+  };
+
+  // Aplicar filtros cuando cambien los valores
+  useEffect(() => {
+    aplicarFiltros();
+  }, [filtroMateria, filtroEstado, filtroFechaInicio, filtroFechaFin, materias]);
 
   const getProgressVariant = (porcentaje: number) => {
     if (porcentaje >= 80) return 'success';
@@ -81,6 +151,28 @@ export const MisMaterias = () => {
     if (porcentaje >= 80) return 'primary';
     if (porcentaje >= 60) return 'warning';
     return 'secondary';
+  };
+
+  const getEstadoBadgeVariant = (estado: string) => {
+    switch (estado) {
+      case 'completada': return 'success';
+      case 'en-progreso': return 'warning';
+      case 'no-iniciada': return 'secondary';
+      default: return 'secondary';
+    }
+  };
+
+  const getEstadoText = (estado: string) => {
+    switch (estado) {
+      case 'completada': return 'Completada';
+      case 'en-progreso': return 'En Progreso';
+      case 'no-iniciada': return 'No Iniciada';
+      default: return estado;
+    }
+  };
+
+  const formatearFecha = (fecha: string) => {
+    return new Date(fecha).toLocaleDateString('es-ES');
   };
 
   if (loading) {
@@ -109,17 +201,110 @@ export const MisMaterias = () => {
 
   return (
     <Container className="mis-materias-container">
-      {materias.length === 0 ? (
+      {/* Sección de Filtros */}
+      <Card className="filters-card mb-4">
+        <Card.Header>
+          <h5 className="mb-0">
+            <i className="bi bi-funnel me-2"></i>
+            Filtros de Búsqueda
+          </h5>
+        </Card.Header>
+        <Card.Body>
+          <Row className="g-3">
+            {/* Filtro por Materia */}
+            <Col md={4}>
+              <Form.Group>
+                <Form.Label>Buscar por materia</Form.Label>
+                <InputGroup>
+                  <InputGroup.Text>
+                    <i className="bi bi-search"></i>
+                  </InputGroup.Text>
+                  <Form.Control
+                    type="text"
+                    placeholder="Nombre o código de materia..."
+                    value={filtroMateria}
+                    onChange={(e) => setFiltroMateria(e.target.value)}
+                  />
+                </InputGroup>
+              </Form.Group>
+            </Col>
+
+            {/* Filtro por Estado */}
+            <Col md={3}>
+              <Form.Group>
+                <Form.Label>Estado de encuesta</Form.Label>
+                <Form.Select
+                  value={filtroEstado}
+                  onChange={(e) => setFiltroEstado(e.target.value)}
+                >
+                  <option value="todos">Todos los estados</option>
+                  <option value="completada">Completada</option>
+                  <option value="en-progreso">En Progreso</option>
+                  <option value="no-iniciada">No Iniciada</option>
+                </Form.Select>
+              </Form.Group>
+            </Col>
+
+            {/* Filtro por Fecha Inicio */}
+            <Col md={2}>
+              <Form.Group>
+                <Form.Label>Fecha desde</Form.Label>
+                <Form.Control
+                  type="date"
+                  value={filtroFechaInicio}
+                  onChange={(e) => setFiltroFechaInicio(e.target.value)}
+                />
+              </Form.Group>
+            </Col>
+
+            {/* Filtro por Fecha Fin */}
+            <Col md={2}>
+              <Form.Group>
+                <Form.Label>Fecha hasta</Form.Label>
+                <Form.Control
+                  type="date"
+                  value={filtroFechaFin}
+                  onChange={(e) => setFiltroFechaFin(e.target.value)}
+                />
+              </Form.Group>
+            </Col>
+
+            {/* Botón Limpiar */}
+            <Col md={1} className="d-flex align-items-end">
+              <Button 
+                variant="outline-secondary" 
+                onClick={limpiarFiltros}
+                className="w-100"
+                title="Limpiar filtros"
+              >
+                <i className="bi bi-arrow-clockwise"></i>
+              </Button>
+            </Col>
+          </Row>
+        </Card.Body>
+      </Card>
+
+      {/* Contador de resultados */}
+      <div className="results-info mb-3">
+        <p className="text-muted">
+          Mostrando {materiasFiltradas.length} de {materias.length} materias
+        </p>
+      </div>
+
+      {materiasFiltradas.length === 0 ? (
         <div className="empty-state">
           <div className="empty-icon">
-            <i className="bi bi-journal-x"></i>
+            <i className="bi bi-search"></i>
           </div>
-          <h3>No tienes materias asignadas</h3>
-          <p>No se encontraron materias asignadas para este cuatrimestre.</p>
+          <h3>No se encontraron materias</h3>
+          <p>No hay materias que coincidan con los filtros aplicados.</p>
+          <Button variant="primary" onClick={limpiarFiltros}>
+            Limpiar filtros
+          </Button>
         </div>
       ) : (
         <Row>
-          {materias.map((materia) => (
+          {materiasFiltradas.map((materia) => (
             <Col key={materia.id} xs={12} md={6} lg={4} className="mb-4">
               <Card className="materia-card h-100">
                 <Card.Header className="card-header-custom">
@@ -130,7 +315,12 @@ export const MisMaterias = () => {
                     >
                       {materia.porcentajeCompletado}%
                     </Badge>
-                    <small className="text-muted">{materia.codigo}</small>
+                    <Badge 
+                      bg={getEstadoBadgeVariant(materia.estadoEncuesta)}
+                      className="estado-badge"
+                    >
+                      {getEstadoText(materia.estadoEncuesta)}
+                    </Badge>
                   </div>
                 </Card.Header>
                 
@@ -142,7 +332,20 @@ export const MisMaterias = () => {
                   <Card.Text className="carrera-text">
                     <i className="bi bi-building me-2"></i>
                     {materia.carrera}
+                    <br />
+                    <small className="text-muted">
+                      <i className="bi bi-code me-1"></i>
+                      {materia.codigo}
+                    </small>
                   </Card.Text>
+
+                  {/* Fechas */}
+                  <div className="fechas-info">
+                    <small className="text-muted">
+                      <i className="bi bi-calendar me-1"></i>
+                      {formatearFecha(materia.fechaInicio)} - {formatearFecha(materia.fechaFin)}
+                    </small>
+                  </div>
                   
                   <div className="materia-stats">
                     <div className="stat-item">
@@ -153,7 +356,7 @@ export const MisMaterias = () => {
                     
                     <div className="stat-item">
                       <i className="bi bi-check-circle me-2 text-success"></i>
-                      <strong>Encuestas contestadas :</strong>
+                      <strong>Encuestas contestadas:</strong>
                       <span className="stat-value">{materia.encuestasContestadas}</span>
                     </div>
                     

@@ -25,19 +25,26 @@ export const usePersona = (rol?: string) => {
         let personaData: Persona | null = null;
 
         if (rol === 'docente') {
-          // Usar endpoint específico para docentes
           endpoint = 'http://127.0.0.1:8000/docentes/';
           
           const response = await fetch(endpoint);
           if (!response.ok) throw new Error('Error al cargar docentes');
           
-          const docentes: Persona[] = await response.json();
+          const docentes: any[] = await response.json();
           
-          // Tomar el primer docente disponible
-          personaData = docentes.find(docente => docente.rol_id === 1) || docentes[0] || null;
-          
+            if (docentes.length > 0) {
+            const docente = docentes[0];
+            personaData = {
+              id: docente.id,
+              nombre: docente.persona.nombre,
+              apellido: docente.persona.apellido,
+              email: docente.persona.email,
+              dni: "", 
+              rol_id: 1,
+              legajo: docente.persona.id
+            };
+          }
         } else {
-          // Usar endpoint para personas (alumnos)
           endpoint = 'http://127.0.0.1:8000/personas/';
           
           const response = await fetch(endpoint);
@@ -45,15 +52,14 @@ export const usePersona = (rol?: string) => {
           
           const personas: Persona[] = await response.json();
           
-          // Para alumno, buscar rol_id = 2 o tomar la primera persona
-          personaData = personas.find(persona => persona.rol_id === 2) || personas[0] || null;
+          personaData = personas.find(persona => persona.rol_id === 2) || null;
         }
 
         if (personaData) {
           setPersona(personaData);
           setNombreCompleto(`${personaData.nombre} ${personaData.apellido}`);
         } else {
-          throw new Error(`No se encontró ${rol === 'docente' ? 'docente' : 'persona'}`);
+          throw new Error(`No se encontró ${rol === 'docente' ? 'docente' : 'alumno'}`);
         }
         
         setLoading(false);

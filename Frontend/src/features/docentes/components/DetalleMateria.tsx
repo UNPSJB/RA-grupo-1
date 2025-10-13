@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { Container, Nav, Tab } from 'react-bootstrap';
 import { useParams, Navigate } from 'react-router-dom';
-import { Navbar } from "../../../components/layout/Navbar/Navbar";
-import { Footer } from "../../../components/layout/Footer/Footer";
 import '../styles/DetalleMateria.css'
 
 const GraficosTab = () => (
@@ -51,9 +49,9 @@ export const DetalleMateria = () => {
   const { materiaId } = useParams<{ materiaId: string }>();
   const [activeTab, setActiveTab] = useState('graficos');
 
-  // Datos de ejemplo de la materia - en tu caso vendrían de una API
+  // Datos de ejemplo para la api
   const materiaData = {
-    id: parseInt(materiaId || '1' || '2'),
+    id: parseInt(materiaId || '1'),
     nombre: "Algoritmica y programación 1",
     codigo: "IF01",
     carrera: "Analista Programador",
