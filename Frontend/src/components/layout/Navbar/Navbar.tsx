@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import { Container, Navbar as BSNavbar, Nav, Dropdown } from "react-bootstrap";
 import { usePersona } from "../../../hooks/usePersona";
@@ -8,6 +8,7 @@ interface NavbarProps {
   navLinks?: Array<{
     to: string;
     label: string;
+    onClick?: () => void; 
   }>;
   showUserInfo?: boolean;
   rol?: string;
@@ -53,15 +54,16 @@ export const Navbar = ({
         <BSNavbar.Toggle aria-controls="basic-navbar-nav" />
         
         <BSNavbar.Collapse id="basic-navbar-nav">
-          {/* Links de navegación dinámicos */}
           {navLinks.length > 0 && (
             <Nav className="me-auto">
               {navLinks.map((link) => (
                 <Nav.Link 
                   key={link.to}
-                  as={Link} 
-                  to={link.to} 
-                  className={`nav-link-custom ${rol === 'docente' ? 'docente-nav-link' : ''}`}
+                  as={link.onClick ? 'button' : Link} 
+                  to={link.onClick ? undefined : link.to} 
+                  onClick={link.onClick} 
+                  className={`nav-link-custom ${rol === 'docente' ? 'docente-nav-link' : ''} ${rol === 'departamento_alumnos' ? 'depto-alumnos-nav-link' : ''}`}
+                  style={link.onClick ? { cursor: 'pointer' } : {}}
                 >
                   {link.label}
                 </Nav.Link>

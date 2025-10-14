@@ -105,3 +105,26 @@
   background-color: #e9ecef;
 }
 
+/* En tu Navbar.css agrega estos estilos */
+.depto-alumnos-nav-link {
+  color: #314e6d !important;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.depto-alumnos-nav-link:hover {
+  color: #0a6ad1 !important;
+  background-color: #ffffff1a;
+  border-radius: 5px;
+}
+
+/* Estilo específico para el botón de Cerrar Sesión */
+.navbar-custom .nav-link-custom[onclick] {
+  color: #e74c3c !important;
+  font-weight: 600;
+}
+
+.navbar-custom .nav-link-custom[onclick]:hover {
+  color: #c0392b !important;
+  background-color: rgba(231, 76, 60, 0.1);
+}

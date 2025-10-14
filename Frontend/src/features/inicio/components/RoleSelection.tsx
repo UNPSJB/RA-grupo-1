@@ -26,10 +26,10 @@ export const RoleSelection = () => {
     },
     {
       id: 'departamento',
-      title: 'Departamento',
+      title: 'Departamento de Alumnos',
       description: 'Gestión administrativa del departamento',
-      icon: 'bi-building',
-      path: '/departamento/gestion',
+      icon: 'bi-building-gear',
+      path: '/departamento/gestion-preguntas',
       variant: 'warning'
     },
     {
