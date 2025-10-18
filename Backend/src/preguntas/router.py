@@ -21,7 +21,7 @@ def leer_pregunta(db: Session = Depends(get_db)) -> list[schemas.Pregunta]:
 def leer_pregunta(pregunta_id: int, db: Session = Depends(get_db)) -> schemas.Pregunta:
     return services.recibir_pregunta(db, pregunta_id) 
 
-@router.get("{pregunta_id}/opciones", response_model=list[schemas.Opcion])
+@router.get("/{pregunta_id}/opciones", response_model=list[schemas.Opcion])
 def leer_pregunta_opcion(pregunta_id: int, db: Session = Depends(get_db)):
     return services.listar_opciones_pregunta(db, pregunta_id)
 

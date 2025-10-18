@@ -14,14 +14,14 @@ def crear_opcion(db: Session, opcion: schemas.OpcionCreate) -> schemas.Opcion:
 def listar_opciones(db: Session) -> List[schemas.Opcion]:
     return db.scalars(select(Opcion)).all()
 
-def recibir_opcion(db: Session, opcion_id: int) -> schemas.Opcion:
+def obtener_opcion(db: Session, opcion_id: int) -> schemas.Opcion:
     db_opcion = db.scalar(select(Opcion).where(Opcion.id == opcion_id))
     if db_opcion is None:
         raise exceptions.OpcionNoEncontrada()
     return db_opcion 
 
-def cambiar_opcion(db: Session, opcion_id: int, opcion: schemas.OpcionUpdate) -> schemas.Opcion:
-    db_opcion = recibir_opcion(db, opcion_id)
+def renovar_opcion(db: Session, opcion_id: int, opcion: schemas.OpcionUpdate) -> schemas.Opcion:
+    db_opcion = obtener_opcion(db, opcion_id)
      # Actualiza atributos directamente en el objeto
     for field, value in opcion.model_dump().items():
         setattr(db_opcion, field, value)
@@ -31,11 +31,11 @@ def cambiar_opcion(db: Session, opcion_id: int, opcion: schemas.OpcionUpdate) ->
     return db_opcion
 
 def eliminar_opcion(db: Session, opcion_id: int) -> schemas.OpcionDelete:
-    db_opcion = recibir_opcion(db, opcion_id)
+    db_opcion = obtener_opcion(db, opcion_id)
 
     # Valida que no tenga preguntas asociadas
     if db_opcion.preguntas and len(db_opcion.preguntas) > 0:
-        raise exceptions.OpcionNoEliminable()
+        raise exceptions.OpcionSuprimible()
     
     # Crea respuesta antes de eliminar
     respuesta = schemas.OpcionDelete(id=db_opcion.id)

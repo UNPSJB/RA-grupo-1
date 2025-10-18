@@ -15,22 +15,13 @@ def leer_opciones(db: Session = Depends(get_db)) -> list[schemas.Opcion]:
 
 @router.get("/{opcion_id}", response_model=schemas.Opcion)
 def leer_opcion(opcion_id: int, db: Session = Depends(get_db)) -> schemas.Opcion:
-    opcion = services.obtener_opcion(db, opcion_id)
-    if not opcion:
-        raise HTTPException(status_code=404, detail="Opción no encontrada")
-    return opcion
+    return services.obtener_opcion(db, opcion_id)
 
 @router.put("/{opcion_id}", response_model=schemas.Opcion)
 def renovar_opcion(opcion_id: int, opcion: schemas.OpcionUpdate, db: Session = Depends(get_db)) -> schemas.Opcion:
-    opcion_actualizada = services.renovar_opcion(db, opcion_id, opcion)
-    if not opcion_actualizada:
-        raise HTTPException(status_code=404, detail="Opción no encontrada")
-    return opcion_actualizada
+    return services.renovar_opcion(db, opcion_id, opcion)
 
 @router.delete("/{opcion_id}", response_model=schemas.OpcionDelete)
 def borrar_opcion(opcion_id: int, db: Session = Depends(get_db)) -> schemas.OpcionDelete:
-    opcion_eliminada = services.eliminar_opcion(db, opcion_id)
-    if not opcion_eliminada:
-        raise HTTPException(status_code=404, detail="Opción no encontrada")
-    return opcion_eliminada
+    return services.eliminar_opcion(db, opcion_id)
 

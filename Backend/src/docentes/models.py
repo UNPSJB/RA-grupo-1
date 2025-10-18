@@ -5,7 +5,7 @@ from src.models import ModeloBase
 
 if TYPE_CHECKING:
     from src.vinculaciones.asignatura_docente.models import AsignaturaDocente
-    from src.models import Persona
+    from src.personas.models import Persona
 
 class Docente(ModeloBase):
     __tablename__ = "docentes"
@@ -15,7 +15,7 @@ class Docente(ModeloBase):
     persona_id: Mapped[int] = mapped_column(ForeignKey("personas.id"), unique=True, nullable=False)
     
     # Relacion con persona
-    #persona: Mapped["Persona"] = relationship("Persona", back_populates="docente")
+    persona: Mapped["Persona"] = relationship("Persona", back_populates="docente")
 
     # Relacion con asignaturas
     asignaturas_asociadas: Mapped[List["AsignaturaDocente"]] = relationship(

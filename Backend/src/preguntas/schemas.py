@@ -24,10 +24,12 @@ class CrearPreguntaCerrada(PreguntaBase):
     def validar_minimo_opciones(cls, v):
         if not v or len(v) < 1:
             raise ValueError("La pregunta cerrada debe tener al menos una opción")
-        return 
+        return v
 
 class PreguntaUpdate(PreguntaBase):
     texto: Optional[str] = Field(None, min_length=1, max_length=250)
+    encuesta_id: Optional[int] = None
+    tipo: Optional[TipoPreguntaEnum] = None
 
 class PreguntaDelete(BaseModel):
     id: int

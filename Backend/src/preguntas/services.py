@@ -4,7 +4,6 @@ from sqlalchemy import select
 from src.preguntas.models import Pregunta
 from src.preguntas import schemas, exceptions
 from src.opciones.models import Opcion
-
 def crear_abierta(db: Session, pregunta: schemas.CrearPreguntaAbierta) -> Pregunta:
     _nueva_pregunta = Pregunta(
         texto=pregunta.texto, 
@@ -18,9 +17,6 @@ def crear_abierta(db: Session, pregunta: schemas.CrearPreguntaAbierta) -> Pregun
     return _nueva_pregunta
 
 def crear_cerrada(db: Session, pregunta: schemas.CrearPreguntaCerrada) -> Pregunta:
-
-    if len(pregunta.opciones) < 1:
-        raise exceptions.PreguntaSinOpciones("La pregunta cerrada debe tener al menos una opción")
 
     opciones_validas = db.scalars(
         select(Opcion).where(Opcion.id.in_(pregunta.opciones))
@@ -43,6 +39,10 @@ def crear_cerrada(db: Session, pregunta: schemas.CrearPreguntaCerrada) -> Pregun
 
 def listar_preguntas(db: Session) -> List[schemas.Pregunta]:
     return db.scalars(select(Pregunta)).all()
+
+def listar_opciones_pregunta(db: Session, pregunta_id: int) -> List[Opcion]:
+    db_pregunta = recibir_pregunta(db, pregunta_id)
+    return db_pregunta.opciones
 
 def recibir_pregunta(db: Session, pregunta_id: int) -> schemas.Pregunta:
     db_pregunta = db.scalar(select(Pregunta).where(Pregunta.id == pregunta_id))

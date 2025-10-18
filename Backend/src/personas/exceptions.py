@@ -9,3 +9,6 @@ class PersonaDuplicada(BadRequest):
 
 class EmailDuplicado(BadRequest):
     DETAIL = ErrorCode.EMAIL_DUPLICADO
+
+class PersonaConRelaciones(BadRequest):
+    DETAIL = ErrorCode.PERSONA_CON_RELACIONES

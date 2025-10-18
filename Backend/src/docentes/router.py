@@ -24,10 +24,11 @@ def read_docente(docente_id: int, db: Session = Depends(get_db)):
 def asignar_asignatura_docente(
     docente_id: int, 
     asignatura_id: int, 
+    duracion: str,
     db: Session = Depends(get_db)
 ):
     # Asigna una asignatura a un docente
-    resultado = services.asignar_asignatura(db, docente_id, asignatura_id)
+    resultado = services.asignar_asignatura(db, docente_id, asignatura_id, duracion)
     if not resultado:
         raise HTTPException(
             status_code=404, 
@@ -42,7 +43,7 @@ def obtener_asignaturas_docente(docente_id: int, db: Session = Depends(get_db)):
     if not docente:
         raise HTTPException(status_code=404, detail="Docente no encontrado")
     
-    asignaturas = services.ver_asignaturas_docente(db, docente_id)
+    asignaturas = services.observar_asignaturas_docente(db, docente_id)
     return {
         "docente_id": docente.id,
         "persona": {

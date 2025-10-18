@@ -17,6 +17,9 @@ class Respuesta(Base):
     respuesta_texto: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     opcion_id: Mapped[Optional[int]] = mapped_column(ForeignKey("opciones.id"), nullable=True)
 
+    progreso: Mapped[int] = mapped_column(Integer, default=0)
+
      # Relaciones 
     alumno: Mapped["Alumno"] = relationship("Alumno", back_populates="respuestas")
+    pregunta: Mapped["Pregunta"] = relationship("Pregunta", back_populates="respuestas")
     opcion: Mapped["Opcion"] = relationship("Opcion")

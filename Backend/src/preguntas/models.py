@@ -25,6 +25,8 @@ class Pregunta(ModeloBase):
     texto: Mapped[str] = mapped_column(String(250), nullable=False)
     encuesta_id: Mapped[int] = mapped_column(Integer, ForeignKey("encuestas.id"))
 
+    respuestas: Mapped[List["Respuesta"]] = relationship("Respuesta", back_populates="alumno")
+
     tipo: Mapped[TipoPreguntaEnum] = mapped_column(
         String(50), 
         nullable=False, 

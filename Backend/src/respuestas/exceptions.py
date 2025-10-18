@@ -6,7 +6,6 @@ class RespuestaNoEncontrada(NotFound):
     DETAIL = ErrorMessages.RESPUESTA_NO_ENCONTRADA
 
 class RespuestaException(Exception):
-    """Excepción para errores de respuestas"""
     pass
 
 class EncuestaNoEncontrada(RespuestaException):

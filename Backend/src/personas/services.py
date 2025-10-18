@@ -53,7 +53,7 @@ def crear_persona(db: Session, persona: schemas.PersonaCreate) -> schemas.Person
     except Exception as e:
         db.rollback()
         raise e
-    
+
 def listar_personas(db: Session) -> List[schemas.Persona]:
     return db.scalars(select(Persona)).all()
 
@@ -88,51 +88,26 @@ def modificar_persona(
     return db_persona
 
 def eliminar_persona(db: Session, persona_id: int) -> dict:
-    db_persona = leer_persona(db, persona_id)
-    nombre_persona = db_persona.nombre
-    
-    # Verifica si la persona tiene registros relacionados antes de eliminarla
-    if db_persona.rol_id == 2:  # Es alumno
-        alumno = db.scalar(select(Alumno).where(Alumno.persona_id == persona_id))
-        if alumno:
-            db.delete(alumno)
-    elif db_persona.rol_id == 1:  # Es docente
-        docente = db.scalar(select(Docente).where(Docente.persona_id == persona_id))
-        if docente:
-            db.delete(docente)
-    
-    db.delete(db_persona)
-    db.commit()
-    return {"message": f"Persona {nombre_persona} eliminada correctamente"}
-
     try:
-        nueva_persona = Persona(
-            nombre=data.nombre,
-            apellido=data.apellido,
-            legajo=data.legajo,
-            dni=data.dni,
-            email=data.email,
-            rol_id=data.rol_id
-        )
-        db.add(nueva_persona)
-        db.flush()
+        db_persona = leer_persona(db, persona_id)
+        nombre_persona = db_persona.nombre
         
-        if data.rol_nombre == "Alumno":
-            alumno = Alumno(
-                persona_id=nueva_persona.id,
-                CUIL=data.datos_alumno.CUIL,
-                usuario=data.datos_alumno.usuario,
-                clave=data.datos_alumno.clave
-            )
-            db.add(alumno)
-        elif data.rol_nombre == "Docente":
-            docente = Docente(persona_id=nueva_persona.id)
-            db.add(docente)
+        # Verifica si la persona tiene registros relacionados antes de eliminarla
+        if db_persona.rol_id == 2:  # Es alumno
+            alumno = db.scalar(select(Alumno).where(Alumno.persona_id == persona_id))
+            if alumno:
+                # Si el alumno tiene relaciones, manejarlas primero
+                db.delete(alumno)
+                
+        elif db_persona.rol_id == 1:  # Es docente
+            docente = db.scalar(select(Docente).where(Docente.persona_id == persona_id))
+            if docente:
+                db.delete(docente)
         
+        db.delete(db_persona)
         db.commit()
-        db.refresh(nueva_persona)
-        return nueva_persona
+        return {"message": f"Persona {nombre_persona} eliminada correctamente"}
         
-    except Exception:
-        db.rollback() 
-        raise
+    except Exception as e:
+        db.rollback()
+        raise exceptions.PersonaConRelaciones()

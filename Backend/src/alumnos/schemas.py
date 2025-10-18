@@ -12,9 +12,9 @@ class AlumnoCreate(AlumnoBase):
 
 
 class AlumnoUpdate(BaseModel):
+    CUIL: Optional[str] = None
     usuario: Optional[str] = None
     clave: Optional[str] = None
-    CUIL: Optional[str] = None
 
 
 class AlumnoResponse(AlumnoBase):

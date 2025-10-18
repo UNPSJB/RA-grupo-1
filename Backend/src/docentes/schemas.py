@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict ,field_validator
+from pydantic import BaseModel, ConfigDict ,field_validator, EmailStr
 from typing import List, Optional
 from datetime import datetime
 from enum import StrEnum
@@ -6,12 +6,17 @@ from enum import StrEnum
 class PersonaBase(BaseModel):
     nombre: str
     apellido: str
-    email: str
-    telefono: Optional[str] = None
-    roles: str
+    email: EmailStr
+    dni: str
+    rol_id: int
+    legajo: int
 
 class Persona(PersonaBase):
     id: int
+    CUIL: Optional[str] = None
+    usuario: Optional[str] = None
+    clave: Optional[str] = None
+    
     model_config = ConfigDict(from_attributes=True)
 
 class DocenteBase(BaseModel):
@@ -64,8 +69,6 @@ class DuracionAsignatura(StrEnum):
     semestral = "semestral"
     cuatrimestral = "cuatrimestral"
 
-
-
 class EncuestaDocenteResumen(BaseModel):
     id: int
     titulo: str
@@ -111,6 +114,16 @@ class AsignacionAsignaturaResponse(BaseModel):
     
     model_config = ConfigDict(from_attributes=True)
 
+class AsignarAsignaturaRequest(BaseModel):
+    duracion: str
+    
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "duracion": "anual"
+            }
+        }
+    )
 class DocenteListResponse(BaseModel):
     """Response para lista de docentes"""
     docentes: List[DocenteResponse]
