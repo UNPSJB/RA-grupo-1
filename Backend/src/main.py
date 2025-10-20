@@ -66,7 +66,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 app.include_router(asignaturas_router)
 app.include_router(encuestas_router)
 app.include_router(carreras_router)

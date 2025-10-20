@@ -15,7 +15,7 @@ class Alumno(ModeloBase):
     CUIL: Mapped[str] = mapped_column(String, index=True)
     usuario: Mapped[str] = mapped_column(String, index=True)
     clave: Mapped[str] = mapped_column(String, index=True)
-    #persona: Mapped["src.personas.models.Persona"] = relationship("src.personas.models.Persona", back_populates="alumno")
+    persona: Mapped["src.personas.models.Persona"] = relationship("src.personas.models.Persona", back_populates="alumno")
 
     respuestas: Mapped[List["Respuesta"]] = relationship("Respuesta", back_populates="alumno")
     
