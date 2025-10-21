@@ -104,7 +104,6 @@ def read_preguntas_encuesta(encuesta_id: int, db: Session = Depends(get_db)):
     return services.listar_preguntas_encuesta(db, encuesta_id)
 
 
-
 @router.post("/{encuesta_id}/alumnos/{alumno_id}", response_model=schemas.Encuesta)
 def vincular_alumno_encuesta(encuesta_id: int, alumno_id: int, db: Session = Depends(get_db)):
     # Vincula un alumno a una encuesta

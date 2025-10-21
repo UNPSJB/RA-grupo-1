@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from src.database import get_db
 from src.asignaturas import schemas, services
@@ -6,10 +6,31 @@ from src.asignaturas import schemas, services
 router = APIRouter(prefix="/asignaturas", tags=["asignaturas"])
 
 @router.get("/", response_model=list[schemas.Asignatura])
-def read_asignatura(db: Session = Depends(get_db)):
-    return services.listar_asignatura(db)
+def listar_asignaturas(db: Session = Depends(get_db)):
+    """Listar todas las asignaturas"""
+    return services.listar_asignaturas(db)
 
 @router.get("/{asignatura_id}", response_model=schemas.Asignatura)
-def read_asignatura(asignatura_id: int, db: Session = Depends(get_db)):
-    asignatura = services.leer_asignatura(db, asignatura_id)
-    return asignatura
+def obtener_asignatura(asignatura_id: int, db: Session = Depends(get_db)):
+    """Obtener una asignatura por ID"""
+    return services.leer_asignatura(db, asignatura_id)
+
+@router.post("/", response_model=schemas.Asignatura)
+def crear_asignatura(asignatura: schemas.AsignaturaCreate, db: Session = Depends(get_db)):
+    """Crear una nueva asignatura"""
+    return services.crear_asignatura(db, asignatura)
+
+@router.put("/{asignatura_id}", response_model=schemas.Asignatura)
+def actualizar_asignatura(
+    asignatura_id: int, 
+    asignatura_actualizada: schemas.AsignaturaBase, 
+    db: Session = Depends(get_db)
+):
+    """Actualizar una asignatura existente"""
+    return services.actualizar_asignatura(db, asignatura_id, asignatura_actualizada)
+
+@router.delete("/{asignatura_id}")
+def eliminar_asignatura(asignatura_id: int, db: Session = Depends(get_db)):
+    """Eliminar una asignatura"""
+    services.eliminar_asignatura(db, asignatura_id)
+    return {"message": "Asignatura eliminada correctamente"}

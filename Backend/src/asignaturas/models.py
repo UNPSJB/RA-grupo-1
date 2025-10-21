@@ -1,8 +1,7 @@
 from __future__ import annotations
-from sqlalchemy import Integer, String, ForeignKey, Enum
+from sqlalchemy import Integer, String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import Optional, List, TYPE_CHECKING
-from enum import auto, StrEnum
 from src.models import ModeloBase
 from src.vinculaciones.models import alumno_asignatura
 
@@ -16,7 +15,7 @@ class Asignatura(ModeloBase):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     nombre: Mapped[str] = mapped_column(String, nullable=False, index=True)
-    matricula: Mapped[str] = mapped_column(String, nullable=False, index=True)
+    matricula: Mapped[str] = mapped_column(String, nullable=False, index=True, unique=True)
     
     docentes_asociados: Mapped[List["AsignaturaDocente"]] = relationship(
         "AsignaturaDocente", 
@@ -33,5 +32,3 @@ class Asignatura(ModeloBase):
         "Encuesta", 
         back_populates="asignatura"
     )
-
-    
