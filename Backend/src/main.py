@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from src.database import engine
 from src.models import ModeloBase
+from fastapi.middleware.cors import CORSMiddleware
 
 from src.roles.models import Rol
 from src.departamentos.models import Departamento
