@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom';
 import { docenteService, DocenteStats } from '../services/docenteService';
 
 export const PanelDocente: React.FC = () => {
-  // Datos de ejemplo aca despues se llama a la api
+  // DATOS HARCODEADOS ACA VAN CON LA API
   const docenteData = {
     materias: 3,
-    semestre: "2024",
+    semestre: "2025",
     alumnos: 105,
     encuestasCompletadas: 85,
     evaluacionPromedio: 3.7

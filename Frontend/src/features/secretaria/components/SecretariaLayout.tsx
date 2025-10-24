@@ -8,10 +8,10 @@ import '../styles/Secretaria.css';
 export const SecretariaLayout = () => {
   const navigate = useNavigate();
 
-  const navLinks = [
-    { to: '/secretaria', label: 'Panel Principal' },
-    { to: '/secretaria/preguntas', label: 'Gestión de Preguntas' },
-    { to: '/secretaria/crear-encuesta', label: 'Crear Encuesta' }
+  const secretariaNavLinks = [
+    { to: "/secretaria", label: "Panel Principal" },
+    { to: "/secretaria/preguntas", label: "Gestión de Preguntas" },
+    { to: "/secretaria/crear-encuesta", label: "Crear Encuesta" }
   ];
 
   const metricas = [
@@ -79,7 +79,7 @@ export const SecretariaLayout = () => {
   return (
     <div className="secretaria-layout">
       <Navbar 
-        navLinks={navLinks} 
+        navLinks={secretariaNavLinks} 
         showUserInfo={true} 
         rol="secretaria"
       />

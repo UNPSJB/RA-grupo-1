@@ -10,6 +10,9 @@ import { DetalleMateria } from '../features/docentes/components/DetalleMateria';
 import { DepartamentoLayout } from '../features/departamentos/components/DepartamentoLayout';
 import { GestionPreguntas } from '../features/departamentos/components/GestionPreguntas';
 import { GestionEncuestas } from '../features/departamentos/components/GestionEncuestas';
+import { SecretariaLayout } from '../features/secretaria/components/SecretariaLayout';
+import { CrearEncuesta } from '../features/secretaria/components/CrearEncuesta';
+import { EstadisticasEncuesta } from '../features/secretaria/components/EstadisticasEncuesta';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
@@ -34,6 +37,11 @@ function App() {
       <Route path="/departamento" element={<DepartamentoLayout />}>
         <Route path="gestion-preguntas" element={<GestionPreguntas />} />
         <Route path="gestion-encuestas" element={<GestionEncuestas />} />
+      </Route>
+
+      <Route path="/secretaria" element={<SecretariaLayout />}>
+        <Route path="crear-encuesta" element={<CrearEncuesta />} />
+        <Route path="estadisticas/:encuestaId" element={<EstadisticasEncuesta />} />
       </Route>
     </Routes>
   );

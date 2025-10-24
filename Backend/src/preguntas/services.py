@@ -17,13 +17,18 @@ def crear_abierta(db: Session, pregunta: schemas.CrearPreguntaAbierta) -> Pregun
     return _nueva_pregunta
 
 def crear_cerrada(db: Session, pregunta: schemas.CrearPreguntaCerrada) -> Pregunta:
-
     opciones_validas = db.scalars(
         select(Opcion).where(Opcion.id.in_(pregunta.opciones))
     ).all()
 
     if len(opciones_validas) != len(pregunta.opciones):
-        raise exceptions.PreguntaSinOpciones("Algunas opciones no existen")
+        # Identificar exactamente qué opciones faltan
+        ids_encontrados = {op.id for op in opciones_validas}
+        opciones_faltantes = [op_id for op_id in pregunta.opciones if op_id not in ids_encontrados]
+        
+        raise exceptions.PreguntaSinOpciones(
+            f"Las siguientes opciones no existen: {opciones_faltantes}"
+        )
 
     nueva_pregunta = Pregunta(
         texto=pregunta.texto, 

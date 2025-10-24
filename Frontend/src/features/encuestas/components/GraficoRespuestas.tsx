@@ -39,8 +39,7 @@ export default function DistribucionPage({ materiaId, preguntaId }: Props) {
     <Container className="mt-4">
       <h1 className="mb-4">Distribución de respuestas</h1>
       <Estadistica
-        labels={labels}   // ["Sí", "No", "NPO"]
-        data={data}       // [5, 2, 1]
+        labels={labels}   
         title={`Pregunta ${preguntaId}`}
       />
     </Container>
