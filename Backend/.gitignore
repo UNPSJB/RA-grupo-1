@@ -183,3 +183,5 @@ __pycache__/
 *.db
 .env
 >>>>>>> da540e16b9a6a0db37edb11f422351d27f76d3ac
+.env
+*.db
