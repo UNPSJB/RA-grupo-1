@@ -1,75 +1,24 @@
-# ========== Python ==========
-# Virtual environments
-venv/
-env/
-.venv/
-ENV/
-env.bak/
-venv.bak/
-
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
-*.pyc
-*.pyo
-
-# Distribution / packaging
-dist/
-build/
-*.egg-info/
-.eggs/
-
-# Databases
-*.db
-*.sqlite
-*.sqlite3
-
-# ========== Node.js / Frontend ==========
-node_modules/
+# Logs
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-package-lock.json
+pnpm-debug.log*
+lerna-debug.log*
 
-# Build outputs
-dist/
-build/
-.next/
-out/
+node_modules
+dist
+dist-ssr
+*.local
 
-# ========== Environment Variables ==========
-.env
-.env.local
-.env.development
-.env.test
-.env.production
-**/.env
-
-# ========== IDEs / Editors ==========
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
 .DS_Store
-
-# ========== Logs ==========
-*.log
-logs/
-
-# ========== Testing ==========
-.coverage
-htmlcov/
-.pytest_cache/
-.tox/
-
-# ========== OS ==========
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# ========== Otros ==========
-*.bak
-*.tmp
-.cache/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
