@@ -8,7 +8,9 @@ export enum EstadoEncuesta {
 export enum Cursado {
     PrimerCuatrimestre = "cuatrimestre 1",
     SegundoCuatrimestre = "cuatrimestre 2",
-    Anual = "Anual"
+    Anual = "Anual",
+    Docente_id = 2,
+    AnioActual = 2025
 }
 
 export interface Encuesta {
@@ -20,7 +22,6 @@ export interface Encuesta {
 }
 
 export function useEncuestas(){
-
     const[encuestas, setEncuestas] = useState<Encuesta[]>([]);
     const[loading, setLoading] = useState<boolean>(true);
     const[error, setError] = useState<string | null>(null);
@@ -43,7 +44,6 @@ export function useEncuestas(){
             setLoading(false);
         }
     }    
-
 
 useEffect(() => {
     fetchEncuestas();

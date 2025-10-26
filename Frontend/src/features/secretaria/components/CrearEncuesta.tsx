@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Container, Row, Col, Card, Form, Button, Alert, Badge, Accordion } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { useEncuestas } from '../hooks/useEncuestas';
+import { useSecretaria } from '../hooks/useSecretaria';
 import { Pregunta } from '../types/encuestasTypes';
 
 export const CrearEncuesta = () => {
-  const { preguntas, categorias, crearEncuesta } = useEncuestas();
+  const { preguntas, categorias, crearEncuesta } = useSecretaria();
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState({

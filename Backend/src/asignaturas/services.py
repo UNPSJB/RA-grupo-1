@@ -1,8 +1,10 @@
 from typing import List, Optional
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+from fastapi import HTTPException
 from src.asignaturas.models import Asignatura
 from src.asignaturas import schemas, exceptions
+from src.departamentos.models import Departamento
 
 def listar_asignaturas(db: Session) -> List[schemas.Asignatura]:
     """Listar todas las asignaturas"""
@@ -24,6 +26,11 @@ def crear_asignatura(db: Session, asignatura: schemas.AsignaturaCreate) -> schem
     # Verificar si ya existe la matrícula
     if buscar_asignatura_por_matricula(db, asignatura.matricula):
         raise exceptions.AsignaturaYaExiste()
+    
+    # Verificar que el departamento exista
+    departamento = db.query(Departamento).filter(Departamento.id == asignatura.departamento_id).first()
+    if not departamento:
+        raise HTTPException(status_code=404, detail="Departamento no encontrado")
     
     db_asignatura = Asignatura(**asignatura.dict())
     db.add(db_asignatura)

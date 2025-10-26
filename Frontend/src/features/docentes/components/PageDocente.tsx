@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import DetalleDocente from "./docentes";
-import type { Docente } from "../../types/types";
+import DetalleDocente from "./Docentes";
+import type { Docente } from "../types/docenteTypes";
 
 export default function DocentePage() {
   const { id } = useParams<{ id: string }>();
@@ -12,7 +12,7 @@ export default function DocentePage() {
   useEffect(() => {
     if (!id) return;
 
-    fetch(`http://127.0.0.1:8000/docentes/${id}/materias`)
+    fetch(`http://127.0.0.1:8000/docentes/${id}/asignaturas`)
       .then((res) => {
         if (!res.ok) throw new Error("Error al obtener el docente");
         return res.json();

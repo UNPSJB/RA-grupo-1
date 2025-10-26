@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ANIO_ACTUAL, PERIODO_ACTUAL } from "../../constants";
-import MensajeExito from "../pregunta/preguntaCerrada/MensajeExito";
+import { Cursado } from "../hooks/useEncuestas";
+import NotificacionExito from "../../pregunta/components/NotificacionExito";
 
 type EncuestaHabilitada = {
   asignatura: string;
@@ -15,25 +15,25 @@ type Props = {
   alumnoId: number;
 };
 
-export default function EncuestasDisponibles({ encuestas, alumnoId }: Props) {
+export default function EncuestasHabilitadas({ encuestas, alumnoId }: Props) {
   const navigate = useNavigate();
-  const [mensajeExito, setMensajeExito] = useState<string | null>(null); 
+  const [notificacionExito, setNotificacionExito] = useState<string | null>(null); 
 
-  const verificarYCompletar = async (e: EncuestaHabilitada) => {
+  const verificar_Completar = async (e: EncuestaHabilitada) => {
     try {
       const params = new URLSearchParams({
         alumno_id: alumnoId.toString(),
         encuesta_id: e.encuesta_id.toString(),
         asignatura_id: e.asignatura_id.toString(),
-        anio: ANIO_ACTUAL.toString(),
-        periodo: PERIODO_ACTUAL
+        anio: Cursado.AnioActual.toString(),
+        periodo: 'cuatrimestre 1'
       });
 
       const response = await fetch(`http://localhost:8000/encuesta-completada/existe?${params}`);
       const data = await response.json();
 
       if(data.existe){
-        setMensajeExito(`La encuesta ya la completaste ${e.asignatura}`); 
+        setNotificacionExito(`La encuesta ya esta completada ${e.asignatura}`); 
       } else{
         navigate("/encuestas/categoria-b", {
           state: {
@@ -45,22 +45,21 @@ export default function EncuestasDisponibles({ encuestas, alumnoId }: Props) {
         });
       }
     } catch (error) {
-      console.error("Hubo un problema cuando se quiso verificar la encuesta:", error);
-      setMensajeExito("Problema al querer verificar la encuesta");  
+      console.error("Ocurrio un error cuando se quiso verificar la encuesta:", error);
+      setNotificacionExito("Error cuando se verifico la encuesta");  
     }
   };
 
-  
-  const cerrarMensaje = () => {
-    setMensajeExito(null);
+  const cerrarNotificacion = () => {
+    setNotificacionExito(null);
   };
 
   
-  if (mensajeExito) {
+  if (notificacionExito) {
     return (
-      <MensajeExito
-        mensaje={mensajeExito}
-        onClose={cerrarMensaje}
+      <NotificacionExito
+        notificacion={notificacionExito}
+        onClose={cerrarNotificacion}
       />
     );
   } 
@@ -85,7 +84,7 @@ export default function EncuestasDisponibles({ encuestas, alumnoId }: Props) {
                   <strong>{e.asignatura}</strong> — {e.encuesta}{" "}
                 </span>
               </div>
-              <button onClick={() => verificarYCompletar(e)}
+              <button onClick={() => verificar_Completar(e)}
                 className="btn btn-primary btn-sm"
               >
                 Completar Encuesta

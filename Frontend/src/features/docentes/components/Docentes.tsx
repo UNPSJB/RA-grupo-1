@@ -1,5 +1,5 @@
-import type { Docente } from "../../types/types";
-import ListaMaterias from "../materia/materias";
+import type { Docente } from "../types/docenteTypes";
+import ListarAsignaturas from "../../asignaturas/components/Asignaturas";
 
 type Props = {
   docente: Docente | undefined;
@@ -22,7 +22,7 @@ export default function DetalleDocente ({ docente }: Props){
           <h1 className="h4 mb-0">{docente.nombre} {docente.apellido}</h1>
         </div>
         <div className="card-body">
-          <ListaMaterias materias={docente.materias} />
+          <ListarAsignaturas asignaturas={docente.asignaturas} />
         </div>
       </div>
     </div>

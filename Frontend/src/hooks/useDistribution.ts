@@ -8,13 +8,13 @@ interface DistribucionResponse {
 
 const NAME_MAP: Record<number, string> = { 1: "Sí", 2: "No", 3: "NPO" };
 
-export function useDistribucion(materiaId: number, preguntaId: number) {
+export function useDistribucion(asignaturaId: number, preguntaId: number) {
   const [labels, setLabels] = useState<string[]>([]);
   const [data, setData] = useState<number[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const API_URL = `http://localhost:8000/materias/${materiaId}/pregunta/${preguntaId}/distribucion`;
+  const API_URL = `http://localhost:8000/asignaturas/${asignaturaId}/pregunta/${preguntaId}/distribucion`;
 
   const fetchDistribucion = async () => {
     try {
@@ -39,8 +39,7 @@ export function useDistribucion(materiaId: number, preguntaId: number) {
 
   useEffect(() => {
     fetchDistribucion();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [materiaId, preguntaId]);
+  }, [asignaturaId, preguntaId]);
 
   return { labels, data, loading, error, refetch: fetchDistribucion };
 }

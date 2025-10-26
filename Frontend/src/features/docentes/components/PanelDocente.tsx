@@ -5,7 +5,7 @@ import { docenteService, DocenteStats } from '../services/docenteService';
 export const PanelDocente: React.FC = () => {
   // DATOS HARCODEADOS ACA VAN CON LA API
   const docenteData = {
-    materias: 3,
+    asignaturas: 3,
     semestre: "2025",
     alumnos: 105,
     encuestasCompletadas: 85,
@@ -20,8 +20,8 @@ export const PanelDocente: React.FC = () => {
             <div className="card-body">
               <div className="d-flex justify-content-between align-items-start">
                 <div>
-                  <h6 className="card-title text-muted text-uppercase small">Total Materias</h6>
-                  <h2 className="fw-bold text-primary mb-1">{docenteData.materias}</h2>
+                  <h6 className="card-title text-muted text-uppercase small">Total Asignaturas</h6>
+                  <h2 className="fw-bold text-primary mb-1">{docenteData.asignaturas}</h2>
                   <small className="text-muted">Semestre {docenteData.semestre}</small>
                 </div>
                 <div className="bg-primary bg-opacity-10 p-3 rounded">
@@ -39,7 +39,7 @@ export const PanelDocente: React.FC = () => {
                 <div>
                   <h6 className="card-title text-muted text-uppercase small">Total alumnos</h6>
                   <h2 className="fw-bold text-success mb-1">{docenteData.alumnos}</h2>
-                  <small className="text-muted">Todas las materias</small>
+                  <small className="text-muted">Todas las asignaturas</small>
                 </div>
                 <div className="bg-success bg-opacity-10 p-3 rounded">
                   <i className="bi bi-people text-success fs-4"></i>
@@ -79,58 +79,6 @@ export const PanelDocente: React.FC = () => {
                 </div>
                 <div className="bg-info bg-opacity-10 p-3 rounded">
                   <i className="bi bi-star text-info fs-4"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="row">
-        <div className="col-lg-6 mb-4">
-          <div className="card border-0 shadow-sm h-100">
-            <div className="card-header bg-white border-0">
-              <h5 className="card-title mb-0">
-                <i className="bi bi-clock-history me-2 text-warning"></i>
-                Actividad Reciente
-              </h5>
-            </div>
-            <div className="card-body">
-              <div className="list-group list-group-flush">
-                <div className="list-group-item border-0 px-0 py-2">
-                  <small className="text-muted">Hoy</small>
-                  <p className="mb-1">Nueva encuesta disponible para Matemáticas I</p>
-                </div>
-                <div className="list-group-item border-0 px-0 py-2">
-                  <small className="text-muted">Ayer</small>
-                  <p className="mb-1">15 alumnos completaron encuesta de Algebra</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-lg-6 mb-4">
-          <div className="card border-0 shadow-sm h-100">
-            <div className="card-header bg-white border-0">
-              <h5 className="card-title mb-0">
-                <i className="bi bi-exclamation-triangle me-2 text-danger"></i>
-                Acciones Pendientes
-              </h5>
-            </div>
-            <div className="card-body">
-              <div className="list-group list-group-flush">
-                <div className="list-group-item border-0 px-0 py-2">
-                  <span className="badge bg-warning me-2">3</span>
-                  <span>Encuestas por revisar</span>
-                </div>
-                <div className="list-group-item border-0 px-0 py-2">
-                  <span className="badge bg-info me-2">1</span>
-                  <span>Reporte pendiente de envío</span>
-                </div>
-                <div className="list-group-item border-0 px-0 py-2">
-                  <span className="badge bg-success me-2">2</span>
-                  <span>Materias sin evaluaciones</span>
                 </div>
               </div>
             </div>

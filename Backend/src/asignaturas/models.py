@@ -9,6 +9,8 @@ if TYPE_CHECKING:
     from src.vinculaciones.asignatura_docente.models import AsignaturaDocente
     from src.alumnos.models import Alumno
     from src.encuestas.models import Encuesta
+    from src.departamentos.models import Departamento
+    from src.encuestas_completadas.models import EncuestaCompletada
 
 class Asignatura(ModeloBase):
     __tablename__ = "asignaturas"
@@ -30,5 +32,13 @@ class Asignatura(ModeloBase):
 
     encuestas: Mapped[List["Encuesta"]] = relationship(
         "Encuesta", 
+        back_populates="asignatura"
+    )
+
+    departamento_id: Mapped[int] = mapped_column(Integer, ForeignKey("departamentos.id"), nullable=False)
+    departamento: Mapped["Departamento"] = relationship("Departamento", back_populates="asignaturas")
+
+    encuestas_completadas: Mapped[List["EncuestaCompletada"]] = relationship(
+        "EncuestaCompletada", 
         back_populates="asignatura"
     )

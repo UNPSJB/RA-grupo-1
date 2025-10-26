@@ -1,9 +1,9 @@
 import { Container, Row, Col, Card, Table, Badge, Button, Spinner, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { useEncuestas } from '../hooks/useEncuestas';
+import { useSecretaria } from '../hooks/useSecretaria';
 
 export const PanelEncuestas = () => {
-  const { encuestas, loading, error, cargarEstadisticas } = useEncuestas();
+  const { encuestas, loading, error, cargarEstadisticas } = useSecretaria();
   const navigate = useNavigate();
 
   const verEstadisticas = async (encuestaId: number) => {
@@ -21,19 +21,6 @@ export const PanelEncuestas = () => {
 
   return (
     <Container fluid className="py-4">
-      <Row className="mb-4">
-        <Col>
-          <h1 className="h2">Panel de Encuestas</h1>
-          <p className="text-muted">Gestión y visualización de encuestas del sistema</p>
-        </Col>
-        <Col xs="auto">
-          <Button variant="primary" onClick={() => navigate('/secretaria/crear-encuesta')}>
-            <i className="bi bi-plus-circle me-2"></i>
-            Nueva Encuesta
-          </Button>
-        </Col>
-      </Row>
-
       {error && <Alert variant="danger">{error}</Alert>}
 
       <Row className="g-4 mb-4">

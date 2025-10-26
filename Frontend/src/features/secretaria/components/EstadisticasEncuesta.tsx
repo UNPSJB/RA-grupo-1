@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Button, Spinner, Alert, Table } from 'react-bootstrap';
-import { useEncuestas } from '../hooks/useEncuestas';
+import { useSecretaria } from '../hooks/useSecretaria';
 
 export const EstadisticasEncuesta = () => {
   const { encuestaId } = useParams<{ encuestaId: string }>();
   const navigate = useNavigate();
-  const { estadisticas, loading, error, cargarEstadisticas, encuestas } = useEncuestas();
+  const { estadisticas, loading, error, cargarEstadisticas, encuestas } = useSecretaria();
 
   const encuesta = encuestas.find(e => e.id === parseInt(encuestaId || '0'));
 
@@ -28,9 +28,6 @@ export const EstadisticasEncuesta = () => {
     return (
       <Container>
         <Alert variant="danger">{error}</Alert>
-        <Button variant="secondary" onClick={() => navigate('/secretaria/panel')}>
-          Volver al Panel
-        </Button>
       </Container>
     );
   }
@@ -39,9 +36,6 @@ export const EstadisticasEncuesta = () => {
     return (
       <Container>
         <Alert variant="warning">No se encontraron estadísticas para esta encuesta</Alert>
-        <Button variant="secondary" onClick={() => navigate('/secretaria/panel')}>
-          Volver al Panel
-        </Button>
       </Container>
     );
   }
@@ -50,10 +44,6 @@ export const EstadisticasEncuesta = () => {
     <Container fluid className="py-4">
       <Row className="mb-4">
         <Col>
-          <Button variant="outline-secondary" onClick={() => navigate('/secretaria/panel')} className="mb-3">
-            <i className="bi bi-arrow-left me-2"></i>
-            Volver al Panel
-          </Button>
           <h1 className="h2">{encuesta.titulo}</h1>
           <p className="text-muted">{encuesta.descripcion}</p>
         </Col>

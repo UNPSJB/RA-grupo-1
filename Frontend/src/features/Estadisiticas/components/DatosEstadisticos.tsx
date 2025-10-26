@@ -17,7 +17,7 @@ export default function DatosEstadisticosPage() {
   const [loading, setLoading] = useState(false);
 
   const informeId = 6;
-  const materiaId = 7;
+  const asignaturaId = 7;
   const anio = 2025;
   const periodo = "PRIMER_CUATRIMESTRE";
 
@@ -29,7 +29,7 @@ export default function DatosEstadisticosPage() {
 
       let url = "";
       if (tipo === "calculados") {
-        url = `http://127.0.0.1:8000/datos_estadisticos/?id_materia=${materiaId}&anio=${anio}&periodo=${periodo}`;
+        url = `http://127.0.0.1:8000/datos_estadisticos/?id_asignatura=${asignaturaId}&anio=${anio}&periodo=${periodo}`;
       } else {
         url = `http://127.0.0.1:8000/datos_estadisticos/recuperar_existentes/${informeId}`;
       }
@@ -79,7 +79,7 @@ export default function DatosEstadisticosPage() {
         <div className="card-body">
           <div className="mb-3">
             <strong>Informe ID:</strong> {informeId} <br />
-            <strong>Materia ID:</strong> {materiaId} <br />
+            <strong>Asignatura ID:</strong> {asignaturaId} <br />
             <strong>Año:</strong> {anio} <br />
             <strong>Periodo:</strong> {periodo}
           </div>

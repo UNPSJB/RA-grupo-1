@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import ListarCarreras from "../../carreras/components/ListarCarreras";
-import type { Departamento, Carrera } from "../../types/types";
+import type { Departamento } from "../types/departamentoTypes";
+import type { Carrera } from "../../carreras/types/carrerasTypes";
 
 function DepartamentoDetalle() {
   const [departamento, setDepartamento] = useState<Departamento | null>(null);

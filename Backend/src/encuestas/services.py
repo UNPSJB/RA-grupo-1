@@ -9,13 +9,6 @@ from src.respuestas.models import Respuesta
 from src.preguntas.models import Pregunta
 from src.categorias import schemas as categoria_schemas
 from src.preguntas import schemas as pregunta_schemas
-from src.encuestas.exceptions import (
-    EncuestaNoEncontrada, 
-    FechasEncuestaInvalidas,
-    EncuestaNoDisponible,
-    EncuestaYaRespondida
-)
-
 
 def listar_encuestas(db:Session) -> List[schemas.Encuesta]:
     return db.scalars(select(Encuesta)).all()

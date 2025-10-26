@@ -3,12 +3,12 @@ import { useDistribucion } from "../hooks/useDistribution";
 import { Estadistica } from "../components/Estadistica";
 
 interface Props {
-  materiaId: number;
+  asignaturaId: number;
   preguntaId: number;
 }
 
-export default function DistribucionPage({ materiaId, preguntaId }: Props) {
-  const { labels, data, loading, error, refetch } = useDistribucion(materiaId, preguntaId);
+export default function DistribucionPage({ asignaturaId, preguntaId }: Props) {
+  const { labels, data, loading, error, refetch } = useDistribucion(asignaturaId, preguntaId);
 
   if (loading) {
     return (
