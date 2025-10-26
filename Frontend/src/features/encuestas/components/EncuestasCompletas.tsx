@@ -1,7 +1,7 @@
 import { Card, Button, Badge, Spinner, Alert, Row, Col, Container } from 'react-bootstrap';
 import { useEncuestas } from "../hooks/useEncuestas";
 import '../styles/Encuestas.css'; 
-import { EstadoEncuesta, Cursado } from '../types/index';
+import { EstadoEncuesta, Cursado } from "../types/encuestasTypes";
 
 export const EncuestasCompletas = () => {
     const { encuestas, loading, error, refetch } = useEncuestas();

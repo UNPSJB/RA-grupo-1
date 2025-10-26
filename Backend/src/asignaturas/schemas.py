@@ -4,6 +4,7 @@ from typing import Optional
 class AsignaturaBase(BaseModel):
     nombre: str
     matricula: str
+    departamento_id: Optional[int] = None
     
     @field_validator('nombre')
     def nombre_no_vacio(cls, v):

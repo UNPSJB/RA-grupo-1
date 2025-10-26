@@ -13,7 +13,7 @@ export interface Carrera {
   nombre: string;
   codigo: string;
   departamento: string;
-  cantidadMaterias: number;
+  cantidadAsignaturas: number;
   activa: boolean;
 }
 

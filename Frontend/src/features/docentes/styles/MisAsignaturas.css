@@ -1,0 +1,156 @@
+.mis-asignaturas-container {
+  padding: 20px 0;
+}
+
+.header-section {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.asignatura-card {
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px #0000001a;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.asignatura-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px #00000026;
+}
+
+.card-header-custom {
+  background: linear-gradient(135deg, #5572f7 0%, #dbdfe7 100%);
+  color: white;
+  border-radius: 15px 15px 0 0 !important;
+  padding: 15px 20px;
+}
+
+.card-body-custom {
+  padding: 25px 20px;
+}
+
+.card-footer-custom {
+  background-color: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  border-radius: 0 0 15px 15px !important;
+  padding: 20px;
+}
+
+.asignatura-title {
+  color: #2c3e50;
+  font-weight: 600;
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.carrera-text {
+  color: #5a6c7d;
+  margin-bottom: 20px;
+}
+
+.asignatura-stats {
+  margin-top: 15px;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.stat-item:last-child {
+  border-bottom: none;
+}
+
+.stat-value {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.progress-container {
+  margin-top: 15px;
+}
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+  color: #5a6c7d;
+}
+
+.progress {
+  height: 8px;
+  border-radius: 4px;
+  background-color: #e9ecef;
+}
+
+.porcentaje-badge {
+  font-size: 0.8rem;
+  padding: 6px 10px;
+  border-radius: 20px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #7f8c8d;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  color: #bdc3c7;
+  margin-bottom: 20px;
+}
+
+.empty-state h3 {
+  color: #95a5a6;
+  margin-bottom: 15px;
+}
+
+.loading-text {
+  color: #3498db;
+  font-weight: 500;
+}
+
+.error-alert {
+  border-radius: 15px;
+  border: none;
+  box-shadow: 0 4px 6px #0000001a;
+}
+
+.filters-card {
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.filters-card .card-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 15px 15px 0 0 !important;
+  font-weight: 600;
+}
+
+.results-info {
+  font-size: 0.9rem;
+}
+
+/* Estilos para los badges de estado */
+.estado-badge {
+  font-size: 0.7rem;
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+
+.fechas-info {
+  margin-bottom: 15px;
+  padding: 8px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  font-size: 0.85rem;
+}

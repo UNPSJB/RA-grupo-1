@@ -35,7 +35,7 @@ export const GestionPreguntas = () => {
         setLoading(true);
         await new Promise(resolve => setTimeout(resolve, 1000));
         
-        // Datos de ejemplo
+        // Datos harcodeados
         const preguntasData: Pregunta[] = [
           {
             id: 1,
@@ -43,7 +43,7 @@ export const GestionPreguntas = () => {
             tipo: 'escala',
             categoria: 'docente',
             activa: true,
-            fechaCreacion: '2024-01-15',
+            fechaCreacion: '2025-01-15',
             orden: 1
           },
           {
@@ -52,7 +52,7 @@ export const GestionPreguntas = () => {
             tipo: 'escala',
             categoria: 'material',
             activa: true,
-            fechaCreacion: '2024-01-15',
+            fechaCreacion: '2025-01-15',
             orden: 2
           },
           {
@@ -61,7 +61,7 @@ export const GestionPreguntas = () => {
             tipo: 'texto',
             categoria: 'sugerencias',
             activa: true,
-            fechaCreacion: '2024-01-20',
+            fechaCreacion: '2025-01-20',
             orden: 3
           },
           {
@@ -70,7 +70,7 @@ export const GestionPreguntas = () => {
             tipo: 'escala',
             categoria: 'docente',
             activa: false,
-            fechaCreacion: '2024-01-10',
+            fechaCreacion: '2025-01-10',
             orden: 4
           }
         ];
@@ -137,7 +137,7 @@ export const GestionPreguntas = () => {
   };
 
   const eliminarPregunta = (id: number) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar esta pregunta?')) {
+    if (window.confirm('¿Queres eliminar esta pregunta?')) {
       setPreguntas(prev => prev.filter(p => p.id !== id));
     }
   };
