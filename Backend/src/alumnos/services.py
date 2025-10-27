@@ -38,7 +38,7 @@ def leer_alumno(db: Session, alumno_id: int) -> schemas.AlumnoResponse:
     return db_alumno
 
 
-def leer_alumno(db: Session, alumno_id: int) -> schemas.Alumno:
+def leer_alumno(db: Session, alumno_id: int) -> schemas.AlumnoResponse:
     db_alumno = db.scalar(select(Alumno).where(Alumno.id == alumno_id))
     if db_alumno is None:
         raise exceptions.AlumnoNoEncontrada()
@@ -87,7 +87,7 @@ def obtener_encuestas_disponibles(db: Session, alumno_id: int) -> List[schemas.E
     encuestas = db.scalars(stmt).all()
     return encuestas
 
-def obtener_asignaturas_alumno(db: Session, alumno_id: int) -> List[schemas.AsignaturaAlumno]:
+def obtener_asignaturas_alumno(db: Session, alumno_id: int) -> List[schemas.AsignaturaBase]:
     # Obtiene asignaturas de un alumno
     
     alumno = leer_alumno(db, alumno_id)

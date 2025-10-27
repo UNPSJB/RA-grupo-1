@@ -10,6 +10,7 @@ export const DepartamentoLayout: React.FC = () => {
   };
 
   const departamentoNavLinks = [
+    { to: "/departamento", label: "Panel Principal"},
     { to: "/departamento/gestion-preguntas", label: "Gestión de Preguntas" },
     { to: "/departamento/gestion-encuestas", label: "Gestión de Encuestas" },
     { 

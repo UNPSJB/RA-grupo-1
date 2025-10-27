@@ -4,6 +4,9 @@ from src.models import ModeloBase
 from typing import List
 from src.vinculaciones.models import alumno_asignatura, alumno_encuesta
 
+#if TYPE_CHECKING:
+    #from src.respuestas.models import Respuesta
+
 class Alumno(ModeloBase):
     __tablename__ = "alumnos"
 
@@ -18,6 +21,7 @@ class Alumno(ModeloBase):
         "EncuestaCompletada", 
         back_populates="alumno"
     )
+    #respuestas: Mapped[List["Respuesta"]] = relationship("Respuesta", back_populates="alumno")
     
     asignaturas: Mapped[List["Asignatura"]] = relationship(
         "Asignatura",

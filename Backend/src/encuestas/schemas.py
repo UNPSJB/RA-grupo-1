@@ -8,7 +8,7 @@ class EncuestaBase(BaseModel):
     año: int = Field(ge=2000, le=2100, description="Año académico")
     cursado: Duracion
     fecha_inicio: datetime
-    fecha_fin: datetime = Field(description="Fecha de finalización de la encuesta")
+    fecha_fin: datetime | None = Field(default=None, description="Fecha de finalización de la encuesta")
     carrera: str = Field(min_length=1, max_length=100)
     sede: str = Field(min_length=1, max_length=50)
     titulo: str = Field(min_length=1, max_length=255, description="Título de la encuesta")

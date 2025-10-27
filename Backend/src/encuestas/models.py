@@ -22,7 +22,7 @@ class Encuesta(ModeloBase):
     estado: Mapped[EstadoEncuesta] = mapped_column(Enum(EstadoEncuesta), nullable=False, default=EstadoEncuesta.abierta)
     titulo: Mapped[str] = mapped_column(String(255), nullable=False)
     fecha_inicio: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-    fecha_fin: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    fecha_fin: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     activa: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     

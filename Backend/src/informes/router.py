@@ -9,6 +9,10 @@ router = APIRouter(prefix="/informes", tags=["informes"])
 def read_informes(db: Session = Depends(get_db)):
     return services.listar_informes(db)
 
+@router.get("/pendientes", response_model=list[schemas.Informe])
+def read_informes_pendientes(db: Session = Depends(get_db)):
+    return services.listar_informes_pendientes(db)
+
 @router.post("/", response_model=schemas.Informe)
 def create_informe(informe: schemas.InformeCreate, db: Session = Depends(get_db)):
     return services.crear_informe(db, informe)

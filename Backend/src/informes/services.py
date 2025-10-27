@@ -1,6 +1,6 @@
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
-from src.informes.models import Informe
+from src.informes.models import Informe, EstadoInforme
 from src.informes import schemas, exceptions
 from typing import List
 
@@ -19,3 +19,9 @@ def leer_informe(db: Session, informe_id: int)-> schemas.Informe:
     if db_informe is None:
         raise exceptions.InformeNoEncontrado()
     return db_informe
+
+def listar_informes_pendientes(db: Session) -> List[schemas.Informe]:
+    stmt = select(Informe).where(
+        Informe.estado == EstadoInforme.abierto
+    )
+    return db.scalars(stmt).all() 

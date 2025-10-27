@@ -2,13 +2,15 @@ from typing import List, Optional
 from datetime import datetime
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session, selectinload
-from src.encuestas.models import Encuesta, EstadoEncuesta
+from src.encuestas.models import Encuesta, EstadoEncuesta, alumno_encuesta
 from src.encuestas import schemas, exceptions
 from src.respuestas.schemas import RespuestaCreate
 from src.respuestas.models import Respuesta
 from src.preguntas.models import Pregunta
 from src.categorias import schemas as categoria_schemas
 from src.preguntas import schemas as pregunta_schemas
+from src.alumnos.models import Alumno
+from src.alumnos.services import leer_alumno
 from src.encuestas.exceptions import (
     EncuestaNoEncontrada, 
     FechasEncuestaInvalidas,
@@ -82,15 +84,16 @@ def modificar_encuesta(
 
 def eliminar_encuesta(db: Session, encuesta_id: int) -> dict:
     db_encuesta = leer_encuesta(db, encuesta_id)
-    
-    db.execute(
-        update(Encuesta)
-        .where(Encuesta.id == encuesta_id)
-        .values(activa=False, estado=EstadoEncuesta.cerrada)
-    )
+    nombre = db_encuesta.titulo
+    db.delete(db_encuesta)
+    #db.execute(
+    #    update(Encuesta)
+    #    .where(Encuesta.id == encuesta_id)
+    #    .values(activa=False, estado=EstadoEncuesta.cerrada)
+    #)
     db.commit()
     
-    return {"message": f"Encuesta '{db_encuesta.titulo}' desactivada correctamente"}
+    return {"message": f"Encuesta '{nombre}' eliminada correctamente"}
 
 def listar_categorias_encuesta(db: Session, encuesta_id: int) -> List[categoria_schemas.Categoria]:
     # Obtiene categorías de una encuesta específica
@@ -109,9 +112,22 @@ def listar_preguntas_encuesta(db: Session, encuesta_id: int) -> List[pregunta_sc
 
 def vincular_alumno_encuesta(db: Session, encuesta_id: int, alumno_id: int) -> schemas.Encuesta:
     # Vincula un alumno a una encuesta
+    db_alumno = leer_alumno(db, alumno_id)
     db_encuesta = leer_encuesta(db, encuesta_id)
     
-    db.commit()
+    enc_vinculada= db.execute(
+        select(Encuesta.id)
+        .join(Alumno.encuestas)
+        .where(Alumno.id == alumno_id, Encuesta.id == encuesta_id)
+    ).scalar_one_or_none()
+
+    if enc_vinculada is None:
+        db_alumno.encuestas.append(db_encuesta) # agrego la encuesta al listado de encuestas del alumno
+        db.commit()
+    else:
+        db.flush()
+        raise Exception("La encuesta ya esta vinculada con el alumno")
+
     db.refresh(db_encuesta)
     return db_encuesta
 
@@ -156,3 +172,30 @@ def obtener_estadisticas_encuesta(db: Session, encuesta_id: int) -> dict:
         "estado": encuesta.estado,
         "activa": encuesta.activa
     }
+
+def restablecer_acceso(db: Session, asignatura_id: int, alumno_id: int) -> Encuesta:
+    SENTINEL = datetime(9999, 12, 31, 23, 59, 59)
+
+    encuesta = db.execute(
+        select(Encuesta)
+        .join(alumno_encuesta, alumno_encuesta.c.encuesta_id == Encuesta.id) 
+        .where(
+            alumno_encuesta.c.alumno_id == alumno_id,
+            Encuesta.asignatura_id == asignatura_id
+        )
+    ).scalar()
+
+    if encuesta.fecha_fin != None:
+        db.execute(
+            update(Encuesta)
+            .where(Encuesta.id == encuesta.id)
+            .values(fecha_fin=SENTINEL)
+        )
+        db.commit()
+        db.refresh(encuesta)
+
+    encuesta = db.execute(
+        select(Encuesta).where(Encuesta.id == encuesta.id)
+    ).scalar_one()
+    
+    return encuesta

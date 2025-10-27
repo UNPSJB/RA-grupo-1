@@ -8,6 +8,7 @@ import { PanelDocente } from '../features/docentes/components/PanelDocente';
 import { MisMaterias } from '../features/docentes/components/MisMaterias';
 import { DetalleMateria } from '../features/docentes/components/DetalleMateria';
 import { DepartamentoLayout } from '../features/departamentos/components/DepartamentoLayout';
+import { PanelDepartamento } from '../features/departamentos/components/PanelDepartamento';
 import { GestionPreguntas } from '../features/departamentos/components/GestionPreguntas';
 import { GestionEncuestas } from '../features/departamentos/components/GestionEncuestas';
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -32,6 +33,7 @@ function App() {
       </Route>
 
       <Route path="/departamento" element={<DepartamentoLayout />}>
+        <Route index element={<PanelDepartamento />} /> 
         <Route path="gestion-preguntas" element={<GestionPreguntas />} />
         <Route path="gestion-encuestas" element={<GestionEncuestas />} />
       </Route>
