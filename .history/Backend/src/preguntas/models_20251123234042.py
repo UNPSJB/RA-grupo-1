@@ -17,9 +17,14 @@ class Pregunta(ModeloBase):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     texto: Mapped[str] = mapped_column(String(250), nullable=False)
+<<<<<<< HEAD
+    encuesta_id: Mapped[int] = mapped_column(Integer, ForeignKey("encuestas.id", ondelete="CASCADE"))
+    categoria_id: Mapped[Optional[int]] = mapped_column(Integer, ForeignKey("categorias.id", ondelete="SET NULL"), nullable=True)
+=======
     encuesta_id: Mapped[int] = mapped_column(Integer, ForeignKey("encuestas.id"))
 
     respuestas: Mapped[List["Respuesta"]] = relationship("Respuesta", back_populates="pregunta")
+>>>>>>> 3379db2 (cambios ultimos en la rama RolDocente)
 
     
     tipo: Mapped[TipoPreguntaEnum] = mapped_column(
