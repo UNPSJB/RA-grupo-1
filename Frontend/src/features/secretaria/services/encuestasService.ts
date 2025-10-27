@@ -1,5 +1,7 @@
 import { Pregunta, Encuesta, EstadisticasEncuesta, TipoPregunta, CategoriaPregunta } from '../types/encuestasTypes';
 
+const API_BASE = 'http://127.0.0.1:8000';
+
 const categoriasMock: CategoriaPregunta[] = [
   { id: 1, codigo: 'A', nombre: 'Planificación de la Enseñanza', orden: 1 },
   { id: 2, codigo: 'B', nombre: 'Desarrollo de la Enseñanza', orden: 2 },
@@ -78,12 +80,33 @@ export const encuestasService = {
   },
 
   // Preguntas
-  obtenerPreguntas: async (): Promise<Pregunta[]> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(preguntasMock.filter(p => p.activa));
-      }, 500);
-    });
+    obtenerPreguntas: async (): Promise<Pregunta[]> => {
+    try {
+      console.log('🔍 Obteniendo preguntas desde:', `${API_BASE}/preguntas/`);
+      const response = await fetch(`${API_BASE}/preguntas/`);
+      
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      console.log('📥 Preguntas recibidas:', data);
+      
+      
+      return data.map((item: any, index: number) => ({
+        id: item.id,
+        texto: item.texto,
+        tipo: item.tipo as TipoPregunta,
+        opciones: item.opciones || [],
+        categoriaId: 1, 
+        orden: index + 1,
+        activa: true,
+        fechaCreacion: item.created_at || new Date().toISOString()
+      }));
+    } catch (error) {
+      console.error('❌ Error fetching preguntas:', error);
+      throw new Error(`No se pudieron cargar las preguntas: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+    }
   },
 
   obtenerPreguntasPorCategoria: async (categoriaId: number): Promise<Pregunta[]> => {

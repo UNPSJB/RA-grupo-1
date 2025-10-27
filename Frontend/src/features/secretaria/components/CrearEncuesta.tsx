@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Form, Button, Alert, Badge, Accordion } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useSecretaria } from '../hooks/useSecretaria';
 import { Pregunta } from '../types/encuestasTypes';
+import { Ciclo } from '../../ciclos/types/index';
 
 export const CrearEncuesta = () => {
   const { preguntas, categorias, crearEncuesta } = useSecretaria();
@@ -11,15 +12,43 @@ export const CrearEncuesta = () => {
   const [formData, setFormData] = useState({
     titulo: '',
     descripcion: '',
-    fechaInicio: '',
-    fechaFin: '',
     rolDestinatario: 'alumno'
   });
   const [preguntasSeleccionadas, setPreguntasSeleccionadas] = useState<number[]>([]);
   const [categoriasSeleccionadas, setCategoriasSeleccionadas] = useState<number[]>([]);
+  const [ciclos, setCiclos] = useState<Ciclo[]>([]);
+  const [cicloSeleccionado, setCicloSeleccionado] = useState<Ciclo | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loadingCiclos, setLoadingCiclos] = useState(true);
 
-  // Agrupar preguntas por categoría
+  // Cargar ciclos disponibles
+  useEffect(() => {
+    const fetchCiclos = async () => {
+      try {
+        setLoadingCiclos(true);
+        const response = await fetch('http://127.0.0.1:8000/ciclos');
+        if (!response.ok) {
+          throw new Error('Error al cargar los ciclos');
+        }
+        const data = await response.json();
+        setCiclos(data);
+        
+        // Seleccionar automáticamente el primer ciclo activo
+        const cicloActivo = data.find((ciclo: Ciclo) => ciclo.activo);
+        if (cicloActivo) {
+          setCicloSeleccionado(cicloActivo);
+        }
+      } catch (err) {
+        console.error('Error fetching ciclos:', err);
+        setError('No se pudieron cargar los ciclos disponibles');
+      } finally {
+        setLoadingCiclos(false);
+      }
+    };
+
+    fetchCiclos();
+  }, []);
+
   const preguntasAgrupadas = categorias.map(categoria => ({
     ...categoria,
     preguntas: preguntas.filter(p => p.categoriaId === categoria.id)
@@ -58,16 +87,31 @@ export const CrearEncuesta = () => {
     return categoriasSeleccionadas.includes(categoriaId);
   };
 
+  const handleCicloChange = (cicloId: number) => {
+    const ciclo = ciclos.find(c => c.id === cicloId);
+    setCicloSeleccionado(ciclo || null);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (preguntasSeleccionadas.length === 0) {
-      setError('Debes seleccionar al menos una pregunta');
+      setError('Selecciona al menos una pregunta');
       return;
     }
 
-    if (!formData.titulo || !formData.fechaInicio || !formData.fechaFin) {
-      setError('Todos los campos marcados con * son obligatorios');
+    if (!formData.titulo) {
+      setError('El título de la encuesta es obligatorio');
+      return;
+    }
+
+    if (!cicloSeleccionado) {
+      setError('Debes seleccionar un ciclo para la encuesta');
+      return;
+    }
+
+    if (!cicloSeleccionado.fecha_inicio || !cicloSeleccionado.fecha_fin) {
+      setError('El ciclo seleccionado no tiene fechas configuradas');
       return;
     }
 
@@ -89,8 +133,8 @@ export const CrearEncuesta = () => {
         categorias: categoriasParaEncuesta,
         preguntas: preguntasParaEncuesta,
         activa: true,
-        fechaInicio: formData.fechaInicio,
-        fechaFin: formData.fechaFin,
+        fechaInicio: cicloSeleccionado.fecha_inicio,
+        fechaFin: cicloSeleccionado.fecha_fin,
         rolDestinatario: formData.rolDestinatario
       });
 
@@ -106,7 +150,6 @@ export const CrearEncuesta = () => {
       <Row>
         <Col>
           <h1 className="h2">Crear Nueva Encuesta</h1>
-          <p className="text-muted">Configura una nueva encuesta seleccionando preguntas por categorías</p>
         </Col>
       </Row>
 
@@ -145,39 +188,86 @@ export const CrearEncuesta = () => {
                 <Row>
                   <Col md={6}>
                     <Form.Group className="mb-3">
-                      <Form.Label>Fecha de Inicio *</Form.Label>
-                      <Form.Control
-                        type="date"
-                        value={formData.fechaInicio}
-                        onChange={(e) => setFormData({ ...formData, fechaInicio: e.target.value })}
-                        required
-                      />
+                      <Form.Label>Seleccionar Ciclo *</Form.Label>
+                      {loadingCiclos ? (
+                        <div className="text-muted">Cargando ciclos...</div>
+                      ) : ciclos.length === 0 ? (
+                        <Alert variant="warning" className="mb-0">
+                          No hay ciclos disponibles. Primero crea un ciclo en la sección de Gestión de Ciclos.
+                        </Alert>
+                      ) : (
+                        <Form.Select
+                          value={cicloSeleccionado?.id || ''}
+                          onChange={(e) => handleCicloChange(Number(e.target.value))}
+                          required
+                        >
+                          <option value="">Selecciona un ciclo...</option>
+                          {ciclos.map((ciclo) => (
+                            <option key={ciclo.id} value={ciclo.id}>
+                              {ciclo.nombre} 
+                              {ciclo.activo && ' ✅'} 
+                              {ciclo.fecha_inicio && ciclo.fecha_fin && 
+                                ` (${new Date(ciclo.fecha_inicio).toLocaleDateString()} - ${new Date(ciclo.fecha_fin).toLocaleDateString()})`
+                              }
+                            </option>
+                          ))}
+                        </Form.Select>
+                      )}
                     </Form.Group>
                   </Col>
                   <Col md={6}>
                     <Form.Group className="mb-3">
-                      <Form.Label>Fecha de Fin *</Form.Label>
-                      <Form.Control
-                        type="date"
-                        value={formData.fechaFin}
-                        onChange={(e) => setFormData({ ...formData, fechaFin: e.target.value })}
-                        required
-                      />
+                      <Form.Label>Destinatario</Form.Label>
+                      <Form.Select
+                        value={formData.rolDestinatario}
+                        onChange={(e) => setFormData({ ...formData, rolDestinatario: e.target.value })}
+                      >
+                        <option value="alumno">Alumnos</option>
+                        <option value="docente">Docentes</option>
+                        <option value="todos">Todos</option>
+                      </Form.Select>
                     </Form.Group>
                   </Col>
                 </Row>
 
-                <Form.Group className="mb-3">
-                  <Form.Label>Destinatario</Form.Label>
-                  <Form.Select
-                    value={formData.rolDestinatario}
-                    onChange={(e) => setFormData({ ...formData, rolDestinatario: e.target.value })}
-                  >
-                    <option value="alumno">Alumnos</option>
-                    <option value="docente">Docentes</option>
-                    <option value="todos">Todos</option>
-                  </Form.Select>
-                </Form.Group>
+                {/* Información del ciclo seleccionado */}
+                {cicloSeleccionado && (
+                  <Card className="mt-3 border-info">
+                    <Card.Body className="py-2">
+                      <Row>
+                        <Col md={6}>
+                          <small className="text-muted">Ciclo seleccionado:</small>
+                          <div>
+                            <strong>{cicloSeleccionado.nombre}</strong>
+                            {cicloSeleccionado.activo && (
+                              <Badge bg="success" className="ms-2">Activo</Badge>
+                            )}
+                          </div>
+                        </Col>
+                        <Col md={3}>
+                          <small className="text-muted">Inicio:</small>
+                          <div>
+                            {cicloSeleccionado.fecha_inicio ? (
+                              <strong>{new Date(cicloSeleccionado.fecha_inicio).toLocaleDateString()}</strong>
+                            ) : (
+                              <span className="text-warning">No configurado</span>
+                            )}
+                          </div>
+                        </Col>
+                        <Col md={3}>
+                          <small className="text-muted">Fin:</small>
+                          <div>
+                            {cicloSeleccionado.fecha_fin ? (
+                              <strong>{new Date(cicloSeleccionado.fecha_fin).toLocaleDateString()}</strong>
+                            ) : (
+                              <span className="text-warning">No configurado</span>
+                            )}
+                          </div>
+                        </Col>
+                      </Row>
+                    </Card.Body>
+                  </Card>
+                )}
               </Card.Body>
             </Card>
           </Col>
@@ -188,6 +278,14 @@ export const CrearEncuesta = () => {
                 <h5 className="mb-0">Resumen</h5>
               </Card.Header>
               <Card.Body>
+                <div className="mb-3">
+                  <strong>Ciclo:</strong>{' '}
+                  {cicloSeleccionado ? (
+                    <Badge bg="info">{cicloSeleccionado.nombre}</Badge>
+                  ) : (
+                    <span className="text-muted">No seleccionado</span>
+                  )}
+                </div>
                 <div className="mb-3">
                   <strong>Categorías seleccionadas:</strong>{' '}
                   <Badge bg="primary">{categoriasSeleccionadas.length}</Badge>
@@ -200,7 +298,7 @@ export const CrearEncuesta = () => {
                   variant="primary" 
                   type="submit" 
                   className="w-100"
-                  disabled={preguntasSeleccionadas.length === 0}
+                  disabled={preguntasSeleccionadas.length === 0 || !cicloSeleccionado}
                 >
                   <i className="bi bi-check-circle me-2"></i>
                   Crear Encuesta

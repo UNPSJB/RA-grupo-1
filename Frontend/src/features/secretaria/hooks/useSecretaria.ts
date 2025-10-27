@@ -9,6 +9,7 @@ export const useSecretaria = () => {
   const [estadisticas, setEstadisticas] = useState<EstadisticasEncuesta | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const cargarDatosIniciales = async () => {
     try {
@@ -66,6 +67,7 @@ export const useSecretaria = () => {
     try {
       const nuevaEncuesta = await encuestasService.crearEncuesta(encuestaData);
       setEncuestas(prev => [...prev, nuevaEncuesta]);
+      setSuccess('Encuesta creada exitosamente');
       return nuevaEncuesta;
     } catch (err) {
       setError('Error al crear la encuesta');
