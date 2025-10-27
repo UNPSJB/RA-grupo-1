@@ -1,9 +1,9 @@
 import { Container, Spinner, Alert, Button } from "react-bootstrap";
 import CicloCard from "./CicloCard"; 
 import { useCiclos } from "../hooks/useCiclos"; 
-import { Ciclo } from "../types"; 
+import { Ciclo } from "../types/ciclosTypes"; 
 
-const CiclosPage: React.FC = () => {
+export const CiclosPage: React.FC = () => {
   const { ciclos, loading, error, updateCicloHook, createCicloHook, fetchCiclos } = useCiclos();
 
   const handleUpdate = async (id: number, formData: Partial<Ciclo>) => {

@@ -5,6 +5,7 @@ from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from src.encuestas_completadas.models import EncuestaCompletada
+    from src.preguntas.models import Pregunta
 
 class Respuesta(ModeloBase):
     __tablename__ = "respuestas"
@@ -20,6 +21,6 @@ class Respuesta(ModeloBase):
 
     
     # RELACIONES 
-    # pregunta: Mapped["Pregunta"] = relationship("Pregunta")
+    # pregunta: Mapped["Pregunta"] = relationship("Pregunta", back_populates="respuestas")  
     # alumno = relationship("Alumno", back_populates="respuestas", lazy="select")
     # opcion: Mapped["Opcion"] = relationship("Opcion")

@@ -3,7 +3,7 @@ import { Container, Row, Col, Card, Form, Button, Alert, Badge, Accordion } from
 import { useNavigate } from 'react-router-dom';
 import { useSecretaria } from '../hooks/useSecretaria';
 import { Pregunta } from '../types/encuestasTypes';
-import { Ciclo } from '../../ciclos/types/index';
+import { Ciclo } from '../../ciclos/types/ciclosTypes';
 
 export const CrearEncuesta = () => {
   const { preguntas, categorias, crearEncuesta } = useSecretaria();

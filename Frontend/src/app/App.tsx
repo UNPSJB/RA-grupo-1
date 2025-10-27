@@ -10,14 +10,16 @@ import { PanelDocente } from '../features/docentes/components/PanelDocente';
 import { MisAsignaturas } from '../features/docentes/components/MisAsignaturas';
 import { DetalleAsignatura} from '../features/docentes/components/DetalleAsignatura';
 import { DepartamentoLayout } from '../features/departamentos/components/DepartamentoLayout';
+import { PanelDepartamento } from '../features/departamentos/components/PanelDepartamento'
 import { GestionPreguntas } from '../features/departamentos/components/GestionPreguntas';
 import { GestionEncuestas } from '../features/departamentos/components/GestionEncuestas';
 import { SecretariaLayout } from '../features/secretaria/components/SecretariaLayout';
 import { CrearEncuesta } from '../features/secretaria/components/CrearEncuesta';
 import { PanelEncuestas } from '../features/secretaria/components/PanelEncuestas';
 import { EstadisticasEncuesta } from '../features/secretaria/components/EstadisticasEncuesta';
+import { CiclosPage } from "../features/ciclos/components/CiclosPage";
+
 //import SecretariaPreguntas from "../features/preguntas/components/SecretariaPreguntas";
-import CiclosPage from "../features/ciclos/components/CiclosPage";
 
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -43,6 +45,7 @@ function App() {
       </Route>
 
       <Route path="/departamento" element={<DepartamentoLayout />}>
+        <Route index element={<PanelDepartamento />} />
         <Route path="gestion-preguntas" element={<GestionPreguntas />} />
         <Route path="gestion-encuestas" element={<GestionEncuestas />} />
       </Route>
