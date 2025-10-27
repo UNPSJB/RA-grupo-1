@@ -19,6 +19,7 @@ from src.encuestas.models import Encuesta
 from src.informes.models import Informe
 from src.respuestas.models import Respuesta
 from src.encuestas_completadas.models import EncuestaCompletada
+from src.ciclos.models import CicloEncuesta
 
 # Tablas de vinculación van al final
 from src.vinculaciones.models import alumno_asignatura, pregunta_opcion
@@ -36,6 +37,7 @@ from src.opciones.router import router as opciones_router
 from src.respuestas.router import router as respuestas_router
 from src.roles.router import router as roles_router
 from src.preguntas.router import router as preguntas_router
+from src.ciclos.router import router as ciclos_router
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -77,6 +79,7 @@ app.include_router(personas_router)
 app.include_router(preguntas_router)
 app.include_router(respuestas_router)
 app.include_router(roles_router)
+app.include_router(ciclos_router)
 
 @app.get("/")
 def read_root():
