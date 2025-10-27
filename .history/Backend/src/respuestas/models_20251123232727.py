@@ -20,6 +20,20 @@ class Respuesta(ModeloBase):
     ciclo_id: Mapped[int] = mapped_column(ForeignKey("ciclos_encuesta.id"))
 
 
+<<<<<<< HEAD
+    opcion_seleccionada = Column(String(255), nullable=True) 
+    texto_respuesta = Column(Text, nullable=True)             
+    subrespuestas = Column(JSON, nullable=True)               
+
+    fecha_respuesta = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    
+    # RELACIONES 
+    pregunta = relationship("Pregunta", back_populates="respuestas") 
+    alumno = relationship("Alumno", back_populates="respuestas", lazy="select")
+    opcion: Mapped["Opcion"] = relationship("Opcion")
+    encuesta_finalizada: Mapped["EncuestaFinalizada"] = relationship("EncuestaFinalizada", back_populates="respuestas")
+    ciclo: Mapped["CicloEncuesta"] = relationship("CicloEncuesta", back_populates="respuestas")
+=======
     #Relaciones 
     #alumno: Mapped["src.alumnos.models.Alumno"] = relationship(
     #"src.alumnos.models.Alumno",
@@ -28,3 +42,4 @@ class Respuesta(ModeloBase):
     #alumno: Mapped["Alumno"] = relationship("Alumno", back_populates="respuestas")
     pregunta: Mapped["Pregunta"] = relationship("Pregunta", back_populates="respuestas")
     opcion: Mapped["Opcion"] = relationship("Opcion")
+>>>>>>> c8aef30 (cambios de paneldocente)

@@ -17,10 +17,18 @@ class Alumno(ModeloBase):
     clave: Mapped[str] = mapped_column(String, index=True)
     persona: Mapped["src.personas.models.Persona"] = relationship("src.personas.models.Persona", back_populates="alumno")
 
+<<<<<<< HEAD
+    # RELACIONES 
+    encuestas_finalizadas: Mapped[List["EncuestaFinalizada"]] = relationship(
+        "EncuestaFinalizada", 
+        back_populates="alumno"
+    )
+=======
     #respuestas: Mapped[List["src.respuestas.models.Respuesta"]] = relationship(
     #    "src.respuestas.models.Respuesta",
     #back_populates="alumno"
     #)
+>>>>>>> c8aef30 (cambios de paneldocente)
     
     asignaturas: Mapped[List["Asignatura"]] = relationship(
         "Asignatura",

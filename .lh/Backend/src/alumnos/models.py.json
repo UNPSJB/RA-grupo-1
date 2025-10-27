@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Backend/src/alumnos/models.py",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1763951613528,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1763951613528,
+            "name": "Commit-0",
+            "content": "from sqlalchemy import Integer, String, ForeignKey\r\nfrom sqlalchemy.orm import Mapped, mapped_column, relationship\r\nfrom src.models import ModeloBase\r\nfrom typing import Optional, List, TYPE_CHECKING\r\nfrom src.vinculaciones.models import asignatura_alumno, alumno_encuesta\r\n\r\nif TYPE_CHECKING:\r\n    from src.respuestas.models import Respuesta\r\n\r\nclass Alumno(ModeloBase):\r\n    __tablename__ = \"alumnos\"\r\n\r\n    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)\r\n    persona_id: Mapped[int] = mapped_column(ForeignKey(\"personas.id\"), unique=True)\r\n    CUIL: Mapped[str] = mapped_column(String, index=True)\r\n    usuario: Mapped[str] = mapped_column(String, index=True)\r\n    clave: Mapped[str] = mapped_column(String, index=True)\r\n    persona: Mapped[\"src.personas.models.Persona\"] = relationship(\"src.personas.models.Persona\", back_populates=\"alumno\")\r\n\r\n    #respuestas: Mapped[List[\"src.respuestas.models.Respuesta\"]] = relationship(\r\n    #    \"src.respuestas.models.Respuesta\",\r\n    #back_populates=\"alumno\"\r\n    #)\r\n    \r\n    asignaturas: Mapped[List[\"Asignatura\"]] = relationship(\r\n        \"Asignatura\",\r\n        secondary=asignatura_alumno,\r\n        back_populates=\"alumnos\"\r\n    )\r\n\r\n    encuestas: Mapped[List[\"Encuesta\"]] = relationship(\r\n        \"Encuesta\",\r\n        secondary=alumno_encuesta,\r\n        back_populates=\"alumnos\"\r\n    )\r\n\r\n    respuestas = relationship(\"Respuesta\", back_populates=\"alumno\", lazy=\"select\")"
+        }
+    ]
+}

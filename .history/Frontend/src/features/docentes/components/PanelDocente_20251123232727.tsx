@@ -1,8 +1,15 @@
+<<<<<<< HEAD
+import React, { useEffect, useState } from 'react';
+import { docenteService, DocenteStats } from '../services/docenteService'; 
+import { getInformes, Informe } from "../services/informeService";
+import '../styles/PanelDocente.css'; 
+=======
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { docenteService, DocenteStats } from '../services/docenteService';
 import { useEffect, useState } from 'react';
 import { getInformes, Informe } from "../services/informesService";
+>>>>>>> c8aef30 (cambios de paneldocente)
 
 export const PanelDocente: React.FC = () => {
   // DATOS HARCODEADOS (Idealmente vendrían de una API)
@@ -28,8 +35,22 @@ export const PanelDocente: React.FC = () => {
     fetchInformes();
   }, []);
 
+<<<<<<< HEAD
+  const getStatusColor = (estado: string) => {
+    switch(estado.toLowerCase()) {
+      case 'aprobado': return 'bg-success bg-opacity-10 text-success';
+      case 'pendiente': return 'bg-warning bg-opacity-10 text-warning';
+      default: return 'bg-secondary bg-opacity-10 text-secondary';
+    }
+  };
+
+   return (
+    <div className="container-fluid py-4">
+      {/* Sección de Bienvenida Rápida */}
+=======
   return (
     <div className="container-fluid">
+>>>>>>> c8aef30 (cambios de paneldocente)
       <div className="row mb-4">
         <div className="col-12">
             <h3 className="text-dark fw-bold">Panel de Control</h3>

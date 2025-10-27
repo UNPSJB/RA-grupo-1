@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Backend/src/respuestas/models.py",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1763951783443,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1763951783443,
+            "name": "Commit-0",
+            "content": "from sqlalchemy import Integer, ForeignKey, Text, String, Column, JSON, DateTime, func\r\nfrom sqlalchemy.orm import Mapped, mapped_column, relationship\r\nfrom src.models import ModeloBase\r\nfrom typing import Optional, TYPE_CHECKING\r\n\r\nif TYPE_CHECKING:\r\n    from src.encuesta_finalizada.models import EncuestaFinalizada\r\n    from src.preguntas.models import Pregunta\r\n    from src.ciclos.models import CicloEncuesta\r\n\r\nclass Respuesta(ModeloBase):\r\n    __tablename__ = \"respuestas\"\r\n\r\n    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)\r\n    alumno_id: Mapped[int] = mapped_column(Integer, ForeignKey(\"alumnos.id\"))\r\n    pregunta_id: Mapped[int] = mapped_column(ForeignKey(\"preguntas.id\"))\r\n    respuesta_texto: Mapped[str | None] = mapped_column(String(150), nullable=True)\r\n    opcion_id: Mapped[int] = mapped_column(ForeignKey(\"opciones.id\"), nullable=True)\r\n    encuesta_finalizada_id: Mapped[int] = mapped_column(ForeignKey(\"encuestas_finalizadas.id\"))\r\n    ciclo_id: Mapped[int] = mapped_column(ForeignKey(\"ciclos_encuesta.id\"))\r\n\r\n\r\n    #Relaciones \r\n    #alumno: Mapped[\"src.alumnos.models.Alumno\"] = relationship(\r\n    #\"src.alumnos.models.Alumno\",\r\n    #back_populates=\"respuestas\"\r\n    #)\r\n    #alumno: Mapped[\"Alumno\"] = relationship(\"Alumno\", back_populates=\"respuestas\")\r\n    pregunta: Mapped[\"Pregunta\"] = relationship(\"Pregunta\", back_populates=\"respuestas\")\r\n    opcion: Mapped[\"Opcion\"] = relationship(\"Opcion\")\r\n"
+        }
+    ]
+}

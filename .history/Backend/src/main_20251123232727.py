@@ -17,7 +17,22 @@ from src.opciones.models import Opcion
 from src.preguntas.models import Pregunta
 from src.asignaturas.models import Asignatura
 from src.encuestas.models import Encuesta
+<<<<<<< HEAD
+from src.informe_catedra.models import InformeCatedra
+from src.respuestas.models import Respuesta
+from src.categorias.models import Categoria
+from src.encuesta_finalizada.models import EncuestaFinalizada
+from src.ciclos.models import CicloEncuesta
+from src.indicadores.models import IndicadoresInforme
+from src.informe_catedra_finalizado.models import InformeCatedraFinalizado
+from src.resultado_informe.models import ResultadoInforme
+from src.informe_sintetico_finalizado.models import InformeSinteticoFinalizado
+from src.pregunta_informe_sintetico.models import PreguntaInformeSintetico
+from src.respuestas_informe.models import RespuestaInforme
+from src.informe_sintetico.models import InformeSintetico
+=======
 from src.informes.models import Informe
+>>>>>>> c8aef30 (cambios de paneldocente)
 
 
 # Tablas de vinculación van al final
