@@ -20,6 +20,10 @@ class Respuesta(Base):
     progreso: Mapped[int] = mapped_column(Integer, default=0)
 
     #Relaciones 
-    alumno: Mapped["Alumno"] = relationship("Alumno", back_populates="respuestas")
+    #alumno: Mapped["src.alumnos.models.Alumno"] = relationship(
+    #"src.alumnos.models.Alumno",
+    #back_populates="respuestas"
+    #)
+    #alumno: Mapped["Alumno"] = relationship("Alumno", back_populates="respuestas")
     pregunta: Mapped["Pregunta"] = relationship("Pregunta", back_populates="respuestas")
     opcion: Mapped["Opcion"] = relationship("Opcion")

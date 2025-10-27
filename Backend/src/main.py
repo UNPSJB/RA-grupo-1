@@ -11,13 +11,14 @@ from src.departamentos.models import Departamento
 from src.carreras.models import Carrera
 from src.personas.models import Persona
 from src.docentes.models import Docente
+from src.respuestas.models import Respuesta
 from src.alumnos.models import Alumno
 from src.opciones.models import Opcion
 from src.preguntas.models import Pregunta
 from src.asignaturas.models import Asignatura
 from src.encuestas.models import Encuesta
 from src.informes.models import Informe
-from src.respuestas.models import Respuesta
+
 
 # Tablas de vinculación van al final
 from src.vinculaciones.models import alumno_asignatura, pregunta_opcion

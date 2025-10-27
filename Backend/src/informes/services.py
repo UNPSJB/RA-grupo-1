@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from src.informes.models import Informe
 from src.informes import schemas, exceptions
 from typing import List
+from src.informes.schemas import InformeCreate
 
 def listar_informes(db:Session) -> List[schemas.Informe]:
     return db.scalars(select(Informe)).all()

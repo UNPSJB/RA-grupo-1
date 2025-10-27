@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { docenteService, DocenteStats } from '../services/docenteService';
+import { useEffect, useState } from 'react';
+import { getInformes, Informe } from "../services/informesService";
 
 export const PanelDocente: React.FC = () => {
   // Datos de ejemplo aca despues se llama a la api
@@ -11,6 +13,20 @@ export const PanelDocente: React.FC = () => {
     encuestasCompletadas: 85,
     evaluacionPromedio: 3.7
   };
+
+  const [informes, setInformes] = useState<Informe[]>([]);
+
+  useEffect(() => {
+    const fetchInformes = async () => {
+      try{
+        const data = await getInformes();
+        setInformes(data);
+      } catch (error) {
+        console.error("Error al obtener informes:", error);
+      }
+    };
+    fetchInformes();
+  }, []);
 
   return (
     <div className="container-fluid">
@@ -133,6 +149,30 @@ export const PanelDocente: React.FC = () => {
                   <span>Materias sin evaluaciones</span>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+        <div className="col-lg-12 mb-4">
+          <div className="card border-0 shadow-sm h-100">
+            <div className="card-header bg-white border-0">
+              <h5 className="card-title mb-0">
+                <i className="bi bi-journal-text me-2 text-primary"></i>
+                Informes del Docente
+              </h5>
+            </div>
+            <div className="card-body">
+              {informes.length > 0 ? (
+                <ul className="list-group list-group-flush">
+                  {informes.map((inf) => (
+                    <li key={inf.id} className="list-group-item border-0 px-0 py-2">
+                      <strong>{inf.codigo_actividad_curricular}</strong> —{" "}
+                      {inf.docente_responsable} ({inf.estado})
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-muted">No hay informes registrados.</p>
+              )}
             </div>
           </div>
         </div>
