@@ -16,6 +16,8 @@ import { SecretariaLayout } from '../features/secretaria/components/SecretariaLa
 import { CrearEncuesta } from '../features/secretaria/components/CrearEncuesta';
 import { PanelEncuestas } from '../features/secretaria/components/PanelEncuestas';
 import { EstadisticasEncuesta } from '../features/secretaria/components/EstadisticasEncuesta';
+//import SecretariaPreguntas from "../features/preguntas/components/SecretariaPreguntas";
+import CiclosPage from "../features/ciclos/components/CiclosPage";
 
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -49,6 +51,8 @@ function App() {
         <Route path="crear-encuesta" element={<CrearEncuesta />} />
         <Route path="estadisticas/:encuestaId" element={<EstadisticasEncuesta />} />
         <Route path="panel-encuestas" element={<PanelEncuestas />} />
+        <Route index element={<CiclosPage />} />
+        <Route path="ciclos" element={<CiclosPage />} />
       </Route>
     </Routes>
   );
