@@ -1,96 +1,73 @@
 import { useState, useEffect } from 'react';
 import { 
   Container, Row, Col, Card, Table, Button, 
-  Form, Modal, Spinner, Alert, Badge 
+  Form, Modal, Spinner, Alert, Badge, Accordion
 } from 'react-bootstrap';
-import '../styles/Departamento.css';
-
-interface Pregunta {
-  id: number;
-  texto: string;
-  tipo: 'multiple' | 'texto' | 'escala';
-  categoria: string;
-  activa: boolean;
-  fechaCreacion: string;
-  orden: number;
-}
+import { useSecretaria } from '../../secretaria/hooks/useSecretaria';
+import { Pregunta, TipoPregunta, CategoriaPregunta } from '../../secretaria/types/encuestasTypes';
 
 export const GestionPreguntas = () => {
-  const [preguntas, setPreguntas] = useState<Pregunta[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { 
+    preguntas, 
+    categorias, 
+    crearPregunta, 
+    eliminarPregunta, 
+    loading, 
+    error,
+    recargarDatos 
+  } = useSecretaria();
+
+  // Estados para gestión
   const [showModal, setShowModal] = useState(false);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [preguntaEditando, setPreguntaEditando] = useState<Pregunta | null>(null);
+  const [preguntaAEliminar, setPreguntaAEliminar] = useState<Pregunta | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   // Estados para el formulario
   const [textoPregunta, setTextoPregunta] = useState('');
-  const [tipoPregunta, setTipoPregunta] = useState('multiple');
-  const [categoriaPregunta, setCategoriaPregunta] = useState('docente');
+  const [tipoPregunta, setTipoPregunta] = useState<TipoPregunta>('abierta');
+  const [categoriaId, setCategoriaId] = useState<number>(1);
+  const [opciones, setOpciones] = useState<string[]>(['', '']);
   const [activaPregunta, setActivaPregunta] = useState(true);
 
-  // Cargar preguntas
+  // Cargar datos al montar
   useEffect(() => {
-    const fetchPreguntas = async () => {
-      try {
-        setLoading(true);
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Datos de ejemplo
-        const preguntasData: Pregunta[] = [
-          {
-            id: 1,
-            texto: "¿El docente explica los conceptos con claridad?",
-            tipo: 'escala',
-            categoria: 'docente',
-            activa: true,
-            fechaCreacion: '2024-01-15',
-            orden: 1
-          },
-          {
-            id: 2,
-            texto: "¿El material de estudio es adecuado?",
-            tipo: 'escala',
-            categoria: 'material',
-            activa: true,
-            fechaCreacion: '2024-01-15',
-            orden: 2
-          },
-          {
-            id: 3,
-            texto: "¿Qué aspectos mejorarías del curso?",
-            tipo: 'texto',
-            categoria: 'sugerencias',
-            activa: true,
-            fechaCreacion: '2024-01-20',
-            orden: 3
-          },
-          {
-            id: 4,
-            texto: "¿El ritmo de la clase es adecuado?",
-            tipo: 'escala',
-            categoria: 'docente',
-            activa: false,
-            fechaCreacion: '2024-01-10',
-            orden: 4
-          }
-        ];
-        
-        setPreguntas(preguntasData);
-        setLoading(false);
-      } catch (err) {
-        setError("Error al cargar las preguntas");
-        setLoading(false);
-      }
-    };
-
-    fetchPreguntas();
+    recargarDatos();
   }, []);
 
+  // Limpiar mensajes después de un tiempo
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => setSuccess(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
+
+  // Funciones para opciones de preguntas cerradas
+  const agregarOpcion = () => {
+    setOpciones([...opciones, '']);
+  };
+
+  const eliminarOpcion = (index: number) => {
+    if (opciones.length > 2) {
+      setOpciones(opciones.filter((_, i) => i !== index));
+    }
+  };
+
+  const actualizarOpcion = (index: number, valor: string) => {
+    const nuevasOpciones = [...opciones];
+    nuevasOpciones[index] = valor;
+    setOpciones(nuevasOpciones);
+  };
+
+  // Modal handlers
   const abrirModalNuevaPregunta = () => {
     setPreguntaEditando(null);
     setTextoPregunta('');
-    setTipoPregunta('multiple');
-    setCategoriaPregunta('docente');
+    setTipoPregunta('abierta');
+    setCategoriaId(1);
+    setOpciones(['', '']);
     setActivaPregunta(true);
     setShowModal(true);
   };
@@ -99,75 +76,105 @@ export const GestionPreguntas = () => {
     setPreguntaEditando(pregunta);
     setTextoPregunta(pregunta.texto);
     setTipoPregunta(pregunta.tipo);
-    setCategoriaPregunta(pregunta.categoria);
+    setCategoriaId(pregunta.categoriaId);
+    setOpciones(pregunta.opciones || ['', '']);
     setActivaPregunta(pregunta.activa);
     setShowModal(true);
   };
 
-  const guardarPregunta = () => {
-    // Aca van los datos desde la API
-    if (preguntaEditando) {
-      // Editar pregunta existente
-      setPreguntas(prev => prev.map(p => 
-        p.id === preguntaEditando.id 
-          ? { ...p, texto: textoPregunta, tipo: tipoPregunta as any, categoria: categoriaPregunta, activa: activaPregunta }
-          : p
-      ));
-    } else {
-      // Nueva pregunta
-      const nuevaPregunta: Pregunta = {
-        id: Math.max(...preguntas.map(p => p.id)) + 1,
-        texto: textoPregunta,
-        tipo: tipoPregunta as any,
-        categoria: categoriaPregunta,
-        activa: activaPregunta,
-        fechaCreacion: new Date().toISOString().split('T')[0],
-        orden: preguntas.length + 1
-      };
-      setPreguntas(prev => [...prev, nuevaPregunta]);
+  // Función para manejar el click de eliminar
+  const handleEliminarClick = (pregunta: Pregunta) => {
+    console.log('🔄 Intentando eliminar pregunta ID:', pregunta.id);
+    if (!pregunta.id || isNaN(pregunta.id)) {
+      console.error('❌ ID de pregunta inválido:', pregunta.id);
+      setError('ID de pregunta inválido');
+      return;
+    }
+    setPreguntaAEliminar(pregunta);
+    setShowConfirmDelete(true);
+  };
+
+  // Función para confirmar eliminación
+  const confirmarEliminacion = async () => {
+    if (preguntaAEliminar) {
+      try {
+        console.log('✅ Confirmando eliminación de pregunta ID:', preguntaAEliminar.id);
+        await eliminarPregunta(preguntaAEliminar.id);
+        
+        setSuccess('Pregunta eliminada exitosamente');
+        setShowConfirmDelete(false);
+        setPreguntaAEliminar(null);
+        
+        // Recargar datos para obtener la lista actualizada
+        recargarDatos();
+      } catch (err) {
+        console.error('❌ Error al eliminar pregunta:', err);
+        setError('Error al eliminar la pregunta');
+      }
+    }
+  };
+
+  // Validación del formulario
+  const validarFormulario = (): boolean => {
+    if (!textoPregunta.trim()) {
+      return false;
     }
     
-    setShowModal(false);
+    if (tipoPregunta === 'cerrada') {
+      const opcionesValidas = opciones.filter(op => op.trim() !== '');
+      return opcionesValidas.length >= 2;
+    }
+    
+    return true;
   };
 
-  const toggleActivaPregunta = (id: number) => {
-    setPreguntas(prev => prev.map(p => 
-      p.id === id ? { ...p, activa: !p.activa } : p
-    ));
-  };
+  // Guardar pregunta
+  const guardarPregunta = async () => {
+    if (!validarFormulario()) {
+      return;
+    }
 
-  const eliminarPregunta = (id: number) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar esta pregunta?')) {
-      setPreguntas(prev => prev.filter(p => p.id !== id));
+    try {
+      await crearPregunta(
+        textoPregunta,
+        tipoPregunta,
+        tipoPregunta === 'cerrada' ? opciones.filter(op => op.trim() !== '') : undefined,
+        categoriaId
+      );
+
+      setShowModal(false);
+      setSuccess(preguntaEditando ? 'Pregunta actualizada exitosamente' : 'Pregunta creada exitosamente');
+      
+      // Recargar datos para obtener la lista actualizada
+      recargarDatos();
+    } catch (err) {
+      // El error ya se maneja en el hook
     }
   };
 
-  const getTipoBadgeVariant = (tipo: string) => {
-    switch (tipo) {
-      case 'escala': return 'primary';
-      case 'multiple': return 'success';
-      case 'texto': return 'info';
-      default: return 'secondary';
-    }
+  // Helper functions
+  const getTipoBadgeVariant = (tipo: TipoPregunta) => {
+    return tipo === 'abierta' ? 'primary' : 'success';
   };
 
-  const getTipoText = (tipo: string) => {
-    switch (tipo) {
-      case 'escala': return 'Escala';
-      case 'multiple': return 'Múltiple';
-      case 'texto': return 'Texto';
-      default: return tipo;
-    }
+  const getTipoText = (tipo: TipoPregunta) => {
+    return tipo === 'abierta' ? 'Abierta' : 'Cerrada';
   };
 
-  const getCategoriaText = (categoria: string) => {
-    switch (categoria) {
-      case 'docente': return 'Docente';
-      case 'material': return 'Material';
-      case 'sugerencias': return 'Sugerencias';
-      default: return categoria;
-    }
+  const getCategoriaNombre = (categoriaId: number) => {
+    const categoria = categorias.find(c => c.id === categoriaId);
+    return categoria ? `${categoria.codigo}: ${categoria.nombre}` : `Categoría ${categoriaId}`;
   };
+
+  const getEstadoBadgeVariant = (activa: boolean) => {
+    return activa ? 'success' : 'secondary';
+  };
+
+  // Agrupar preguntas por categoría para vista de acordeón
+  const preguntasAgrupadas = categorias.map(categoria => ({
+    ...categoria,
+    preguntas: preguntas.filter(p => p.categoriaId === categoria.id)
+  }));
 
   if (loading) {
     return (
@@ -176,93 +183,133 @@ export const GestionPreguntas = () => {
           <Spinner animation="border" role="status" className="mb-3" variant="primary">
             <span className="visually-hidden">Cargando...</span>
           </Spinner>
-          <p className="loading-text">Cargando preguntas...</p>
+          <p>Cargando preguntas...</p>
         </div>
       </Container>
     );
   }
 
-  if (error) {
-    return (
-      <Container className="mt-4">
-        <Alert variant="danger" className="error-alert">
-          <Alert.Heading>Error al cargar las preguntas</Alert.Heading>
-          <p className="mb-3">{error}</p>
-        </Alert>
-      </Container>
-    );
-  }
-
   return (
-    <Container className="departamento-container">  
+    <Container fluid className="py-4">
+      <Row className="mb-4">
+        <Col>
+          <h1 className="h2">Gestión de Preguntas</h1>
+          <p className="text-muted">Administrar todas las preguntas del sistema</p>
+        </Col>
+        <Col xs="auto">
+          <Button variant="primary" onClick={abrirModalNuevaPregunta}>
+            <i className="bi bi-plus-circle me-2"></i>
+            Nueva Pregunta
+          </Button>
+        </Col>
+      </Row>
+
+      {/* Alertas */}
+      {error && <Alert variant="danger">{error}</Alert>}
+      {success && <Alert variant="success">{success}</Alert>}
+
+      {/* Vista de Acordeón por Categorías */}
       <Card>
         <Card.Header>
           <h5 className="mb-0">
             <i className="bi bi-list-ul me-2"></i>
-            Lista de Preguntas ({preguntas.length})
+            Preguntas Organizadas por Categorías
           </h5>
+          <small className="text-muted">
+            {preguntas.length} preguntas disponibles en el sistema
+          </small>
         </Card.Header>
         <Card.Body className="p-0">
-          <Table responsive hover>
-            <thead className="table-light">
-              <tr>
-                <th>Orden</th>
-                <th>Pregunta</th>
-                <th>Tipo</th>
-                <th>Categoría</th>
-                <th>Estado</th>
-                <th>Fecha</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {preguntas.map((pregunta) => (
-                <tr key={pregunta.id}>
-                  <td>
-                    <Badge bg="secondary">{pregunta.orden}</Badge>
-                  </td>
-                  <td className="texto-pregunta">{pregunta.texto}</td>
-                  <td>
-                    <Badge bg={getTipoBadgeVariant(pregunta.tipo)}>
-                      {getTipoText(pregunta.tipo)}
-                    </Badge>
-                  </td>
-                  <td>{getCategoriaText(pregunta.categoria)}</td>
-                  <td>
-                    <Form.Check
-                      type="switch"
-                      checked={pregunta.activa}
-                      onChange={() => toggleActivaPregunta(pregunta.id)}
-                      label={pregunta.activa ? 'Activa' : 'Inactiva'}
-                    />
-                  </td>
-                  <td>
-                    <small className="text-muted">
-                      {new Date(pregunta.fechaCreacion).toLocaleDateString('es-ES')}
-                    </small>
-                  </td>
-                  <td>
-                    <div className="d-flex gap-2">
-                      <Button
-                        variant="outline-primary"
-                        size="sm"
-                        onClick={() => abrirModalEditarPregunta(pregunta)}
-                      >
-                        <i className="bi bi-pencil"></i>
-                      </Button>
-                      <Button
-                        variant="outline-danger"
-                        size="sm"
-                        onClick={() => eliminarPregunta(pregunta.id)}
-                      >
-                        <i className="bi bi-trash"></i>
-                      </Button>
+          {preguntas.length === 0 ? (
+            <div className="p-4 text-center">
+              <Alert variant="info" className="mb-0">
+                No hay preguntas disponibles. Crea la primera pregunta.
+              </Alert>
+            </div>
+          ) : (
+            <Accordion defaultActiveKey="0">
+              {preguntasAgrupadas.map((categoria, index) => (
+                <Accordion.Item key={categoria.id} eventKey={index.toString()}>
+                  <Accordion.Header>
+                    <div className="d-flex align-items-center">
+                      <strong>{categoria.codigo}: {categoria.nombre}</strong>
+                      <Badge bg="secondary" className="ms-2">
+                        {categoria.preguntas.length} preguntas
+                      </Badge>
                     </div>
-                  </td>
-                </tr>
+                  </Accordion.Header>
+                  <Accordion.Body>
+                    {categoria.preguntas.length === 0 ? (
+                      <Alert variant="info" className="mb-0">
+                        No hay preguntas en esta categoría
+                      </Alert>
+                    ) : (
+                      <Row>
+                        {categoria.preguntas.map((pregunta) => (
+                          <Col key={pregunta.id} md={6} className="mb-3">
+                            <Card>
+                              <Card.Body>
+                                <div className="d-flex justify-content-between align-items-start">
+                                  <div className="flex-grow-1">
+                                    <div className="d-flex align-items-center mb-2">
+                                      <Badge 
+                                        bg={getTipoBadgeVariant(pregunta.tipo)} 
+                                        className="me-2"
+                                      >
+                                        {getTipoText(pregunta.tipo)}
+                                      </Badge>
+                                      <Badge 
+                                        bg={getEstadoBadgeVariant(pregunta.activa)}
+                                        className="me-2"
+                                      >
+                                        {pregunta.activa ? 'Activa' : 'Inactiva'}
+                                      </Badge>
+                                      <Badge bg="secondary">
+                                        Orden: {pregunta.orden}
+                                      </Badge>
+                                    </div>
+                                    <p className="mb-2">{pregunta.texto}</p>
+                                    {pregunta.tipo === 'cerrada' && pregunta.opciones && (
+                                      <small className="text-muted">
+                                        <strong>Opciones:</strong> {pregunta.opciones.join(', ')}
+                                      </small>
+                                    )}
+                                    <div className="mt-2">
+                                      <small className="text-muted">
+                                        Creada: {new Date(pregunta.fechaCreacion).toLocaleDateString()}
+                                      </small>
+                                    </div>
+                                  </div>
+                                  <div className="d-flex flex-column gap-2 ms-3">
+                                    <Button
+                                      variant="outline-primary"
+                                      size="sm"
+                                      onClick={() => abrirModalEditarPregunta(pregunta)}
+                                      title="Editar pregunta"
+                                    >
+                                      <i className="bi bi-pencil"></i>
+                                    </Button>
+                                    <Button
+                                      variant="outline-danger"
+                                      size="sm"
+                                      onClick={() => handleEliminarClick(pregunta)}
+                                      title="Eliminar pregunta"
+                                    >
+                                      <i className="bi bi-trash"></i>
+                                    </Button>
+                                  </div>
+                                </div>
+                              </Card.Body>
+                            </Card>
+                          </Col>
+                        ))}
+                      </Row>
+                    )}
+                  </Accordion.Body>
+                </Accordion.Item>
               ))}
-            </tbody>
-          </Table>
+            </Accordion>
+          )}
         </Card.Body>
       </Card>
 
@@ -275,46 +322,95 @@ export const GestionPreguntas = () => {
         </Modal.Header>
         <Modal.Body>
           <Form>
+            <Row>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Tipo de Pregunta *</Form.Label>
+                  <div>
+                    <Form.Check
+                      inline
+                      type="radio"
+                      label="Pregunta Abierta"
+                      name="tipoPregunta"
+                      value="abierta"
+                      checked={tipoPregunta === 'abierta'}
+                      onChange={(e) => setTipoPregunta(e.target.value as TipoPregunta)}
+                    />
+                    <Form.Check
+                      inline
+                      type="radio"
+                      label="Pregunta Cerrada"
+                      name="tipoPregunta"
+                      value="cerrada"
+                      checked={tipoPregunta === 'cerrada'}
+                      onChange={(e) => setTipoPregunta(e.target.value as TipoPregunta)}
+                    />
+                  </div>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Categoría *</Form.Label>
+                  <Form.Select
+                    value={categoriaId}
+                    onChange={(e) => setCategoriaId(Number(e.target.value))}
+                  >
+                    {categorias.map((categoria) => (
+                      <option key={categoria.id} value={categoria.id}>
+                        {categoria.codigo}: {categoria.nombre}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+            </Row>
+
             <Form.Group className="mb-3">
-              <Form.Label>Texto de la pregunta</Form.Label>
+              <Form.Label>Texto de la Pregunta *</Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}
                 value={textoPregunta}
                 onChange={(e) => setTextoPregunta(e.target.value)}
-                placeholder="Escribe la pregunta aquí..."
+                placeholder="Ingresa el texto de la pregunta..."
+                required
               />
             </Form.Group>
 
-            <Row>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Tipo de pregunta</Form.Label>
-                  <Form.Select
-                    value={tipoPregunta}
-                    onChange={(e) => setTipoPregunta(e.target.value)}
-                  >
-                    <option value="multiple">Opción múltiple</option>
-                    <option value="escala">Escala numérica</option>
-                    <option value="texto">Texto abierto</option>
-                  </Form.Select>
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Categoría</Form.Label>
-                  <Form.Select
-                    value={categoriaPregunta}
-                    onChange={(e) => setCategoriaPregunta(e.target.value)}
-                  >
-                    <option value="docente">Docente</option>
-                    <option value="material">Material</option>
-                    <option value="metodologia">Metodología</option>
-                    <option value="sugerencias">Sugerencias</option>
-                  </Form.Select>
-                </Form.Group>
-              </Col>
-            </Row>
+            {/* Opciones para preguntas cerradas */}
+            {tipoPregunta === 'cerrada' && (
+              <Form.Group className="mb-3">
+                <Form.Label>Opciones de Respuesta *</Form.Label>
+                <small className="text-muted d-block mb-2">
+                  Mínimo 2 opciones. Las opciones vacías no se guardarán.
+                </small>
+                
+                {opciones.map((opcion, index) => (
+                  <div key={index} className="d-flex mb-2">
+                    <Form.Control
+                      type="text"
+                      value={opcion}
+                      onChange={(e) => actualizarOpcion(index, e.target.value)}
+                      placeholder={`Opción ${index + 1}`}
+                    />
+                    <Button
+                      variant="outline-danger"
+                      size="sm"
+                      className="ms-2"
+                      onClick={() => eliminarOpcion(index)}
+                      disabled={opciones.length <= 2}
+                    >
+                      <i className="bi bi-trash"></i>
+                    </Button>
+                  </div>
+                ))}
+                
+                <Button variant="outline-primary" size="sm" onClick={agregarOpcion}>
+                  <i className="bi bi-plus-circle me-1"></i>
+                  Agregar Opción
+                </Button>
+              </Form.Group>
+            )}
 
             <Form.Group className="mb-3">
               <Form.Check
@@ -330,8 +426,46 @@ export const GestionPreguntas = () => {
           <Button variant="secondary" onClick={() => setShowModal(false)}>
             Cancelar
           </Button>
-          <Button variant="primary" onClick={guardarPregunta}>
+          <Button 
+            variant="primary" 
+            onClick={guardarPregunta}
+            disabled={!validarFormulario()}
+          >
             {preguntaEditando ? 'Actualizar' : 'Crear'} Pregunta
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Modal de Confirmación para Eliminar */}
+      <Modal show={showConfirmDelete} onHide={() => setShowConfirmDelete(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirmar Eliminación</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {preguntaAEliminar && (
+            <>
+              <p>¿Estás seguro de que quieres eliminar esta pregunta?</p>
+              <div className="alert alert-warning">
+                <strong>{preguntaAEliminar.texto}</strong>
+              </div>
+              <div className="mb-2">
+                <small>
+                  <strong>Tipo:</strong> {getTipoText(preguntaAEliminar.tipo)} | 
+                  <strong> Categoría:</strong> {getCategoriaNombre(preguntaAEliminar.categoriaId)}
+                </small>
+              </div>
+              <p className="text-danger">
+                <small>Esta acción no se puede deshacer.</small>
+              </p>
+            </>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowConfirmDelete(false)}>
+            Cancelar
+          </Button>
+          <Button variant="danger" onClick={confirmarEliminacion} disabled={loading}>
+            {loading ? 'Eliminando...' : 'Eliminar'}
           </Button>
         </Modal.Footer>
       </Modal>

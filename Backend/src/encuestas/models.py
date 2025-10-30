@@ -4,7 +4,7 @@ from datetime import datetime
 from src.models import ModeloBase
 from src.vinculaciones.models import alumno_encuesta, Duracion
 from enum import StrEnum
-from typing import Optional
+from typing import Optional, List
 
 class EstadoEncuesta(StrEnum):
     abierta = "abierta"
@@ -26,12 +26,10 @@ class Encuesta(ModeloBase):
     activa: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     
-    
-    
     # Foreign Keys
     asignatura_id: Mapped[int] = mapped_column(Integer, ForeignKey("asignaturas.id"))
     
-    # Relationships
+    # Relaciones
     asignatura: Mapped["Asignatura"] = relationship(
         "Asignatura", back_populates="encuestas"
     )
@@ -40,6 +38,17 @@ class Encuesta(ModeloBase):
         "Alumno", secondary=alumno_encuesta, back_populates="encuestas"
     )
 
+    encuestas_finalizadas: Mapped[List["EncuestaFinalizada"]] = relationship(
+        "EncuestaFinalizada", 
+        back_populates="encuesta"
+    )
+
+    categorias: Mapped[List["Categoria"]] = relationship(
+    "src.categorias.models.Categoria",
+    back_populates="encuesta"
+    )
+
+
     # Verifica si la encuesta esta activa
     @property
     def esta_activa(self) -> bool:
@@ -47,17 +56,3 @@ class Encuesta(ModeloBase):
         return (self.activa and 
                 self.estado == EstadoEncuesta.abierta and
                 self.fecha_inicio <= ahora <= self.fecha_fin)
-
-
-""" class EncuestaAlumno(ModeloBase):
-    __tablename__ = "encuesta_alumno"
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    alumno_id: Mapped[int] = mapped_column(ForeignKey("alumnos.id"))
-    encuesta_id: Mapped[int] = mapped_column(ForeignKey("encuestas.id"))
-    fecha_respuesta: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-
-
-    alumno: Mapped["Alumno"] = relationship("Alumno", back_populates="encuestas")
-    encuesta: Mapped["Encuesta"] = relationship("Encuesta", back_populates="alumnos") """
-

@@ -12,7 +12,7 @@ interface Encuesta {
   estado: 'activa' | 'inactiva' | 'programada';
   fechaInicio: string;
   fechaFin: string;
-  materiasAsignadas: number;
+  asignaturasAsignadas: number;
   respuestasRecibidas: number;
 }
 
@@ -37,7 +37,7 @@ export const GestionEncuestas = () => {
             estado: 'activa',
             fechaInicio: '2025-04-05',
             fechaFin: '2025-07-30',
-            materiasAsignadas: 45,
+            asignaturasAsignadas: 45,
             respuestasRecibidas: 1250
           },
           {
@@ -47,7 +47,7 @@ export const GestionEncuestas = () => {
             estado: 'programada',
             fechaInicio: '2025-08-04',
             fechaFin: '2025-12-20',
-            materiasAsignadas: 52,
+            asignaturasAsignadas: 52,
             respuestasRecibidas: 0
           },
         ];
@@ -164,7 +164,7 @@ export const GestionEncuestas = () => {
                   </div>
                   <div className="info-item">
                     <i className="bi bi-journals me-2"></i>
-                    <strong>Materias:</strong> {encuesta.materiasAsignadas}
+                    <strong>Asignaturas:</strong> {encuesta.asignaturasAsignadas}
                   </div>
                   <div className="info-item">
                     <i className="bi bi-check-circle me-2"></i>

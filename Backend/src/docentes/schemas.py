@@ -44,6 +44,7 @@ class DocenteConAsignaturas(Docente):
     asignaturas_asociadas: List['AsignaturaInfo'] = []
     
     model_config = ConfigDict(from_attributes=True)
+
 class AsignaturaInfo(BaseModel):
     id: int
     nombre: str

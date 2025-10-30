@@ -3,6 +3,8 @@ from sqlalchemy.orm import Session
 from typing import List
 from src.database import get_db
 from src.docentes import schemas, services
+from src.vinculaciones.models import Duracion
+from src.asignaturas.schemas import Asignatura
 from src.docentes import services as docente_services
 
 router = APIRouter(prefix="/docentes", tags=["docentes"])
