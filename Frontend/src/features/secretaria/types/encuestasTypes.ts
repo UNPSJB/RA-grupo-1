@@ -37,7 +37,7 @@ export interface RespuestaEncuesta {
   encuestaId: number;
   alumnoId: number;
   respuestas: RespuestaPregunta[];
-  fechaCompletada: string;
+  fechaFinalizada: string;
 }
 
 export interface RespuestaPregunta {

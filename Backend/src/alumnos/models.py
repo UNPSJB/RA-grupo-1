@@ -18,8 +18,8 @@ class Alumno(ModeloBase):
     persona: Mapped["src.personas.models.Persona"] = relationship("src.personas.models.Persona", back_populates="alumno")
 
     # RELACIONES 
-    encuestas_completadas: Mapped[List["EncuestaCompletada"]] = relationship(
-        "EncuestaCompletada", 
+    encuestas_finalizadas: Mapped[List["EncuestaFinalizada"]] = relationship(
+        "EncuestaFinalizada", 
         back_populates="alumno"
     )
     
@@ -35,4 +35,4 @@ class Alumno(ModeloBase):
         back_populates="alumnos"
     )
 
-    #respuestas = relationship("Respuesta", back_populates="alumno", lazy="select")
+    respuestas = relationship("Respuesta", back_populates="alumno", lazy="select")

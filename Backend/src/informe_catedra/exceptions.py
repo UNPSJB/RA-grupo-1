@@ -1,4 +1,4 @@
-from src.informes.constants import ErrorCode
+from src.informe_catedra.constants import ErrorCode
 from src.exceptions import NotFound
 
 class InformeNoEncontrado(NotFound):

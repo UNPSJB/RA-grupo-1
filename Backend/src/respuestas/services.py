@@ -42,16 +42,16 @@ def listar_respuestas(
     """
     return services.listar_respuestas(db, skip=skip, limit=limit)
 
-@router.get("/encuesta-completada/{encuesta_completada_id}", response_model=list[schemas.RespuestaOut])
-def obtener_respuestas_por_encuesta_completada(
-    encuesta_completada_id: int, 
+@router.get("/encuesta-finalizada/{encuesta_finalizada_id}", response_model=list[schemas.RespuestaOut])
+def obtener_respuestas_por_encuesta_finalizada(
+    encuesta_finalizada_id: int, 
     db: Session = Depends(get_db)
 ):
     """
-    Obtiene las respuestas por encuesta completada
+    Obtiene las respuestas por encuesta terminada
     """
     try:
-        return services.obtener_respuestas_por_encuesta_completada(db, encuesta_completada_id)
+        return services.obtener_respuestas_por_encuesta_finalizada(db, encuesta_finalizada_id)
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 

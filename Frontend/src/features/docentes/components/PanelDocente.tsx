@@ -10,7 +10,7 @@ export const PanelDocente: React.FC = () => {
     asignaturas: 3,
     semestre: "2025",
     alumnos: 105,
-    encuestasCompletadas: 85,
+    encuestasFinalizadas: 85,
     evaluacionPromedio: 3.7
   };
 
@@ -70,8 +70,8 @@ export const PanelDocente: React.FC = () => {
             <div className="card-body">
               <div className="d-flex justify-content-between align-items-start">
                 <div>
-                  <h6 className="card-title text-muted text-uppercase small">Encuestas Completadas</h6>
-                  <h2 className="fw-bold text-warning mb-1">{docenteData.encuestasCompletadas}</h2>
+                  <h6 className="card-title text-muted text-uppercase small">Encuestas Finalizadas</h6>
+                  <h2 className="fw-bold text-warning mb-1">{docenteData.encuestasFinalizadas}</h2>
                   <small className="text-muted">
                     de {docenteData.alumnos} alumnos
                   </small>

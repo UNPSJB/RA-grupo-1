@@ -14,7 +14,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useSecretaria } from '../hooks/useSecretaria';
 import { Pregunta } from '../types/encuestasTypes';
-import { Ciclo } from '../../ciclos/types/ciclosTypes';
+
 
 export const CrearEncuesta = () => {
   const { preguntas, categorias, crearEncuesta, crearPregunta, eliminarPregunta } = useSecretaria();
@@ -31,11 +31,6 @@ export const CrearEncuesta = () => {
   const [preguntasSeleccionadas, setPreguntasSeleccionadas] = useState<number[]>([]);
   const [categoriasSeleccionadas, setCategoriasSeleccionadas] = useState<number[]>([]);
   
-  // Estados de ciclos
-  const [ciclos, setCiclos] = useState<Ciclo[]>([]);
-  const [cicloSeleccionado, setCicloSeleccionado] = useState<Ciclo | null>(null);
-  const [loadingCiclos, setLoadingCiclos] = useState(true);
-  
   // Estados de gestión de preguntas
   const [nuevaPreguntaAbierta, setNuevaPreguntaAbierta] = useState('');
   const [creandoPregunta, setCreandoPregunta] = useState(false);
@@ -47,34 +42,6 @@ export const CrearEncuesta = () => {
   // Estados de feedback
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-
-  // Cargar ciclos disponibles
-  useEffect(() => {
-    const fetchCiclos = async () => {
-      try {
-        setLoadingCiclos(true);
-        const response = await fetch('http://127.0.0.1:8000/ciclos');
-        if (!response.ok) {
-          throw new Error('Error al cargar los ciclos');
-        }
-        const data = await response.json();
-        setCiclos(data);
-        
-        // Seleccionar automáticamente el primer ciclo activo
-        const cicloActivo = data.find((ciclo: Ciclo) => ciclo.activo);
-        if (cicloActivo) {
-          setCicloSeleccionado(cicloActivo);
-        }
-      } catch (err) {
-        console.error('Error fetching ciclos:', err);
-        setError('No se pudieron cargar los ciclos disponibles');
-      } finally {
-        setLoadingCiclos(false);
-      }
-    };
-
-    fetchCiclos();
-  }, []);
 
   // Agrupar preguntas por categoría
   const preguntasAgrupadas = categorias.map(categoria => ({
@@ -115,12 +82,6 @@ export const CrearEncuesta = () => {
 
   const getCategoriaSeleccionada = (categoriaId: number) => {
     return categoriasSeleccionadas.includes(categoriaId);
-  };
-
-  // Manejo de ciclos
-  const handleCicloChange = (cicloId: number) => {
-    const ciclo = ciclos.find(c => c.id === cicloId);
-    setCicloSeleccionado(ciclo || null);
   };
 
   // Crear nueva pregunta abierta
@@ -188,16 +149,6 @@ export const CrearEncuesta = () => {
       return;
     }
 
-    if (!cicloSeleccionado) {
-      setError('Debes seleccionar un ciclo para la encuesta');
-      return;
-    }
-
-    if (!cicloSeleccionado.fecha_inicio || !cicloSeleccionado.fecha_fin) {
-      setError('El ciclo seleccionado no tiene fechas configuradas');
-      return;
-    }
-
     try {
       const preguntasParaEncuesta = preguntas.filter(p => 
         preguntasSeleccionadas.includes(p.id)
@@ -209,17 +160,6 @@ export const CrearEncuesta = () => {
       const categoriasParaEncuesta = categorias.filter(c =>
         categoriasSeleccionadas.includes(c.id)
       );
-
-      await crearEncuesta({
-        titulo: formData.titulo,
-        descripcion: formData.descripcion,
-        categorias: categoriasParaEncuesta,
-        preguntas: preguntasParaEncuesta,
-        activa: true,
-        fechaInicio: cicloSeleccionado.fecha_inicio,
-        fechaFin: cicloSeleccionado.fecha_fin,
-        rolDestinatario: formData.rolDestinatario
-      });
 
       navigate('/secretaria');
     } catch (err) {
@@ -273,35 +213,6 @@ export const CrearEncuesta = () => {
                 <Row>
                   <Col md={6}>
                     <Form.Group className="mb-3">
-                      <Form.Label>Seleccionar Ciclo *</Form.Label>
-                      {loadingCiclos ? (
-                        <div className="text-muted">Cargando ciclos...</div>
-                      ) : ciclos.length === 0 ? (
-                        <Alert variant="warning" className="mb-0">
-                          No hay ciclos disponibles. Primero crea un ciclo en la sección de Gestión de Ciclos.
-                        </Alert>
-                      ) : (
-                        <Form.Select
-                          value={cicloSeleccionado?.id || ''}
-                          onChange={(e) => handleCicloChange(Number(e.target.value))}
-                          required
-                        >
-                          <option value="">Selecciona un ciclo...</option>
-                          {ciclos.map((ciclo) => (
-                            <option key={ciclo.id} value={ciclo.id}>
-                              {ciclo.nombre} 
-                              {ciclo.activo && ' ✅'} 
-                              {ciclo.fecha_inicio && ciclo.fecha_fin && 
-                                ` (${new Date(ciclo.fecha_inicio).toLocaleDateString()} - ${new Date(ciclo.fecha_fin).toLocaleDateString()})`
-                              }
-                            </option>
-                          ))}
-                        </Form.Select>
-                      )}
-                    </Form.Group>
-                  </Col>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
                       <Form.Label>Destinatario</Form.Label>
                       <Form.Select
                         value={formData.rolDestinatario}
@@ -314,45 +225,6 @@ export const CrearEncuesta = () => {
                     </Form.Group>
                   </Col>
                 </Row>
-
-                {/* Información del ciclo seleccionado */}
-                {cicloSeleccionado && (
-                  <Card className="mt-3 border-info">
-                    <Card.Body className="py-2">
-                      <Row>
-                        <Col md={6}>
-                          <small className="text-muted">Ciclo seleccionado:</small>
-                          <div>
-                            <strong>{cicloSeleccionado.nombre}</strong>
-                            {cicloSeleccionado.activo && (
-                              <Badge bg="success" className="ms-2">Activo</Badge>
-                            )}
-                          </div>
-                        </Col>
-                        <Col md={3}>
-                          <small className="text-muted">Inicio:</small>
-                          <div>
-                            {cicloSeleccionado.fecha_inicio ? (
-                              <strong>{new Date(cicloSeleccionado.fecha_inicio).toLocaleDateString()}</strong>
-                            ) : (
-                              <span className="text-warning">No configurado</span>
-                            )}
-                          </div>
-                        </Col>
-                        <Col md={3}>
-                          <small className="text-muted">Fin:</small>
-                          <div>
-                            {cicloSeleccionado.fecha_fin ? (
-                              <strong>{new Date(cicloSeleccionado.fecha_fin).toLocaleDateString()}</strong>
-                            ) : (
-                              <span className="text-warning">No configurado</span>
-                            )}
-                          </div>
-                        </Col>
-                      </Row>
-                    </Card.Body>
-                  </Card>
-                )}
               </Card.Body>
             </Card>
 
@@ -390,14 +262,6 @@ export const CrearEncuesta = () => {
               </Card.Header>
               <Card.Body>
                 <div className="mb-3">
-                  <strong>Ciclo:</strong>{' '}
-                  {cicloSeleccionado ? (
-                    <Badge bg="info">{cicloSeleccionado.nombre}</Badge>
-                  ) : (
-                    <span className="text-muted">No seleccionado</span>
-                  )}
-                </div>
-                <div className="mb-3">
                   <strong>Categorías seleccionadas:</strong>{' '}
                   <Badge bg="primary">{categoriasSeleccionadas.length}</Badge>
                 </div>
@@ -409,7 +273,6 @@ export const CrearEncuesta = () => {
                   variant="primary" 
                   type="submit" 
                   className="w-100"
-                  disabled={preguntasSeleccionadas.length === 0 || !cicloSeleccionado}
                 >
                   <i className="bi bi-check-circle me-2"></i>
                   Crear Encuesta

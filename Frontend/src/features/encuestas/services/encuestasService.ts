@@ -154,19 +154,27 @@ export const encuestasService = {
     }
   },
 
-  eliminarPregunta: async (id: number): Promise<void> => {
-    try {
-      await fetchWithErrorHandling(
-        `${API_BASE}/preguntas/${id}`,
-        { method: 'DELETE' },
-        'eliminar pregunta'
-      );
-      console.log(`✅ Pregunta ${id} eliminada exitosamente`);
-    } catch (error) {
-      console.error(`❌ Error deleting pregunta ${id}:`, error);
-      throw error;
+  eliminarPregunta: async (preguntaId: number): Promise<void> => {
+  try {
+    console.log(`🗑️ Eliminando pregunta ${preguntaId}`);
+    
+    // Opción 1: Si tu API elimina por ID directo (más común)
+    const response = await fetch(`${API_BASE}/preguntas/${preguntaId}`, {
+      method: 'DELETE'
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Error al eliminar pregunta: ${response.status} ${response.statusText}`);
     }
-  },
+
+    console.log('✅ Pregunta eliminada exitosamente');
+  } catch (error) {
+    console.error(`❌ Error deleting pregunta ${preguntaId}:`, error);
+    throw error;
+  }
+},
+
 
   // ==================== OPERACIONES CON ENCUESTAS ====================
   obtenerEncuestas: async (): Promise<Encuesta[]> => {

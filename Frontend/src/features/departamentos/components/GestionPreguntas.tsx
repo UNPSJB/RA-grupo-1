@@ -4,7 +4,8 @@ import {
   Form, Modal, Spinner, Alert, Badge, Accordion
 } from 'react-bootstrap';
 import { useSecretaria } from '../../secretaria/hooks/useSecretaria';
-import { Pregunta, TipoPregunta, CategoriaPregunta } from '../../secretaria/types/encuestasTypes;
+import { Pregunta, TipoPregunta, CategoriaPregunta } from '../../secretaria/types/encuestasTypes';
+
 export const GestionPreguntas = () => {
   const { 
     preguntas, 
@@ -81,9 +82,36 @@ export const GestionPreguntas = () => {
     setShowModal(true);
   };
 
+  // Función para manejar el click de eliminar
   const handleEliminarClick = (pregunta: Pregunta) => {
+    console.log('🔄 Intentando eliminar pregunta ID:', pregunta.id);
+    if (!pregunta.id || isNaN(pregunta.id)) {
+      console.error('❌ ID de pregunta inválido:', pregunta.id);
+      setError('ID de pregunta inválido');
+      return;
+    }
     setPreguntaAEliminar(pregunta);
     setShowConfirmDelete(true);
+  };
+
+  // Función para confirmar eliminación
+  const confirmarEliminacion = async () => {
+    if (preguntaAEliminar) {
+      try {
+        console.log('✅ Confirmando eliminación de pregunta ID:', preguntaAEliminar.id);
+        await eliminarPregunta(preguntaAEliminar.id);
+        
+        setSuccess('Pregunta eliminada exitosamente');
+        setShowConfirmDelete(false);
+        setPreguntaAEliminar(null);
+        
+        // Recargar datos para obtener la lista actualizada
+        recargarDatos();
+      } catch (err) {
+        console.error('❌ Error al eliminar pregunta:', err);
+        setError('Error al eliminar la pregunta');
+      }
+    }
   };
 
   // Validación del formulario
@@ -121,23 +149,6 @@ export const GestionPreguntas = () => {
       recargarDatos();
     } catch (err) {
       // El error ya se maneja en el hook
-    }
-  };
-
-  // Eliminar pregunta
-  const confirmarEliminacion = async () => {
-    if (preguntaAEliminar) {
-      try {
-        await eliminarPregunta(preguntaAEliminar.id);
-        setShowConfirmDelete(false);
-        setPreguntaAEliminar(null);
-        setSuccess('Pregunta eliminada exitosamente');
-        
-        // Recargar datos para obtener la lista actualizada
-        recargarDatos();
-      } catch (err) {
-        // El error ya se maneja en el hook
-      }
     }
   };
 

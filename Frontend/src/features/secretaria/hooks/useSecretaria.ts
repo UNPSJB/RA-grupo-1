@@ -53,15 +53,27 @@ export const useSecretaria = () => {
     }
   };
 
-  const eliminarPregunta = async (id: number) => {
-    try {
-      await encuestasService.eliminarPregunta(id);
-      setPreguntas(prev => prev.filter(p => p.id !== id));
-    } catch (err) {
-      setError('Error al eliminar la pregunta');
-      throw err;
-    }
-  };
+  // En useSecretaria.ts - CORREGIR la función eliminarPregunta
+const eliminarPregunta = async (preguntaId: number) => {
+  try {
+    setLoading(true);
+    setError(null);
+    
+    await encuestasService.eliminarPregunta(preguntaId);
+    
+    // Actualizar el estado local eliminando la pregunta
+    setPreguntas(prev => prev.filter(p => p.id !== preguntaId));
+    
+    return true;
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Error al eliminar la pregunta';
+    setError(errorMessage);
+    console.error('Error eliminando pregunta:', err);
+    throw err;
+  } finally {
+    setLoading(false);
+  }
+};
 
   const crearEncuesta = async (encuestaData: Omit<Encuesta, 'id' | 'fechaCreacion'>) => {
     try {

@@ -16,9 +16,9 @@ from src.opciones.models import Opcion
 from src.preguntas.models import Pregunta
 from src.asignaturas.models import Asignatura
 from src.encuestas.models import Encuesta
-from src.informes.models import Informe
+from src.informe_catedra.models import InformeCatedra
 from src.respuestas.models import Respuesta
-from src.encuestas_completadas.models import EncuestaCompletada
+from src.encuesta_finalizada.models import EncuestaFinalizada
 from src.ciclos.models import CicloEncuesta
 
 # Tablas de vinculación van al final
@@ -32,7 +32,7 @@ from src.docentes.router import router as docentes_router
 from src.asignaturas.router import router as asignaturas_router
 from src.carreras.router import router as carreras_router
 from src.departamentos.router import router as departamentos_router
-from src.informes.router import router as informes_router
+from src.informe_catedra.router import router as informes_router
 from src.opciones.router import router as opciones_router
 from src.respuestas.router import router as respuestas_router
 from src.roles.router import router as roles_router

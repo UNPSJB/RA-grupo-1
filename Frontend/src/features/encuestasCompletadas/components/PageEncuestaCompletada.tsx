@@ -6,10 +6,10 @@ type Respuesta = {
   pregunta_id: number;
   opcion_id: number[];
   texto_respuesta: string;
-  encuesta_completada_id: number;
+  encuesta_finalizada_id: number;
 }
 
-type EncuestaCompletada = {
+type EncuestaFinalizada = {
   id: number;
   alumno_id: number;
   encuesta_id: number;
@@ -21,12 +21,12 @@ type EncuestaCompletada = {
 
 export default function EncuestasCompletadasPage() {
   const alumnoId = 3; // HARCODEADO ACA VAN LOS DATOS DE LA API
-  const [encuestas, setEncuestas] = useState<EncuestaCompletada[]>([]);
+  const [encuestas, setEncuestas] = useState<EncuestaFinalizada[]>([]);
 
   useEffect(() => {
     fetch(`http://127.0.0.1:8000/encuesta-completada/alumno/${alumnoId}`)
       .then((res) => res.json())
-      .then((data: EncuestaCompletada[]) => setEncuestas(data))
+      .then((data: EncuestaFinalizada[]) => setEncuestas(data))
       .catch((err) => {
         console.error("Error al obtener encuestas:", err);
         setEncuestas([]);

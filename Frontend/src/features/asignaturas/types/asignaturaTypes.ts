@@ -23,6 +23,6 @@ export interface AsignaturaEstado {
   progreso: number;
   calificacion?: number;
   asistencia: number;
-  tareasCompletadas: number;
+  tareasFinalizadas: number;
   tareasPendientes: number;
 }
