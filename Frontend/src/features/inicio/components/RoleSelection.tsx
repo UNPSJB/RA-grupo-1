@@ -29,7 +29,7 @@ export const RoleSelection = () => {
       title: 'Departamento de Alumnos',
       description: 'Gestión administrativa del departamento',
       icon: 'bi-building-gear',
-      path: '/departamento/gestion-preguntas',
+      path: '/departamento',
       variant: 'warning'
     },
     {
@@ -37,7 +37,7 @@ export const RoleSelection = () => {
       title: 'Secretaría',
       description: 'Administración del sistema',
       icon: 'bi-gear',
-      path: '/secretaria/admin',
+      path: '/secretaria',
       variant: 'info'
     }
   ];

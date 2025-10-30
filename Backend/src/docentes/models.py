@@ -1,5 +1,8 @@
-from sqlalchemy import Integer, String, ForeignKey, Enum
+from __future__ import annotations
+from sqlalchemy import Integer, String, ForeignKey, Enum, Table, Column
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from typing import Optional, List
+from enum import auto, StrEnum
 from typing import List, TYPE_CHECKING
 from src.models import ModeloBase
 
@@ -18,8 +21,4 @@ class Docente(ModeloBase):
     persona: Mapped["Persona"] = relationship("Persona", back_populates="docente")
 
     # Relacion con asignaturas
-    asignaturas_asociadas: Mapped[List["AsignaturaDocente"]] = relationship(
-        "AsignaturaDocente", 
-        back_populates="docente",
-        cascade="all, delete-orphan"
-    )
+    asignaturas_asociadas: Mapped[List["AsignaturaDocente"]] =  relationship("AsignaturaDocente", back_populates="docente")

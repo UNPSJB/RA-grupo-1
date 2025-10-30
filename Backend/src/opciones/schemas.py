@@ -14,16 +14,17 @@ class OpcionBase(BaseModel):
         return v.strip()
 
 class OpcionCreate(OpcionBase):
-    pass
+    contenido: str
 
 class OpcionUpdate(OpcionBase):
-    pass
+    contenido: str
 
 class OpcionDelete(BaseModel):
     id: int
 
 class Opcion(OpcionBase):
     id: int
+    contenido: str
 
     model_config = {
         "from_attributes": True

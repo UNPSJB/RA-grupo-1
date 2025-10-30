@@ -3,12 +3,12 @@ import { useDistribucion } from "../hooks/useDistribution";
 import { Estadistica } from "../components/Estadistica";
 
 interface Props {
-  materiaId: number;
+  asignaturaId: number;
   preguntaId: number;
 }
 
-export default function DistribucionPage({ materiaId, preguntaId }: Props) {
-  const { labels, data, loading, error, refetch } = useDistribucion(materiaId, preguntaId);
+export default function DistribucionPage({ asignaturaId, preguntaId }: Props) {
+  const { labels, data, loading, error, refetch } = useDistribucion(asignaturaId, preguntaId);
 
   if (loading) {
     return (
@@ -39,8 +39,7 @@ export default function DistribucionPage({ materiaId, preguntaId }: Props) {
     <Container className="mt-4">
       <h1 className="mb-4">Distribución de respuestas</h1>
       <Estadistica
-        labels={labels}   // ["Sí", "No", "NPO"]
-        data={data}       // [5, 2, 1]
+        labels={labels}   
         title={`Pregunta ${preguntaId}`}
       />
     </Container>

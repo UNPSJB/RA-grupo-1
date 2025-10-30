@@ -9,13 +9,6 @@ from src.respuestas.models import Respuesta
 from src.preguntas.models import Pregunta
 from src.categorias import schemas as categoria_schemas
 from src.preguntas import schemas as pregunta_schemas
-from src.encuestas.exceptions import (
-    EncuestaNoEncontrada, 
-    FechasEncuestaInvalidas,
-    EncuestaNoDisponible,
-    EncuestaYaRespondida
-)
-
 
 def listar_encuestas(db:Session) -> List[schemas.Encuesta]:
     return db.scalars(select(Encuesta)).all()
@@ -97,15 +90,18 @@ def listar_categorias_encuesta(db: Session, encuesta_id: int) -> List[categoria_
     db_encuesta = leer_encuesta(db, encuesta_id)
     return db_encuesta.categorias if hasattr(db_encuesta, 'categorias') else []
 
-def listar_preguntas_encuesta(db: Session, encuesta_id: int) -> List[pregunta_schemas.Pregunta]:
-    # Obtiene preguntas de una encuesta específica
-    db_encuesta = leer_encuesta(db, encuesta_id)
-    return db_encuesta.preguntas if hasattr(db_encuesta, 'preguntas') else []
+def listar_encuestas_pregunta_cerrada(db: Session, encuesta_id: int) -> List[pregunta_schemas.Pregunta]:
+    db_encuesta = db.scalar(select(Encuesta).where(Encuesta.id == encuesta_id))
+    if db_encuesta is None:
+        raise exceptions.EncuestaNoEncontrada()
+    
+    respuestas=[]
+    for categoria in db_encuesta.categorias:
+        for pregunta in categoria.preguntas:
+            if pregunta.tipo == "cerrada":
+                respuestas.append(pregunta)
 
-#def listar_alumnos_encuesta(db: Session, encuesta_id: int) -> List[Any]:
-    """Obtiene alumnos vinculados a una encuesta"""
-#    db_encuesta = leer_encuesta(db, encuesta_id)
-#    return db_encuesta.alumnos if hasattr(db_encuesta, 'alumnos') else []
+    return respuestas
 
 def vincular_alumno_encuesta(db: Session, encuesta_id: int, alumno_id: int) -> schemas.Encuesta:
     # Vincula un alumno a una encuesta
@@ -135,7 +131,7 @@ def responder_encuesta(db: Session, respuesta: RespuestaCreate):
         raise Exception("Encuesta fuera de período")
 
     
-    db_respuesta = RespuestaEstudiante(
+    db_respuesta = Respuesta(
         estudiante_id=respuesta.estudiante_id,
         encuesta_id=respuesta.encuesta_id,
         respuesta_texto=respuesta.respuesta_texto,

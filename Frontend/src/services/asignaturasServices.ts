@@ -1,6 +1,6 @@
 import api from './api';
 
-export interface Materia {
+export interface Asignatura {
   id: number;
   nombre: string;
   codigo: string;
@@ -8,26 +8,26 @@ export interface Materia {
   carrera: string;
   sede: string;
   total_estudiantes: number;
-  encuestas_completadas: number;
+  encuestas_finalizadas: number;
   promedio_general: number;
   encuestas_pendientes?: number;
 }
 
-class MateriasService {
-  async getMateriasByDocente(docenteId: number): Promise<Materia[]> {
-    const response = await api.get(`/docentes/${docenteId}/materias`);
+class AsignaturasService {
+  async getAsignaturasByDocente(docenteId: number): Promise<Asignatura[]> {
+    const response = await api.get(`/docentes/${docenteId}/asignaturas`);
     return response.data;
   }
 
-  async getMateriaDetalle(materiaId: number): Promise<Materia> {
-    const response = await api.get(`/materias/${materiaId}`);
+  async getAsignaturaDetalle(asignaturaId: number): Promise<Asignatura> {
+    const response = await api.get(`/asignaturas/${asignaturaId}`);
     return response.data;
   }
 
-  async getEstadisticasMateria(materiaId: number) {
-    const response = await api.get(`/materias/${materiaId}/estadisticas`);
+  async getEstadisticasAsignatura(asignaturaId: number) {
+    const response = await api.get(`/asignaturas/${asignaturaId}/estadisticas`);
     return response.data;
   }
 }
 
-export default new MateriasService();
+export default new AsignaturasService();

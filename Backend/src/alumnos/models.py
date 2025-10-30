@@ -17,7 +17,11 @@ class Alumno(ModeloBase):
     clave: Mapped[str] = mapped_column(String, index=True)
     persona: Mapped["src.personas.models.Persona"] = relationship("src.personas.models.Persona", back_populates="alumno")
 
-    respuestas: Mapped[List["Respuesta"]] = relationship("Respuesta", back_populates="alumno")
+    # RELACIONES 
+    encuestas_finalizadas: Mapped[List["EncuestaFinalizada"]] = relationship(
+        "EncuestaFinalizada", 
+        back_populates="alumno"
+    )
     
     asignaturas: Mapped[List["Asignatura"]] = relationship(
         "Asignatura",
@@ -31,8 +35,4 @@ class Alumno(ModeloBase):
         back_populates="alumnos"
     )
 
-    # respuestas: Mapped[List["Respuesta"]] = relationship(
-    #     "Respuesta", 
-    #     back_populates="alumno",
-    #     cascade="all, delete-orphan"
-    # )
+    respuestas = relationship("Respuesta", back_populates="alumno", lazy="select")

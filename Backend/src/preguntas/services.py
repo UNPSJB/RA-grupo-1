@@ -4,10 +4,10 @@ from sqlalchemy import select
 from src.preguntas.models import Pregunta
 from src.preguntas import schemas, exceptions
 from src.opciones.models import Opcion
-def crear_abierta(db: Session, pregunta: schemas.CrearPreguntaAbierta) -> Pregunta:
+def crear_abierta(db: Session, pregunta: schemas.PreguntaAbiertaCreate) -> Pregunta:
     _nueva_pregunta = Pregunta(
-        texto=pregunta.texto, 
-        tipo=pregunta.tipo.value,
+        texto=pregunta.oracion, 
+        tipo=pregunta.tipo or "abierta",
         encuesta_id=pregunta.encuesta_id
     )
 
@@ -16,18 +16,22 @@ def crear_abierta(db: Session, pregunta: schemas.CrearPreguntaAbierta) -> Pregun
     db.refresh(_nueva_pregunta)
     return _nueva_pregunta
 
-def crear_cerrada(db: Session, pregunta: schemas.CrearPreguntaCerrada) -> Pregunta:
-
+def crear_cerrada(db: Session, pregunta: schemas.PreguntaCerradaCreate) -> Pregunta:
     opciones_validas = db.scalars(
-        select(Opcion).where(Opcion.id.in_(pregunta.opciones))
+        select(Opcion).where(Opcion.id.in_(pregunta.opcion_ids))
     ).all()
 
-    if len(opciones_validas) != len(pregunta.opciones):
-        raise exceptions.PreguntaSinOpciones("Algunas opciones no existen")
+    if len(opciones_validas) != len(pregunta.opcion_ids):
+        ids_encontrados = {op.id for op in opciones_validas}
+        opciones_faltantes = [op_id for op_id in pregunta.opcion_ids if op_id not in ids_encontrados]
+        
+        raise exceptions.PreguntaSinOpciones(
+            f"Las siguientes opciones no existen: {opciones_faltantes}"
+        )
 
     nueva_pregunta = Pregunta(
-        texto=pregunta.texto, 
-        tipo=pregunta.tipo.value,
+        texto=pregunta.oracion, 
+        tipo=pregunta.tipo or "cerrada",
         encuesta_id=pregunta.encuesta_id
     )
     nueva_pregunta.opciones = opciones_validas
@@ -37,14 +41,14 @@ def crear_cerrada(db: Session, pregunta: schemas.CrearPreguntaCerrada) -> Pregun
     db.refresh(nueva_pregunta)
     return nueva_pregunta
 
-def listar_preguntas(db: Session) -> List[schemas.Pregunta]:
+def listar_preguntas(db: Session) -> List[Pregunta]:
     return db.scalars(select(Pregunta)).all()
 
 def listar_opciones_pregunta(db: Session, pregunta_id: int) -> List[Opcion]:
     db_pregunta = recibir_pregunta(db, pregunta_id)
     return db_pregunta.opciones
 
-def recibir_pregunta(db: Session, pregunta_id: int) -> schemas.Pregunta:
+def recibir_pregunta(db: Session, pregunta_id: int) -> Pregunta:
     db_pregunta = db.scalar(select(Pregunta).where(Pregunta.id == pregunta_id))
     if db_pregunta is None:
         raise exceptions.PreguntaNoEncontrada()

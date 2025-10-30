@@ -10,12 +10,10 @@ class AlumnoCreate(AlumnoBase):
     persona_id: int
     clave: str
 
-
 class AlumnoUpdate(BaseModel):
     CUIL: Optional[str] = None
     usuario: Optional[str] = None
     clave: Optional[str] = None
-
 
 class AlumnoResponse(AlumnoBase):
     id: int
