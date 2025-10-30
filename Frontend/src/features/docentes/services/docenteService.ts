@@ -6,7 +6,7 @@ export interface Docente {
 export interface DocenteStats {
   total_asignaturas: number;
   total_estudiantes: number;
-  encuestas_completadas: number;
+  encuestas_finalizadas: number;
   evaluacion_promedio: number;
   semestre_actual: string;
 }
@@ -17,7 +17,7 @@ export const docenteService = {
     return {
       total_asignaturas: 5,
       total_estudiantes: 150,
-      encuestas_completadas: 120,
+      encuestas_finalizadas: 120,
       evaluacion_promedio: 3.8,
       semestre_actual: "2025-1"
     };

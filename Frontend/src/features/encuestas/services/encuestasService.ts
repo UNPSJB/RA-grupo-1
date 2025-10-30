@@ -2,7 +2,7 @@ import { Pregunta, Encuesta, EstadisticasEncuesta, TipoPregunta, CategoriaPregun
 
 const API_BASE = 'http://127.0.0.1:8000';
 
-// Mientras no tengas categorías en la API, las mantenemos como mock
+// Datos mock para categorías (temporal hasta tener API de categorías)
 const categoriasMock: CategoriaPregunta[] = [
   { id: 1, codigo: 'A', nombre: 'Planificación de la Enseñanza', orden: 1 },
   { id: 2, codigo: 'B', nombre: 'Desarrollo de la Enseñanza', orden: 2 },
@@ -13,8 +13,74 @@ const categoriasMock: CategoriaPregunta[] = [
   { id: 7, codigo: 'G', nombre: 'Sugerencias y Comentarios', orden: 7 }
 ];
 
+// Utilidades de mapeo
+const mapearPreguntaDesdeAPI = (item: any, index: number): Pregunta => ({
+  id: item.id,
+  texto: item.texto,
+  tipo: item.tipo as TipoPregunta,
+  opciones: item.opciones || [],
+  categoriaId: 1, // Categoría A por defecto (mejorable)
+  orden: index + 1,
+  activa: true,
+  fechaCreacion: item.created_at || new Date().toISOString()
+});
+
+const mapearEncuestaDesdeAPI = (item: any): Encuesta => ({
+  id: item.id,
+  titulo: item.titulo,
+  descripcion: `${item.carrera} - ${item.sede} - ${item.cursado} ${item.año}`,
+  categorias: categoriasMock,
+  preguntas: [], // Vacío por ahora (mejorable)
+  activa: item.activa,
+  fechaCreacion: item.created_at,
+  fechaInicio: item.fecha_inicio,
+  fechaFin: item.fecha_fin,
+  rolDestinatario: 'alumno'
+});
+
+// Payload helpers
+const crearPayloadPregunta = (pregunta: Omit<Pregunta, 'id' | 'fechaCreacion'>) => ({
+  texto: pregunta.texto,
+  encuesta_id: 1, // Valor por defecto (mejorable)
+  tipo: pregunta.tipo,
+  opciones: pregunta.tipo === 'cerrada' ? [1, 2, 3, 4] : [] // IDs de opciones por defecto
+});
+
+const crearPayloadEncuesta = (encuesta: Omit<Encuesta, 'id' | 'fechaCreacion'>) => ({
+  titulo: encuesta.titulo,
+  año: new Date().getFullYear(),
+  cursado: "PRIMER CUATRIMESTRE", // Configurable (mejorable)
+  fecha_inicio: encuesta.fechaInicio,
+  fecha_fin: encuesta.fechaFin,
+  carrera: "Licenciatura en Sistemas", // Configurable (mejorable)
+  sede: "Trelew", // Configurable (mejorable)
+  asignatura_id: 1, // Valor por defecto (mejorable)
+  estado: "abierta",
+  activa: encuesta.activa
+});
+
+// Handlers de fetch genéricos
+const handleFetchResponse = async (response: Response, operation: string) => {
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Error al ${operation}: ${response.status} ${response.statusText} - ${errorText}`);
+  }
+  return response.json();
+};
+
+const fetchWithErrorHandling = async (url: string, options: RequestInit, operation: string) => {
+  try {
+    console.log(`🔍 ${operation}:`, { url, options: options.method });
+    const response = await fetch(url, options);
+    return await handleFetchResponse(response, operation);
+  } catch (error) {
+    console.error(`❌ Error en ${operation}:`, error);
+    throw error;
+  }
+};
+
 export const encuestasService = {
-  // Categorías (mock por ahora)
+  // ==================== OPERACIONES CON CATEGORÍAS ====================
   obtenerCategorias: async (): Promise<CategoriaPregunta[]> => {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -23,63 +89,58 @@ export const encuestasService = {
     });
   },
 
-  // Preguntas - CONECTADO A TU API
+  // ==================== OPERACIONES CON PREGUNTAS ====================
   obtenerPreguntas: async (): Promise<Pregunta[]> => {
     try {
-      const response = await fetch(`${API_BASE}/preguntas/`);
-      if (!response.ok) {
-        throw new Error('Error al obtener preguntas');
-      }
-      const data = await response.json();
+      const data = await fetchWithErrorHandling(
+        `${API_BASE}/preguntas/`,
+        { method: 'GET' },
+        'obtener preguntas'
+      );
       
-      // Mapear la respuesta de tu API a nuestro tipo Pregunta
-      return data.map((item: any, index: number) => ({
-        id: item.id,
-        texto: item.texto,
-        tipo: item.tipo as TipoPregunta,
-        opciones: item.opciones || [],
-        categoriaId: 1, // Asignamos a categoría A por defecto (podemos mejorarlo luego)
-        orden: index + 1,
-        activa: true,
-        fechaCreacion: item.created_at || new Date().toISOString()
-      }));
+      return Array.isArray(data) 
+        ? data.map(mapearPreguntaDesdeAPI)
+        : [mapearPreguntaDesdeAPI(data, 0)];
     } catch (error) {
-      console.error('Error fetching preguntas:', error);
+      console.error('❌ Error fetching preguntas:', error);
+      throw new Error(`No se pudieron cargar las preguntas: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+    }
+  },
+
+  obtenerPreguntasPorCategoria: async (categoriaId: number): Promise<Pregunta[]> => {
+    try {
+      const todasLasPreguntas = await encuestasService.obtenerPreguntas();
+      return todasLasPreguntas.filter(p => p.categoriaId === categoriaId && p.activa);
+    } catch (error) {
+      console.error(`❌ Error obteniendo preguntas para categoría ${categoriaId}:`, error);
       throw error;
     }
   },
 
   crearPregunta: async (pregunta: Omit<Pregunta, 'id' | 'fechaCreacion'>): Promise<Pregunta> => {
     try {
-      // Para tu API, necesitamos enviar encuesta_id y opciones como array de números
-      // Como no tenemos encuesta específica, usamos 1 como valor por defecto
-      const payload = {
-        texto: pregunta.texto,
-        encuesta_id: 1, // Valor por defecto - podemos hacerlo configurable luego
-        tipo: pregunta.tipo,
-        opciones: pregunta.tipo === 'cerrada' ? [1, 2, 3, 4] : [] // IDs de opciones por defecto
-      };
+      const payload = crearPayloadPregunta(pregunta);
+      console.log('📤 Enviando pregunta:', payload);
 
-      console.log('Enviando pregunta:', payload);
+      const endpoint = pregunta.tipo === 'abierta' 
+        ? `${API_BASE}/preguntas/abierta`
+        : `${API_BASE}/preguntas/cerrada`;
 
-      const response = await fetch(`${API_BASE}/preguntas/cerrada`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const nuevaPregunta = await fetchWithErrorHandling(
+        endpoint,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
         },
-        body: JSON.stringify(payload)
-      });
+        'crear pregunta'
+      );
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Error al crear pregunta: ${errorText}`);
-      }
+      console.log('✅ Pregunta creada:', nuevaPregunta);
 
-      const nuevaPregunta = await response.json();
-      
       return {
         id: nuevaPregunta.id,
-        texto: nuevaPregunta.texto,
+        texto: nuevaPregunta.texto || pregunta.texto,
         tipo: pregunta.tipo,
         opciones: pregunta.opciones || [],
         categoriaId: pregunta.categoriaId,
@@ -88,88 +149,67 @@ export const encuestasService = {
         fechaCreacion: nuevaPregunta.created_at || new Date().toISOString()
       };
     } catch (error) {
-      console.error('Error creating pregunta:', error);
+      console.error('❌ Error creating pregunta:', error);
       throw error;
     }
   },
 
-  eliminarPregunta: async (id: number): Promise<void> => {
-    try {
-      const response = await fetch(`${API_BASE}/preguntas/${id}`, {
-        method: 'DELETE'
-      });
+  eliminarPregunta: async (preguntaId: number): Promise<void> => {
+  try {
+    console.log(`🗑️ Eliminando pregunta ${preguntaId}`);
+    
+    // Opción 1: Si tu API elimina por ID directo (más común)
+    const response = await fetch(`${API_BASE}/preguntas/${preguntaId}`, {
+      method: 'DELETE'
+    });
 
-      if (!response.ok) {
-        throw new Error('Error al eliminar pregunta');
-      }
-    } catch (error) {
-      console.error('Error deleting pregunta:', error);
-      throw error;
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Error al eliminar pregunta: ${response.status} ${response.statusText}`);
     }
-  },
 
-  // Encuestas - CONECTADO A TU API
+    console.log('✅ Pregunta eliminada exitosamente');
+  } catch (error) {
+    console.error(`❌ Error deleting pregunta ${preguntaId}:`, error);
+    throw error;
+  }
+},
+
+
+  // ==================== OPERACIONES CON ENCUESTAS ====================
   obtenerEncuestas: async (): Promise<Encuesta[]> => {
     try {
-      const response = await fetch(`${API_BASE}/encuestas/`);
-      if (!response.ok) {
-        throw new Error('Error al obtener encuestas');
-      }
-      const data = await response.json();
-      
-      // Tu API devuelve un objeto, no un array - lo convertimos a array
+      const data = await fetchWithErrorHandling(
+        `${API_BASE}/encuestas/`,
+        { method: 'GET' },
+        'obtener encuestas'
+      );
+
       const encuestasArray = Array.isArray(data) ? data : [data];
-      
-      return encuestasArray.map((item: any) => ({
-        id: item.id,
-        titulo: item.titulo,
-        descripcion: `${item.carrera} - ${item.sede} - ${item.cursado} ${item.año}`,
-        categorias: categoriasMock,
-        preguntas: [], // Por ahora vacío - luego podemos cargar las preguntas de cada encuesta
-        activa: item.activa,
-        fechaCreacion: item.created_at,
-        fechaInicio: item.fecha_inicio,
-        fechaFin: item.fecha_fin,
-        rolDestinatario: 'alumno'
-      }));
+      return encuestasArray.map(mapearEncuestaDesdeAPI);
     } catch (error) {
-      console.error('Error fetching encuestas:', error);
-      throw error;
+      console.error('❌ Error fetching encuestas:', error);
+      throw new Error(`No se pudieron cargar las encuestas: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     }
   },
 
   crearEncuesta: async (encuesta: Omit<Encuesta, 'id' | 'fechaCreacion'>): Promise<Encuesta> => {
     try {
-      const payload = {
-        titulo: encuesta.titulo,
-        año: new Date().getFullYear(),
-        cursado: "PRIMER CUATRIMESTRE", // Podemos hacer esto configurable
-        fecha_inicio: encuesta.fechaInicio,
-        fecha_fin: encuesta.fechaFin,
-        carrera: "Licenciatura en Sistemas", // Podemos hacer esto configurable
-        sede: "Trelew", // Podemos hacer esto configurable
-        asignatura_id: 1, // Valor por defecto - importante: necesitamos saber cómo obtener esto
-        estado: "abierta",
-        activa: encuesta.activa
-      };
+      const payload = crearPayloadEncuesta(encuesta);
+      console.log('📤 Enviando encuesta:', payload);
 
-      console.log('Enviando encuesta:', payload);
-
-      const response = await fetch(`${API_BASE}/encuestas/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const nuevaEncuesta = await fetchWithErrorHandling(
+        `${API_BASE}/encuestas/`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
         },
-        body: JSON.stringify(payload)
-      });
+        'crear encuesta'
+      );
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Error al crear encuesta: ${errorText}`);
-      }
+      console.log('✅ Encuesta creada:', nuevaEncuesta);
 
-      const nuevaEncuesta = await response.json();
-      
       return {
         id: nuevaEncuesta.id,
         titulo: nuevaEncuesta.titulo,
@@ -183,12 +223,12 @@ export const encuestasService = {
         rolDestinatario: encuesta.rolDestinatario
       };
     } catch (error) {
-      console.error('Error creating encuesta:', error);
+      console.error('❌ Error creating encuesta:', error);
       throw error;
     }
   },
 
-  // Estadísticas (mock por ahora - no tienes endpoint)
+  // ==================== OPERACIONES CON ESTADÍSTICAS ====================
   obtenerEstadisticasEncuesta: async (encuestaId: number): Promise<EstadisticasEncuesta> => {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -207,11 +247,64 @@ export const encuestasService = {
                 'Ocasionalmente': 8,
                 'Nunca': 2
               }
+            },
+            {
+              preguntaId: 2,
+              textoPregunta: '¿El docente demuestra dominio de los contenidos?',
+              tipo: 'cerrada',
+              respuestas: ['Excelente', 'Bueno', 'Bueno', 'Regular', 'Excelente'],
+              estadisticas: {
+                'Excelente': 25,
+                'Bueno': 15,
+                'Regular': 5,
+                'Deficiente': 0
+              }
+            },
+            {
+              preguntaId: 3,
+              textoPregunta: '¿Qué sugerencias tienes para mejorar el curso?',
+              tipo: 'abierta',
+              respuestas: [
+                'Muy buen curso, todo excelente',
+                'Podría mejorar la organización de los materiales',
+                'Más ejercicios prácticos por favor'
+              ]
             }
           ]
         };
         resolve(estadisticas);
       }, 500);
     });
+  },
+
+  // ==================== MÉTODOS ADICIONALES UTILES ====================
+  obtenerEncuestaPorId: async (id: number): Promise<Encuesta | null> => {
+    try {
+      const encuestas = await encuestasService.obtenerEncuestas();
+      return encuestas.find(encuesta => encuesta.id === id) || null;
+    } catch (error) {
+      console.error(`❌ Error obteniendo encuesta ${id}:`, error);
+      throw error;
+    }
+  },
+
+  activarDesactivarEncuesta: async (id: number, activa: boolean): Promise<void> => {
+    try {
+      await fetchWithErrorHandling(
+        `${API_BASE}/encuestas/${id}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ activa })
+        },
+        `${activa ? 'activar' : 'desactivar'} encuesta`
+      );
+      console.log(`✅ Encuesta ${id} ${activa ? 'activada' : 'desactivada'} exitosamente`);
+    } catch (error) {
+      console.error(`❌ Error actualizando estado de encuesta ${id}:`, error);
+      throw error;
+    }
   }
 };
+
+export default encuestasService;

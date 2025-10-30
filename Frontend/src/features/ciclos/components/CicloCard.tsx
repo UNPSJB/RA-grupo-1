@@ -1,6 +1,6 @@
 import { useState, ChangeEvent } from "react";
 import { Card, Button, Form, Row, Col } from "react-bootstrap";
-import { Ciclo } from "../types"; 
+import { Ciclo } from "../types/ciclosTypes"; 
 
 interface CicloCardProps {
   ciclo: Ciclo;

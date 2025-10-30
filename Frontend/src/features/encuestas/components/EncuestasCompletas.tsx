@@ -72,7 +72,7 @@ export const EncuestasCompletas = () => {
                         <i className="bi bi-calendar-check"></i>
                     </div>
                     <h3>No hay encuestas completas</h3>
-                    <p>No has completado ninguna encuesta todavía.</p>
+                    <p>No completaste ninguna encuesta todavía.</p>
                 </div>
             ) : (
                 <Row>

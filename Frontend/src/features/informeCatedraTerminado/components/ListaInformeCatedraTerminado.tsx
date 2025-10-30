@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { mostrarPeriodo } from "./InformeCatedraCompletadoDetail";
-import type { Departamento } from "../../../types/types";
+import { verPeriodo } from "./DetalleInformeCatedraTerminado";
+import type { Departamento } from "../../departamentos/types/departamentoTypes";
 
-interface InformeCatedraCompletado {
+interface InformeCatedraTerminado {
   id: number;
   titulo: string;
   anio: number;
@@ -11,7 +11,7 @@ interface InformeCatedraCompletado {
 }
 
 export default function InformeCatedraList() {
-  const [informes, setInformes] = useState<InformeCatedraCompletado[]>([]);
+  const [informes, setInformes] = useState<InformeCatedraTerminado[]>([]);
   const [departamento, setDepartamento] = useState<Departamento | null>(null);
   const departamentoId = 1; 
 
@@ -20,7 +20,7 @@ export default function InformeCatedraList() {
       .then(res => res.json())
       .then(setDepartamento)
       .catch(console.error);
-    fetch(`http://127.0.0.1:8000/informe-catedra-completado/departamento/${departamentoId}`)
+    fetch(`http://127.0.0.1:8000/informe-catedra-finalizado/departamento/${departamentoId}`)
       .then(res => res.json())
       .then(setInformes)
       .catch(console.error);
@@ -47,7 +47,7 @@ export default function InformeCatedraList() {
                       <div>
                         <span className="text-muted me-3">{i + 1}.</span>
                         <span className="fw-bold">
-                          {inf.titulo} – {inf.anio} ({mostrarPeriodo(inf.periodo)})
+                          {inf.titulo} – {inf.anio} ({verPeriodo(inf.periodo)})
                         </span>
                       </div>
                       <Link

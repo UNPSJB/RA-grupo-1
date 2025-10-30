@@ -14,7 +14,7 @@ class Categoria(ModeloBase):
     texto: Mapped[str] = mapped_column(String, nullable=False)
     encuesta_id: Mapped[int] = mapped_column(
         ForeignKey("encuestas.id")
-    )  # Foreign key a Encuesta
+    )  
 
     encuesta: Mapped["Encuesta"] = relationship(
         "src.encuestas.models.Encuesta", back_populates="categorias"
@@ -23,6 +23,15 @@ class Categoria(ModeloBase):
     preguntas: Mapped[Optional[List["Pregunta"]]] = relationship(
         "src.preguntas.models.Pregunta",
         back_populates="categoria"
+    )
+
+    informe_catedra_id: Mapped[Optional[int]] = mapped_column(
+    ForeignKey("informe_catedra.id")
+    )
+
+    informe_catedra: Mapped[Optional["InformeCatedra"]] = relationship(
+    "src.informe_catedra.models.InformeCatedra",
+    back_populates="categorias"
     )
 
 

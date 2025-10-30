@@ -8,7 +8,7 @@ export interface Asignatura {
   carrera: string;
   sede: string;
   total_estudiantes: number;
-  encuestas_completadas: number;
+  encuestas_finalizadas: number;
   promedio_general: number;
   encuestas_pendientes?: number;
 }

@@ -18,6 +18,8 @@ class Pregunta(ModeloBase):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     texto: Mapped[str] = mapped_column(String(250), nullable=False)
     encuesta_id: Mapped[int] = mapped_column(Integer, ForeignKey("encuestas.id"))
+    categoria_id: Mapped[int] = mapped_column(Integer, ForeignKey("categorias.id"), nullable=True)
+
     
     tipo: Mapped[TipoPreguntaEnum] = mapped_column(
         String(50), 
@@ -26,11 +28,16 @@ class Pregunta(ModeloBase):
     )
 
     # RELACIÓN 
-    # respuestas = relationship("Respuesta", back_populates="pregunta", lazy="select")
+    respuestas = relationship("Respuesta", back_populates="pregunta", lazy="select")
 
     opciones: Mapped[List["Opcion"]] = relationship(
         "Opcion",
         secondary=pregunta_opcion,
         back_populates="preguntas",
         lazy="select"
+    )
+
+    categoria: Mapped["Categoria"] = relationship(
+        "src.categorias.models.Categoria",
+        back_populates="preguntas"
     )

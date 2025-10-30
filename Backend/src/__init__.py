@@ -10,6 +10,9 @@ from src.preguntas.models import Pregunta
 from src.opciones.models import Opcion
 from src.vinculaciones.asignatura_docente.models import AsignaturaDocente
 from src.vinculaciones.models import alumno_encuesta, alumno_asignatura, pregunta_opcion
+from src.informe_catedra.models import InformeCatedra
+from src.informe_catedra_finalizado.models import InformeCatedraFinalizado
+from src.resultado_informe.models import ResultadoInforme
 
 __all__ = [
     "ModeloBase",
@@ -19,6 +22,11 @@ __all__ = [
     "Docente",
     "Asignatura",
     "Encuesta",
-    "EncuestaAlumno",
+    "Respuesta"
+    "Pregunta"
+    "Opcion",
     "AsignaturaDocente"
+    "InformeCatedra"
+    "InformeCatedraFinalizado"
+    "ResultadoInforme"
 ]

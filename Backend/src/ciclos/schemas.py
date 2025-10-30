@@ -24,4 +24,4 @@ class CicloOut(CicloBase):
     creado_en: datetime
 
     class Config:
-        from_attributes = True  
+        from_attributes = True  # <- antes era orm_mode = true, probar

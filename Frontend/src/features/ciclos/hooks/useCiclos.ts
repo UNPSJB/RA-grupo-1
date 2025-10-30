@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Ciclo } from "../types/index";
+import { Ciclo } from "../types/ciclosTypes";
 
 export function useCiclos() {
   const [ciclos, setCiclos] = useState<Ciclo[]>([]);

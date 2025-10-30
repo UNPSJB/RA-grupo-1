@@ -4,22 +4,22 @@ from typing import List
 from src.respuestas.schemas import Respuesta, RespuestaCreateEnEncuesta
 from src.vinculaciones.models import Duracion
 
-class EncuestaCompletadaBase(BaseModel):
+class EncuestaFinalizadaBase(BaseModel):
     alumno_id: int
     encuesta_id: int
     asignatura_id: int
     anio: int
     duracion: Duracion
 
-class EncuestaCompletadaCreate(EncuestaCompletadaBase):
+class EncuestaFinalizadaCreate(EncuestaFinalizadaBase):
     pass
 
-class EncuestaCompletadaConRespuestasCreate(EncuestaCompletadaBase):
+class EncuestaFinalizadaConRespuestasCreate(EncuestaFinalizadaBase):
     respuestas: List[RespuestaCreateEnEncuesta]
 
-class EncuestaCompletada(EncuestaCompletadaBase):
+class EncuestaFinalizada(EncuestaFinalizadaBase):
     id: int
-    #fecha_completada: datetime
+    #fecha_finalizada: datetime
     respuestas: List[Respuesta]
 
     model_config = {"from_attributes": True}

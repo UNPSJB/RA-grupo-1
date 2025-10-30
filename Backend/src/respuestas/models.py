@@ -4,7 +4,9 @@ from src.models import ModeloBase
 from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from src.encuestas_completadas.models import EncuestaCompletada
+    from src.encuesta_finalizada.models import EncuestaFinalizada
+    from src.preguntas.models import Pregunta
+    from src.ciclos.models import CicloEncuesta
 
 class Respuesta(ModeloBase):
     __tablename__ = "respuestas"
@@ -12,14 +14,16 @@ class Respuesta(ModeloBase):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     alumno_id: Mapped[int] = mapped_column(Integer, ForeignKey("alumnos.id"))
     pregunta_id: Mapped[int] = mapped_column(ForeignKey("preguntas.id"))
-    
     respuesta_texto: Mapped[str | None] = mapped_column(String(150), nullable=True)
     opcion_id: Mapped[int] = mapped_column(ForeignKey("opciones.id"), nullable=True)
-    encuesta_completada_id: Mapped[int] = mapped_column(ForeignKey("encuestas_completadas.id"))
-    encuesta_completada: Mapped["EncuestaCompletada"] = relationship("EncuestaCompletada", back_populates="respuestas")
+    encuesta_finalizada_id: Mapped[int] = mapped_column(ForeignKey("encuestas_finalizadas.id"))
+    encuesta_finalizada: Mapped["EncuestaFinalizada"] = relationship("EncuestaFinalizada", back_populates="respuestas")
+    ciclo_id: Mapped[int] = mapped_column(ForeignKey("ciclos_encuesta.id"))
 
     
     # RELACIONES 
-    # pregunta: Mapped["Pregunta"] = relationship("Pregunta")
-    # alumno = relationship("Alumno", back_populates="respuestas", lazy="select")
-    # opcion: Mapped["Opcion"] = relationship("Opcion")
+    pregunta: Mapped["Pregunta"] = relationship("Pregunta", back_populates="respuestas")  
+    alumno = relationship("Alumno", back_populates="respuestas", lazy="select")
+    opcion: Mapped["Opcion"] = relationship("Opcion")
+    encuesta_finalizada: Mapped["EncuestaFinalizada"] = relationship("EncuestaFinalizada", back_populates="respuestas")
+    ciclo: Mapped["CicloEncuesta"] = relationship("CicloEncuesta", back_populates="respuestas")

@@ -23,7 +23,8 @@ async def db_creation_lifespan(app: FastAPI):
 app = FastAPI(title="API de encuestas", version="1.0.0")
 
 origins = [
-    "http://localhost:5173", 
+    "http://localhost:5173",
+    "http://127.0.0.1:5173" 
 ]
 
 

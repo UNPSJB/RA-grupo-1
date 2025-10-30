@@ -10,7 +10,7 @@ type Respuesta = {
   encuesta_completada_id: number;
 };
 
-type EncuestaCompletada = {
+type EncuestaFinalizada = {
   id: number;
   alumno_id: number;
   encuesta_id: number;
@@ -21,7 +21,7 @@ type EncuestaCompletada = {
 };
 
 type Props = {
-  encuestas: EncuestaCompletada[];
+  encuestas: EncuestaFinalizada[];
 };
 
 export default function EncuestasCompletadas({ encuestas }: Props) {

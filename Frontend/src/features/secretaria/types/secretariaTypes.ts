@@ -21,7 +21,7 @@ export interface EstadisticasGenerales {
   totalUsuarios: number;
   totalAlumnos: number;
   totalDocentes: number;
-  totalEncuestasCompletadas: number;
+  totalEncuestasFinalizadas: number;
   totalEncuestasPendientes: number;
   carrerasActivas: number;
 }

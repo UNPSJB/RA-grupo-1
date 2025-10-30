@@ -2,6 +2,7 @@ import { Pregunta, Encuesta, EstadisticasEncuesta, TipoPregunta, CategoriaPregun
 
 const API_BASE = 'http://127.0.0.1:8000';
 
+// Datos mock
 const categoriasMock: CategoriaPregunta[] = [
   { id: 1, codigo: 'A', nombre: 'Planificación de la Enseñanza', orden: 1 },
   { id: 2, codigo: 'B', nombre: 'Desarrollo de la Enseñanza', orden: 2 },
@@ -69,8 +70,9 @@ const encuestasMock: Encuesta[] = [
   }
 ];
 
+// Servicio principal
 export const encuestasService = {
-  // Obtener categorías
+  // Operaciones con Categorías
   obtenerCategorias: async (): Promise<CategoriaPregunta[]> => {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -79,8 +81,8 @@ export const encuestasService = {
     });
   },
 
-  // Preguntas
-    obtenerPreguntas: async (): Promise<Pregunta[]> => {
+  // Operaciones con Preguntas
+  obtenerPreguntas: async (): Promise<Pregunta[]> => {
     try {
       console.log('🔍 Obteniendo preguntas desde:', `${API_BASE}/preguntas/`);
       const response = await fetch(`${API_BASE}/preguntas/`);
@@ -92,13 +94,12 @@ export const encuestasService = {
       const data = await response.json();
       console.log('📥 Preguntas recibidas:', data);
       
-      
       return data.map((item: any, index: number) => ({
         id: item.id,
         texto: item.texto,
         tipo: item.tipo as TipoPregunta,
         opciones: item.opciones || [],
-        categoriaId: 1, 
+        categoriaId: 1, // Por defecto, ajustar según API real
         orden: index + 1,
         activa: true,
         fechaCreacion: item.created_at || new Date().toISOString()
@@ -117,33 +118,84 @@ export const encuestasService = {
     });
   },
 
-  crearPregunta: async (pregunta: Omit<Pregunta, 'id' | 'fechaCreacion'>): Promise<Pregunta> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const nuevaPregunta: Pregunta = {
-          ...pregunta,
-          id: Date.now(),
-          fechaCreacion: new Date().toISOString().split('T')[0]
-        };
-        preguntasMock.push(nuevaPregunta);
-        resolve(nuevaPregunta);
-      }, 500);
-    });
+  crearPregunta: async (preguntaData: {
+    texto: string;
+    tipo: TipoPregunta;
+    opciones?: string[];
+    categoriaId: number;
+    orden: number;
+    activa: boolean;
+  }): Promise<Pregunta> => {
+    try {
+      // Determinar endpoint según tipo
+      const endpoint = preguntaData.tipo === 'abierta' 
+        ? `${API_BASE}/preguntas/abierta`
+        : `${API_BASE}/preguntas/cerrada`;
+
+      // Preparar payload según API
+      const payload = {
+        texto: preguntaData.texto,
+        encuesta_id: 1, // IMPORTANTE: Definir encuesta destino
+        tipo: preguntaData.tipo,
+        opciones: preguntaData.tipo === 'cerrada' ? preguntaData.opciones || [] : []
+      };
+
+      console.log('📤 Enviando pregunta:', { endpoint, payload });
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Error al crear pregunta: ${response.status} ${response.statusText}`);
+      }
+
+      const nuevaPregunta = await response.json();
+      console.log('✅ Pregunta creada:', nuevaPregunta);
+      
+      return {
+        id: nuevaPregunta.id,
+        texto: nuevaPregunta.texto || preguntaData.texto,
+        tipo: preguntaData.tipo,
+        opciones: preguntaData.opciones || [],
+        categoriaId: preguntaData.categoriaId,
+        orden: preguntaData.orden,
+        activa: preguntaData.activa,
+        fechaCreacion: nuevaPregunta.created_at || new Date().toISOString()
+      };
+    } catch (error) {
+      console.error('❌ Error creating pregunta:', error);
+      throw error;
+    }
   },
 
-  eliminarPregunta: async (id: number): Promise<void> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const index = preguntasMock.findIndex(p => p.id === id);
-        if (index !== -1) {
-          preguntasMock.splice(index, 1);
-        }
-        resolve();
-      }, 500);
-    });
+  eliminarPregunta: async (encuestaId: number, preguntaId: number): Promise<void> => {
+    try {
+      console.log(`🗑️ Eliminando pregunta ${preguntaId} de encuesta ${encuestaId}`);
+      
+      // Usar endpoint específico para relación formulario-pregunta
+      const response = await fetch(`${API_BASE}/formulario/${encuestaId}/pregunta/${preguntaId}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Error al eliminar pregunta: ${response.status} ${response.statusText}`);
+      }
+
+      console.log('✅ Pregunta eliminada de la encuesta exitosamente');
+    } catch (error) {
+      console.error(`❌ Error deleting pregunta ${preguntaId}:`, error);
+      throw error;
+    }
   },
 
-  // Encuestas
+  // Operaciones con Encuestas
   obtenerEncuestas: async (): Promise<Encuesta[]> => {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -166,7 +218,7 @@ export const encuestasService = {
     });
   },
 
-  // Estadísticas
+  // Operaciones con Estadísticas
   obtenerEstadisticasEncuesta: async (encuestaId: number): Promise<EstadisticasEncuesta> => {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -194,3 +246,5 @@ export const encuestasService = {
     });
   }
 };
+
+export default encuestasService;

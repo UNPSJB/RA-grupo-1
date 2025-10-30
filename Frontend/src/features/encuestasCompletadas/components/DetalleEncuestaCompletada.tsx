@@ -22,7 +22,7 @@ interface Respuesta {
   encuesta_completada_id: number;
 }
 
-interface EncuestaCompletada {
+interface EncuestaFinalizada {
   id: number;
   alumno_id: number;
   encuesta_id: number;
@@ -38,9 +38,9 @@ interface Asignatura {
   matricula: string;
 }
 
-export default function EncuestaCompletadaDetalle() {
+export default function EncuestaFinalizadaDetalle() {
   const { id } = useParams();
-  const [encuesta, setEncuesta] = useState<EncuestaCompletada | null>(null);
+  const [encuesta, setEncuesta] = useState<EncuestaFinalizada | null>(null);
   const [asignatura, setAsignatura] = useState<Asignatura | null>(null);
   const [preguntas, setPreguntas] = useState<Record<number, Pregunta>>({});
   const [opciones, setOpciones] = useState<Record<number, Opcion[]>>({});
@@ -50,12 +50,12 @@ export default function EncuestaCompletadaDetalle() {
   useEffect(() => {
     if (!id) return;
 
-    fetch(`http://127.0.0.1:8000/encuesta-completada/${id}`)
+    fetch(`http://127.0.0.1:8000/encuesta-finalizada/${id}`)
       .then((res) => {
         if (!res.ok) throw new Error("Error al obtener la encuesta completada");
         return res.json();
       })
-      .then(async (data: EncuestaCompletada) => {
+      .then(async (data: EncuestaFinalizada) => {
         setEncuesta(data);
 
         fetch(`http://127.0.0.1:8000/asignaturas/${data.asignatura_id}`)
