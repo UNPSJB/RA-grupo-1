@@ -11,9 +11,9 @@ export interface RespuestaAbierta {
 }
 
 class RespuestasService {
-  async getRespuestasAbiertas(materiaId?: string): Promise<RespuestaAbierta[]> {
-    const url = materiaId 
-      ? `/respuestas/abiertas/materia/${materiaId}`
+  async getRespuestasAbiertas(asignaturaId?: string): Promise<RespuestaAbierta[]> {
+    const url = asignaturaId 
+      ? `/respuestas/abiertas/asignatura/${asignaturaId}`
       : '/respuestas/abiertas';
     
     const response = await api.get(url);

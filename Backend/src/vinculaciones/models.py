@@ -31,3 +31,11 @@ alumno_encuesta = Table(
     Column('alumno_id', Integer, ForeignKey('alumnos.id'), primary_key=True),
     Column('encuesta_id', Integer, ForeignKey('encuestas.id'), primary_key=True)
 )
+
+informe_catedra_asignatura = Table(
+    "informe_catedra_asignatura",
+    ModeloBase.metadata,
+    Column("id", Integer, primary_key=True, index=True),
+    Column("informe_catedra_id", ForeignKey("informe_catedra.id")),
+    Column("asignatura_id", ForeignKey("asignaturas.id"))
+)   

@@ -28,7 +28,7 @@ const carrerasMock: Carrera[] = [
     nombre: 'Licenciatura en Sistemas',
     codigo: 'LSI',
     departamento: 'Departamento de Informática',
-    cantidadMaterias: 32,
+    cantidadAsignaturas: 32,
     activa: true
   },
   {
@@ -36,7 +36,7 @@ const carrerasMock: Carrera[] = [
     nombre: 'Quimica',
     codigo: 'IQ',
     departamento: 'Departamento de Ingeniería',
-    cantidadMaterias: 35,
+    cantidadAsignaturas: 35,
     activa: true
   }
 ];
@@ -51,7 +51,7 @@ export const secretariaService = {
           totalUsuarios: 1500,
           totalAlumnos: 1200,
           totalDocentes: 250,
-          totalEncuestasCompletadas: 8500,
+          totalEncuestasFinalizadas: 8500,
           totalEncuestasPendientes: 1200,
           carrerasActivas: 15
         });

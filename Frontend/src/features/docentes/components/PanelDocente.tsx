@@ -1,18 +1,34 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { docenteService, DocenteStats } from '../services/docenteService';
+import { useEffect, useState } from 'react';
+import { getInformes, Informe } from "../services/informeService";
 
 export const PanelDocente: React.FC = () => {
-  // Datos de ejemplo aca despues se llama a la api
+  // DATOS HARCODEADOS ACA VAN CON LA API
   const docenteData = {
-    materias: 3,
-    semestre: "2024",
+    asignaturas: 3,
+    semestre: "2025",
     alumnos: 105,
-    encuestasCompletadas: 85,
+    encuestasFinalizadas: 85,
     evaluacionPromedio: 3.7
   };
 
-  return (
+  const [informes, setInformes] = useState<Informe[]>([]);
+
+  useEffect(() => {
+    const fetchInformes = async () => {
+      try{
+        const data = await getInformes();
+        setInformes(data);
+      } catch (error) {
+        console.error("Error al obtener informes:", error);
+      }
+    };
+    fetchInformes();
+  }, []);
+
+   return (
     <div className="container-fluid">
       <div className="row mb-4">
         <div className="col-xl-3 col-md-6 mb-4">
@@ -21,7 +37,7 @@ export const PanelDocente: React.FC = () => {
               <div className="d-flex justify-content-between align-items-start">
                 <div>
                   <h6 className="card-title text-muted text-uppercase small">Total Materias</h6>
-                  <h2 className="fw-bold text-primary mb-1">{docenteData.materias}</h2>
+                  <h2 className="fw-bold text-primary mb-1">{docenteData.asignaturas}</h2>
                   <small className="text-muted">Semestre {docenteData.semestre}</small>
                 </div>
                 <div className="bg-primary bg-opacity-10 p-3 rounded">
@@ -54,8 +70,8 @@ export const PanelDocente: React.FC = () => {
             <div className="card-body">
               <div className="d-flex justify-content-between align-items-start">
                 <div>
-                  <h6 className="card-title text-muted text-uppercase small">Encuestas Completadas</h6>
-                  <h2 className="fw-bold text-warning mb-1">{docenteData.encuestasCompletadas}</h2>
+                  <h6 className="card-title text-muted text-uppercase small">Encuestas Finalizadas</h6>
+                  <h2 className="fw-bold text-warning mb-1">{docenteData.encuestasFinalizadas}</h2>
                   <small className="text-muted">
                     de {docenteData.alumnos} alumnos
                   </small>
@@ -133,6 +149,30 @@ export const PanelDocente: React.FC = () => {
                   <span>Materias sin evaluaciones</span>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+        <div className="col-lg-12 mb-4">
+          <div className="card border-0 shadow-sm h-100">
+            <div className="card-header bg-white border-0">
+              <h5 className="card-title mb-0">
+                <i className="bi bi-journal-text me-2 text-primary"></i>
+                Informes del Docente
+              </h5>
+            </div>
+            <div className="card-body">
+              {informes.length > 0 ? (
+                <ul className="list-group list-group-flush">
+                  {informes.map((inf) => (
+                    <li key={inf.id} className="list-group-item border-0 px-0 py-2">
+                      <strong>{inf.codigo_actividad_curricular}</strong> —{" "}
+                      {inf.docente_responsable} ({inf.estado})
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-muted">No hay informes registrados.</p>
+              )}
             </div>
           </div>
         </div>

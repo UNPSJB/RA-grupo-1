@@ -1,22 +1,55 @@
-import { useState } from 'react';
-import { Container, Row, Col, Card, Form, Button, Alert, ListGroup, Badge } from 'react-bootstrap';
+import { useState, useEffect } from 'react';
+import { 
+  Container, 
+  Row, 
+  Col, 
+  Card, 
+  Form, 
+  Button, 
+  Alert, 
+  Badge, 
+  Accordion,
+  Modal 
+} from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { useEncuestas } from '../hooks/useEncuestas';
+import { useSecretaria } from '../hooks/useSecretaria';
 import { Pregunta } from '../types/encuestasTypes';
 
+
 export const CrearEncuesta = () => {
-  const { preguntas, crearEncuesta } = useEncuestas();
+  const { preguntas, categorias, crearEncuesta, crearPregunta, eliminarPregunta } = useSecretaria();
   const navigate = useNavigate();
   
+  // Estados del formulario principal
   const [formData, setFormData] = useState({
     titulo: '',
     descripcion: '',
-    fechaInicio: '',
-    fechaFin: ''
+    rolDestinatario: 'alumno'
   });
+  
+  // Estados de selección
   const [preguntasSeleccionadas, setPreguntasSeleccionadas] = useState<number[]>([]);
+  const [categoriasSeleccionadas, setCategoriasSeleccionadas] = useState<number[]>([]);
+  
+  // Estados de gestión de preguntas
+  const [nuevaPreguntaAbierta, setNuevaPreguntaAbierta] = useState('');
+  const [creandoPregunta, setCreandoPregunta] = useState(false);
+  
+  // Estados para eliminación
+  const [preguntaAEliminar, setPreguntaAEliminar] = useState<number | null>(null);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  
+  // Estados de feedback
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
+  // Agrupar preguntas por categoría
+  const preguntasAgrupadas = categorias.map(categoria => ({
+    ...categoria,
+    preguntas: preguntas.filter(p => p.categoriaId === categoria.id)
+  }));
+
+  // Manejo de selección de preguntas
   const togglePregunta = (preguntaId: number) => {
     setPreguntasSeleccionadas(prev => 
       prev.includes(preguntaId)
@@ -25,16 +58,94 @@ export const CrearEncuesta = () => {
     );
   };
 
+  const getPreguntaSeleccionada = (preguntaId: number) => {
+    return preguntasSeleccionadas.includes(preguntaId);
+  };
+
+  // Manejo de selección de categorías
+  const toggleCategoria = (categoriaId: number) => {
+    const categoria = preguntasAgrupadas.find(c => c.id === categoriaId);
+    if (!categoria) return;
+
+    if (categoriasSeleccionadas.includes(categoriaId)) {
+      // Deseleccionar categoría y todas sus preguntas
+      setCategoriasSeleccionadas(prev => prev.filter(id => id !== categoriaId));
+      const idsPreguntasCategoria = categoria.preguntas.map(p => p.id);
+      setPreguntasSeleccionadas(prev => prev.filter(id => !idsPreguntasCategoria.includes(id)));
+    } else {
+      // Seleccionar categoría y todas sus preguntas
+      setCategoriasSeleccionadas(prev => [...prev, categoriaId]);
+      const idsPreguntasCategoria = categoria.preguntas.map(p => p.id);
+      setPreguntasSeleccionadas(prev => [...prev, ...idsPreguntasCategoria]);
+    }
+  };
+
+  const getCategoriaSeleccionada = (categoriaId: number) => {
+    return categoriasSeleccionadas.includes(categoriaId);
+  };
+
+  // Crear nueva pregunta abierta
+  const crearPreguntaAbiertaHandler = async () => {
+    if (!nuevaPreguntaAbierta.trim()) {
+      setError('El texto de la pregunta no puede estar vacío');
+      return;
+    }
+
+    try {
+      setCreandoPregunta(true);
+      const preguntaCreada = await crearPregunta(
+        nuevaPreguntaAbierta, 
+        'abierta', 
+        undefined, 
+        7 // Categoría G - Sugerencias
+      );
+      
+      setNuevaPreguntaAbierta('');
+      setSuccess('Pregunta abierta creada exitosamente');
+    } catch (err) {
+      setError('Error al crear la pregunta');
+    } finally {
+      setCreandoPregunta(false);
+    }
+  };
+
+  // Manejo de eliminación de preguntas
+  const handleEliminarPregunta = (preguntaId: number) => {
+    setPreguntaAEliminar(preguntaId);
+    setShowConfirmDelete(true);
+  };
+
+  const confirmarEliminacion = async () => {
+    if (preguntaAEliminar) {
+      try {
+        await eliminarPregunta(preguntaAEliminar);
+        
+        // Remover de seleccionadas si estaba seleccionada
+        if (preguntasSeleccionadas.includes(preguntaAEliminar)) {
+          setPreguntasSeleccionadas(prev => prev.filter(id => id !== preguntaAEliminar));
+        }
+        
+        setSuccess('Pregunta eliminada exitosamente');
+      } catch (err) {
+        setError('Error al eliminar la pregunta');
+      } finally {
+        setShowConfirmDelete(false);
+        setPreguntaAEliminar(null);
+      }
+    }
+  };
+
+  // Envío del formulario
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (preguntasSeleccionadas.length === 0) {
-      setError('Debes seleccionar al menos una pregunta');
+      setError('Selecciona al menos una pregunta');
       return;
     }
 
-    if (!formData.titulo || !formData.fechaInicio || !formData.fechaFin) {
-      setError('Todos los campos son obligatorios');
+    if (!formData.titulo) {
+      setError('El título de la encuesta es obligatorio');
       return;
     }
 
@@ -46,24 +157,15 @@ export const CrearEncuesta = () => {
         orden: index + 1
       }));
 
-      await crearEncuesta({
-        titulo: formData.titulo,
-        descripcion: formData.descripcion,
-        preguntas: preguntasParaEncuesta,
-        activa: true,
-        fechaInicio: formData.fechaInicio,
-        fechaFin: formData.fechaFin
-      });
+      const categoriasParaEncuesta = categorias.filter(c =>
+        categoriasSeleccionadas.includes(c.id)
+      );
 
-      navigate('/secretaria/panel');
+      navigate('/secretaria');
     } catch (err) {
       setError('Error al crear la encuesta');
       console.error('Error:', err);
     }
-  };
-
-  const getPreguntaSeleccionada = (preguntaId: number) => {
-    return preguntasSeleccionadas.includes(preguntaId);
   };
 
   return (
@@ -71,27 +173,28 @@ export const CrearEncuesta = () => {
       <Row>
         <Col>
           <h1 className="h2">Crear Nueva Encuesta</h1>
-          <p className="text-muted">Configura una nueva encuesta seleccionando las preguntas disponibles</p>
         </Col>
       </Row>
 
-      {error && <Alert variant="danger">{error}</Alert>}
+      {error && <Alert variant="danger" onClose={() => setError(null)} dismissible>{error}</Alert>}
+      {success && <Alert variant="success" onClose={() => setSuccess(null)} dismissible>{success}</Alert>}
 
       <Form onSubmit={handleSubmit}>
         <Row>
           <Col md={8}>
+            {/* Información de la Encuesta */}
             <Card className="mb-4">
               <Card.Header>
                 <h5 className="mb-0">Información de la Encuesta</h5>
               </Card.Header>
               <Card.Body>
                 <Form.Group className="mb-3">
-                  <Form.Label>Título de la Encuesta</Form.Label>
+                  <Form.Label>Título de la Encuesta *</Form.Label>
                   <Form.Control
                     type="text"
                     value={formData.titulo}
                     onChange={(e) => setFormData({ ...formData, titulo: e.target.value })}
-                    placeholder="Ej: Encuesta de Satisfacción Docente - Primer Semestre 2024"
+                    placeholder="Ej: Encuesta de Satisfacción Docente - Primer Semestre 2025"
                     required
                   />
                 </Form.Group>
@@ -110,46 +213,66 @@ export const CrearEncuesta = () => {
                 <Row>
                   <Col md={6}>
                     <Form.Group className="mb-3">
-                      <Form.Label>Fecha de Inicio</Form.Label>
-                      <Form.Control
-                        type="date"
-                        value={formData.fechaInicio}
-                        onChange={(e) => setFormData({ ...formData, fechaInicio: e.target.value })}
-                        required
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Fecha de Fin</Form.Label>
-                      <Form.Control
-                        type="date"
-                        value={formData.fechaFin}
-                        onChange={(e) => setFormData({ ...formData, fechaFin: e.target.value })}
-                        required
-                      />
+                      <Form.Label>Destinatario</Form.Label>
+                      <Form.Select
+                        value={formData.rolDestinatario}
+                        onChange={(e) => setFormData({ ...formData, rolDestinatario: e.target.value })}
+                      >
+                        <option value="alumno">Alumnos</option>
+                        <option value="docente">Docentes</option>
+                        <option value="todos">Todos</option>
+                      </Form.Select>
                     </Form.Group>
                   </Col>
                 </Row>
               </Card.Body>
             </Card>
+
+            {/* Crear Nueva Pregunta Abierta */}
+            <Card className="mb-4">
+              <Card.Header>
+                <h5 className="mb-0">Crear Nueva Pregunta Abierta</h5>
+              </Card.Header>
+              <Card.Body>
+                <Form.Group className="mb-3">
+                  <Form.Label>Texto de la pregunta *</Form.Label>
+                  <Form.Control 
+                    type="text" 
+                    placeholder="Ingresa el texto de la pregunta..."
+                    value={nuevaPreguntaAbierta}
+                    onChange={(e) => setNuevaPreguntaAbierta(e.target.value)}
+                  />
+                </Form.Group>
+                <Button 
+                  variant="outline-primary"
+                  onClick={crearPreguntaAbiertaHandler}
+                  disabled={!nuevaPreguntaAbierta.trim() || creandoPregunta}
+                >
+                  {creandoPregunta ? 'Creando...' : 'Crear Pregunta Abierta'}
+                </Button>
+              </Card.Body>
+            </Card>
           </Col>
 
+          {/* Panel de Resumen */}
           <Col md={4}>
-            <Card>
+            <Card className="sticky-top" style={{ top: '20px' }}>
               <Card.Header>
                 <h5 className="mb-0">Resumen</h5>
               </Card.Header>
               <Card.Body>
                 <div className="mb-3">
+                  <strong>Categorías seleccionadas:</strong>{' '}
+                  <Badge bg="primary">{categoriasSeleccionadas.length}</Badge>
+                </div>
+                <div className="mb-3">
                   <strong>Preguntas seleccionadas:</strong>{' '}
-                  <Badge bg="primary">{preguntasSeleccionadas.length}</Badge>
+                  <Badge bg="success">{preguntasSeleccionadas.length}</Badge>
                 </div>
                 <Button 
                   variant="primary" 
                   type="submit" 
                   className="w-100"
-                  disabled={preguntasSeleccionadas.length === 0}
                 >
                   <i className="bi bi-check-circle me-2"></i>
                   Crear Encuesta
@@ -159,13 +282,14 @@ export const CrearEncuesta = () => {
           </Col>
         </Row>
 
+        {/* Selección de Preguntas por Categoría */}
         <Row>
           <Col>
             <Card>
               <Card.Header>
-                <h5 className="mb-0">Seleccionar Preguntas</h5>
+                <h5 className="mb-0">Seleccionar Preguntas por Categoría</h5>
                 <small className="text-muted">
-                  Marca las preguntas que quieres incluir en esta encuesta
+                  Organiza las preguntas por categorías temáticas del sistema universitario
                 </small>
               </Card.Header>
               <Card.Body>
@@ -174,53 +298,118 @@ export const CrearEncuesta = () => {
                     No hay preguntas disponibles. Primero crea algunas preguntas en la sección de Gestión de Preguntas.
                   </Alert>
                 ) : (
-                  <Row>
-                    {preguntas.map((pregunta) => (
-                      <Col key={pregunta.id} md={6} className="mb-3">
-                        <Card 
-                          className={`h-100 cursor-pointer ${
-                            getPreguntaSeleccionada(pregunta.id) ? 'border-primary' : ''
-                          }`}
-                          onClick={() => togglePregunta(pregunta.id)}
-                          style={{ cursor: 'pointer' }}
-                        >
-                          <Card.Body>
-                            <div className="d-flex align-items-start">
-                              <Form.Check
-                                type="checkbox"
-                                checked={getPreguntaSeleccionada(pregunta.id)}
-                                onChange={() => togglePregunta(pregunta.id)}
-                                className="me-2 mt-1"
-                              />
-                              <div className="flex-grow-1">
-                                <div className="d-flex justify-content-between align-items-start mb-2">
-                                  <Badge 
-                                    bg={pregunta.tipo === 'abierta' ? 'primary' : 'success'} 
-                                    className="mb-1"
+                  <Accordion>
+                    {preguntasAgrupadas.map((categoria) => (
+                      <Accordion.Item key={categoria.id} eventKey={categoria.id.toString()}>
+                        <Accordion.Header>
+                          <div className="d-flex align-items-center">
+                            <Form.Check
+                              type="checkbox"
+                              checked={getCategoriaSeleccionada(categoria.id)}
+                              onChange={(e) => {
+                                e.stopPropagation();
+                                toggleCategoria(categoria.id);
+                              }}
+                              className="me-3"
+                            />
+                            <strong>{categoria.codigo}: {categoria.nombre}</strong>
+                            <Badge bg="secondary" className="ms-2">
+                              {categoria.preguntas.length} preguntas
+                            </Badge>
+                          </div>
+                        </Accordion.Header>
+                        <Accordion.Body>
+                          {categoria.preguntas.length === 0 ? (
+                            <Alert variant="info" className="mb-0">
+                              No hay preguntas en esta categoría
+                            </Alert>
+                          ) : (
+                            <Row>
+                              {categoria.preguntas.map((pregunta) => (
+                                <Col key={pregunta.id} md={6} className="mb-3">
+                                  <Card 
+                                    className={`h-100 cursor-pointer ${
+                                      getPreguntaSeleccionada(pregunta.id) ? 'border-primary' : ''
+                                    }`}
+                                    onClick={() => togglePregunta(pregunta.id)}
+                                    style={{ cursor: 'pointer' }}
                                   >
-                                    {pregunta.tipo === 'abierta' ? 'Abierta' : 'Cerrada'}
-                                  </Badge>
-                                  <Badge bg="secondary">Orden: {pregunta.orden}</Badge>
-                                </div>
-                                <p className="mb-2">{pregunta.texto}</p>
-                                {pregunta.tipo === 'cerrada' && pregunta.opciones && (
-                                  <small className="text-muted">
-                                    <strong>Opciones:</strong> {pregunta.opciones.join(', ')}
-                                  </small>
-                                )}
-                              </div>
-                            </div>
-                          </Card.Body>
-                        </Card>
-                      </Col>
+                                    <Card.Body>
+                                      <div className="d-flex align-items-start">
+                                        <Form.Check
+                                          type="checkbox"
+                                          checked={getPreguntaSeleccionada(pregunta.id)}
+                                          onChange={() => togglePregunta(pregunta.id)}
+                                          className="me-2 mt-1"
+                                        />
+                                        <div className="flex-grow-1">
+                                          <div className="d-flex justify-content-between align-items-start mb-2">
+                                            <div>
+                                              <Badge 
+                                                bg={pregunta.tipo === 'abierta' ? 'primary' : 'success'} 
+                                                className="mb-1"
+                                              >
+                                                {pregunta.tipo === 'abierta' ? 'Abierta' : 'Cerrada'}
+                                              </Badge>
+                                              <Badge bg="secondary" className="ms-1">
+                                                Orden: {pregunta.orden}
+                                              </Badge>
+                                            </div>
+                                            <Button
+                                              variant="outline-danger"
+                                              size="sm"
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleEliminarPregunta(pregunta.id);
+                                              }}
+                                              title="Eliminar pregunta"
+                                            >
+                                              <i className="bi bi-trash"></i>
+                                            </Button>
+                                          </div>
+                                          <p className="mb-2">{pregunta.texto}</p>
+                                          {pregunta.tipo === 'cerrada' && pregunta.opciones && (
+                                            <small className="text-muted">
+                                              <strong>Opciones:</strong> {pregunta.opciones.join(', ')}
+                                            </small>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </Card.Body>
+                                  </Card>
+                                </Col>
+                              ))}
+                            </Row>
+                          )}
+                        </Accordion.Body>
+                      </Accordion.Item>
                     ))}
-                  </Row>
+                  </Accordion>
                 )}
               </Card.Body>
             </Card>
           </Col>
         </Row>
       </Form>
+
+      {/* Modal de Confirmación de Eliminación */}
+      <Modal show={showConfirmDelete} onHide={() => setShowConfirmDelete(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirmar Eliminación</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          ¿Estás seguro de que quieres eliminar esta pregunta? 
+          Esta acción no se puede deshacer.
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowConfirmDelete(false)}>
+            Cancelar
+          </Button>
+          <Button variant="danger" onClick={confirmarEliminacion}>
+            Eliminar
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };

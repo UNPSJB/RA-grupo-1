@@ -38,10 +38,16 @@ class Encuesta(ModeloBase):
         "Alumno", secondary=alumno_encuesta, back_populates="encuestas"
     )
 
-    encuestas_completadas: Mapped[List["EncuestaCompletada"]] = relationship(
-        "EncuestaCompletada", 
+    encuestas_finalizadas: Mapped[List["EncuestaFinalizada"]] = relationship(
+        "EncuestaFinalizada", 
         back_populates="encuesta"
     )
+
+    categorias: Mapped[List["Categoria"]] = relationship(
+    "src.categorias.models.Categoria",
+    back_populates="encuesta"
+    )
+
 
     # Verifica si la encuesta esta activa
     @property

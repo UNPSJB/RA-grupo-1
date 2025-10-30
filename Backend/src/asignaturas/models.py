@@ -3,12 +3,15 @@ from sqlalchemy import Integer, String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import Optional, List, TYPE_CHECKING
 from src.models import ModeloBase
-from src.vinculaciones.models import alumno_asignatura
+from src.vinculaciones.models import alumno_asignatura, informe_catedra_asignatura
 
 if TYPE_CHECKING:
     from src.vinculaciones.asignatura_docente.models import AsignaturaDocente
     from src.alumnos.models import Alumno
     from src.encuestas.models import Encuesta
+    from src.departamentos.models import Departamento
+    from src.encuesta_finalizada.models import EncuestaFinalizada
+    from src.informe_catedra.models import InformeCatedra
 
 class Asignatura(ModeloBase):
     __tablename__ = "asignaturas"
@@ -31,4 +34,18 @@ class Asignatura(ModeloBase):
     encuestas: Mapped[List["Encuesta"]] = relationship(
         "Encuesta", 
         back_populates="asignatura"
+    )
+
+    departamento_id: Mapped[int] = mapped_column(Integer, ForeignKey("departamentos.id"), nullable=False)
+
+    departamento: Mapped["Departamento"] = relationship("Departamento", back_populates="asignaturas")
+
+    encuestas_finalizadas: Mapped[List["EncuestaFinalizada"]] = relationship(
+        "EncuestaFinalizada", 
+        back_populates="asignatura"
+    )
+
+    informes_catedra: Mapped[List["InformeCatedra"]] = relationship(
+        "InformeCatedra",
+        back_populates="asignatura"  
     )

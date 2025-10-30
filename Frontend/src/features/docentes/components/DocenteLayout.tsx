@@ -7,13 +7,16 @@ export const DocenteLayout = ({ children }) => {
   const docenteNavLinks = [
     { to: "/docente", label: "Panel Principal" },
     { to: "/docente/reportes", label: "Reportes" },
-    { to: "/docente/mis-materias", label: "Mis Materias"}
+    { to: "/docente/mis-asignaturas", label: "Mis Asignaturas"}
   ];
 
   return (
     <div className="docente-layout">
-      <Navbar navLinks={docenteNavLinks} />
-      
+      <Navbar 
+      navLinks={docenteNavLinks} 
+      showUserInfo={true} 
+      rol="docente"
+      />
       
       <main className="main-content">
         <Container className="content-container">

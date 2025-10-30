@@ -1,9 +1,7 @@
 import React from 'react';
 import { Card, Button, Badge, Spinner, Alert, Row, Col, Container } from 'react-bootstrap';
 import { useInformes } from '../hooks/useInformes';
-import { EstadoInforme } from '../types';
-
-
+import { EstadoInforme } from '../hooks/useInformes';
 
 export const PanelDepartamento: React.FC = () => {
     
@@ -60,7 +58,7 @@ export const PanelDepartamento: React.FC = () => {
                         <i className="bi bi-inbox"></i>
                     </div>
                     <h3>No hay informes incompletos</h3>
-                    <p>Todas los informes están completados o no hay informes abiertos.</p>
+                    <p>Todas los informes están terminados o no hay informes abiertos.</p>
                 </div>
             ) : (
             <ul className="list-group">
@@ -78,7 +76,7 @@ export const PanelDepartamento: React.FC = () => {
                                     informe.estado === EstadoInforme.ABIERTO ? "danger" : "success"
                                 }`}
                             >
-                                {informe.estado.toUpperCase()}
+                                {informe.estado === EstadoInforme.ABIERTO ? "Pendiente" : "Completado"}
                             </span>
                         </div>
 
@@ -97,4 +95,3 @@ export const PanelDepartamento: React.FC = () => {
 };
 
 export default PanelDepartamento;
-

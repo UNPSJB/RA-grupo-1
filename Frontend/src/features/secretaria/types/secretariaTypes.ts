@@ -13,7 +13,7 @@ export interface Carrera {
   nombre: string;
   codigo: string;
   departamento: string;
-  cantidadMaterias: number;
+  cantidadAsignaturas: number;
   activa: boolean;
 }
 
@@ -21,7 +21,7 @@ export interface EstadisticasGenerales {
   totalUsuarios: number;
   totalAlumnos: number;
   totalDocentes: number;
-  totalEncuestasCompletadas: number;
+  totalEncuestasFinalizadas: number;
   totalEncuestasPendientes: number;
   carrerasActivas: number;
 }

@@ -1,11 +1,11 @@
 from sqlalchemy import Integer, String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.models import ModeloBase
-from typing import List
+from typing import Optional, List, TYPE_CHECKING
 from src.vinculaciones.models import alumno_asignatura, alumno_encuesta
 
-#if TYPE_CHECKING:
-    #from src.respuestas.models import Respuesta
+if TYPE_CHECKING:
+    from src.respuestas.models import Respuesta
 
 class Alumno(ModeloBase):
     __tablename__ = "alumnos"
@@ -15,13 +15,13 @@ class Alumno(ModeloBase):
     CUIL: Mapped[str] = mapped_column(String, index=True)
     usuario: Mapped[str] = mapped_column(String, index=True)
     clave: Mapped[str] = mapped_column(String, index=True)
+    persona: Mapped["src.personas.models.Persona"] = relationship("src.personas.models.Persona", back_populates="alumno")
 
     # RELACIONES 
-    encuestas_completadas: Mapped[List["EncuestaCompletada"]] = relationship(
-        "EncuestaCompletada", 
+    encuestas_finalizadas: Mapped[List["EncuestaFinalizada"]] = relationship(
+        "EncuestaFinalizada", 
         back_populates="alumno"
     )
-    #respuestas: Mapped[List["Respuesta"]] = relationship("Respuesta", back_populates="alumno")
     
     asignaturas: Mapped[List["Asignatura"]] = relationship(
         "Asignatura",
@@ -35,4 +35,4 @@ class Alumno(ModeloBase):
         back_populates="alumnos"
     )
 
-    #respuestas = relationship("Respuesta", back_populates="alumno", lazy="select")
+    respuestas = relationship("Respuesta", back_populates="alumno", lazy="select")

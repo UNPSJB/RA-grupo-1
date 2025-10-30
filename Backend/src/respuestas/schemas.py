@@ -3,7 +3,7 @@ from typing import Optional
 
 class RespuestaBase(BaseModel):
     """Schema base para respuestas, contiene campos comunes"""
-    encuesta_completada_id: int = Field(..., description="ID de la encuesta completada")
+    encuesta_finalizada_id: int = Field(..., description="ID de la encuesta finalizada")
     pregunta_id: int = Field(..., description="ID de la pregunta respondida")
     respuesta_texto: Optional[str] = Field(None, description="Respuesta de texto abierto")
     opcion_id: Optional[int] = Field(None, description="ID de la opción seleccionada")
@@ -37,5 +37,5 @@ class RespuestaDetallada(RespuestaOut):
 
 class RespuestaFiltros(BaseModel):
     """Schema para filtrar respuestas en consultas"""
-    encuesta_completada_id: Optional[int] = None
+    encuesta_finalizada_id: Optional[int] = None
     pregunta_id: Optional[int] = None

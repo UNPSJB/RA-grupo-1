@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Container, Row, Col, Card, Table, Button, Badge, Spinner, Alert, Form } from 'react-bootstrap';
-import { useSecretaria } from '../hooks/useSecretaria';
+import { useSecretaria } from "../hooks/useEncuestas";
 import { Usuario } from '../types/secretariaTypes';
 
 export const GestionUsuarios = () => {
-  const { usuarios, loading, error, crearUsuario, actualizarUsuario } = useSecretaria();
+  const { usuarios, loading, error, crearUsuario, actualizarUsuario } = useEncuestas();
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     nombre: '',
