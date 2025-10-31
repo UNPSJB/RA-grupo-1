@@ -14,13 +14,16 @@ from src.encuestas.exceptions import (
 
 router = APIRouter(prefix="/encuestas", tags=["encuestas"])
 
-@router.get("/", response_model=list[schemas.Encuesta])
-def read_encuestas(db: Session = Depends(get_db)):
-    return services.listar_encuestas(db)
-
-@router.get("/activas", response_model=list[schemas.Encuesta])
-def read_encuestas_activas(db: Session = Depends(get_db)):
-    return services.listar_encuestas_activas(db)
+@router.get("/{encuesta_id}", response_model=schemas.Encuesta)
+def read_encuesta(encuesta_id: int, db: Session = Depends(get_db)):
+    # Obtiene una encuesta específica
+    encuesta = services.leer_encuesta(db, encuesta_id)
+    if not encuesta:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Encuesta no encontrada"
+        )
+    return encuesta
 
 # crea encuesta
 @router.post("/", response_model=schemas.Encuesta, status_code=status.HTTP_201_CREATED)
@@ -49,16 +52,10 @@ def read_encuesta(encuesta_id: int, db: Session = Depends(get_db)):
         )
     return encuesta
 
-#@router.get("/{encuesta_id}/alumnos", response_model=List[schemas.EstadoEncuesta])
-#def read_alumnos_encuesta(encuesta_id: int, db: Session = Depends(get_db)):
+@router.get("/{encuesta_id}/alumnos", response_model=List[schemas.EstadoEncuesta])
+def read_alumnos_encuesta(encuesta_id: int, db: Session = Depends(get_db)):
     # Obtiene alumnos vinculados a una encuesta
- #   encuesta = services.leer_encuesta(db, encuesta_id)
- #   if not encuesta:
- #       raise HTTPException(
- #           status_code=status.HTTP_404_NOT_FOUND,
- #           detail="Encuesta no encontrada"
- #       )
- #   return services.listar_alumnos_encuesta(db, encuesta_id)
+    return services.listar_alumnos_encuesta(db, encuesta_id)
  
 @router.put("/{encuesta_id}", response_model=schemas.Encuesta)
 def update_encuesta(encuesta_id: int, encuesta: schemas.EncuestaUpdate, db: Session = Depends(get_db)):
@@ -71,12 +68,12 @@ def update_encuesta(encuesta_id: int, encuesta: schemas.EncuestaUpdate, db: Sess
         )
     return encuesta_actualizada
 
-@router.delete("/{encuesta_id}", response_model=dict)
+@router.delete("/{encuesta_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_encuesta(encuesta_id: int, db: Session = Depends(get_db)):
     # Elimina una encuesta
     try:
-        mensaje = services.eliminar_encuesta(db, encuesta_id)
-        return mensaje
+        services.eliminar_encuesta(db, encuesta_id)
+        return None
     except EncuestaNoEncontrada:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -112,13 +109,8 @@ def vincular_alumno_encuesta(encuesta_id: int, alumno_id: int, db: Session = Dep
     # Vincula un alumno a una encuesta
     return services.vincular_alumno_encuesta(db, encuesta_id, alumno_id)
 
-@router.patch("/alumnos/{alumno_id}/asignaturas/{asignatura_id}/restablecer-acceso", response_model=schemas.Encuesta)
-def restablecer_acceso(alumno_id: int, asignatura_id: int, db: Session = Depends(get_db)):
-        return services.restablecer_acceso(db, asignatura_id, alumno_id)
-    
-
-#@router.get("/{encuesta_id}/respuestas", response_model=list[schemas.PreguntaConRespuestas])
-#def obtener_respuestas(encuesta_id: int, db: Session = Depends(get_db)):
-#    return services.obtener_respuestas_por_encuesta(db, encuesta_id)
+@router.get("/{encuesta_id}/respuestas", response_model=list[schemas.PreguntaConRespuestas])
+def obtener_respuestas(encuesta_id: int, db: Session = Depends(get_db)):
+    return services.obtener_respuestas_por_encuesta(db, encuesta_id)
 
 

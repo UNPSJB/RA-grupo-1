@@ -4,12 +4,13 @@ from typing import List, Optional
 from src.opciones import schemas as opcion_schemas
 
 class PreguntaBase(BaseModel):
-    oracion: str
+    texto: str
     tipo: Optional[str] = None 
     
 class PreguntaCerradaCreate(PreguntaBase):
     categoria_id: int
-    oracion: str
+    encuesta_id: int
+    texto: str
     opcion_ids: List[int] = Field(..., min_length=1)
 
     @field_validator("opcion_ids")
@@ -21,8 +22,8 @@ class PreguntaCerradaCreate(PreguntaBase):
 
 class Pregunta(PreguntaBase):
     id: int
-    oracion: str
-    categoria_id: int
+    texto: str
+    categoria_id: Optional[int] = None
 
     model_config = {"from_attributes": True}
 
@@ -34,8 +35,9 @@ class PreguntaCerrada(Pregunta):
 
 # Pregunta Abierta
 class PreguntaAbiertaCreate(PreguntaBase):
-    categoria_id: int
-    oracion: str
+    categoria_id: Optional[int] = None
+    encuesta_id: int
+    texto: str
 
 # Pregunta abierta (sin opciones).
 class PreguntaAbierta(Pregunta):

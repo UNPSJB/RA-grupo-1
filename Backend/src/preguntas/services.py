@@ -6,7 +6,7 @@ from src.preguntas import schemas, exceptions
 from src.opciones.models import Opcion
 def crear_abierta(db: Session, pregunta: schemas.PreguntaAbiertaCreate) -> Pregunta:
     _nueva_pregunta = Pregunta(
-        texto=pregunta.oracion, 
+        texto=pregunta.texto, 
         tipo=pregunta.tipo or "abierta",
         encuesta_id=pregunta.encuesta_id
     )

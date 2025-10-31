@@ -9,7 +9,7 @@ router = APIRouter(prefix="/informes_catedra",tags=["informes_catedra"]
 )
 
 @router.post("/", response_model=schemas.InformeCatedra)
-def crear_informe_catedra(informe: schemas.InformeCatedra, db: Session = Depends(get_db)):
+def crear_informe_catedra(informe: schemas.InformeCatedraCreate, db: Session = Depends(get_db)):
     return services.crear_informe_catedra(db, informe)
 
 @router.get("/", response_model=list[schemas.InformeCatedra])
