@@ -17,7 +17,6 @@ class Respuesta(ModeloBase):
     respuesta_texto: Mapped[str | None] = mapped_column(String(150), nullable=True)
     opcion_id: Mapped[int] = mapped_column(ForeignKey("opciones.id"), nullable=True)
     encuesta_finalizada_id: Mapped[int] = mapped_column(ForeignKey("encuestas_finalizadas.id"))
-    encuesta_finalizada: Mapped["EncuestaFinalizada"] = relationship("EncuestaFinalizada", back_populates="respuestas")
     ciclo_id: Mapped[int] = mapped_column(ForeignKey("ciclos_encuesta.id"))
 
     

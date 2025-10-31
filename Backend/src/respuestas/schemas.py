@@ -3,8 +3,10 @@ from typing import Optional
 
 class RespuestaBase(BaseModel):
     """Schema base para respuestas, contiene campos comunes"""
+    alumno_id: int = Field(..., description="ID del alumno")
     encuesta_finalizada_id: int = Field(..., description="ID de la encuesta finalizada")
     pregunta_id: int = Field(..., description="ID de la pregunta respondida")
+    ciclo_id: int = Field(..., description="ID del ciclo de encuesta")
     respuesta_texto: Optional[str] = Field(None, description="Respuesta de texto abierto")
     opcion_id: Optional[int] = Field(None, description="ID de la opción seleccionada")
 

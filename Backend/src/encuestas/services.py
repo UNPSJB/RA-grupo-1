@@ -1,6 +1,6 @@
 from typing import List, Optional
 from datetime import datetime
-from sqlalchemy import select, update
+from sqlalchemy import select, update, join
 from sqlalchemy.orm import Session, selectinload
 from src.encuestas.models import Encuesta, EstadoEncuesta
 from src.encuestas import schemas, exceptions
@@ -9,6 +9,8 @@ from src.respuestas.models import Respuesta
 from src.preguntas.models import Pregunta
 from src.categorias import schemas as categoria_schemas
 from src.preguntas import schemas as pregunta_schemas
+from src.encuesta_finalizada.models import EncuestaFinalizada
+
 
 def listar_encuestas(db:Session) -> List[schemas.Encuesta]:
     return db.scalars(select(Encuesta)).all()
@@ -138,6 +140,9 @@ def responder_encuesta(db: Session, respuesta: RespuestaCreate):
         progreso=50  
     )
     db.add(db_respuesta)
+    db.commit()
+    db.refresh(db_respuesta)
+    return db_respuesta
 
 def obtener_estadisticas_encuesta(db: Session, encuesta_id: int) -> dict:
     # Obtiene estadísticas de una encuesta
@@ -152,3 +157,38 @@ def obtener_estadisticas_encuesta(db: Session, encuesta_id: int) -> dict:
         "estado": encuesta.estado,
         "activa": encuesta.activa
     }
+
+def listar_preguntas_encuesta(db: Session, encuesta_id: int) -> List[pregunta_schemas.Pregunta]:
+    """
+    Devuelve todas las preguntas (de todas las categorías) asociadas a una encuesta específica.
+    """
+    db_encuesta = leer_encuesta(db, encuesta_id)
+    if db_encuesta is None:
+        raise exceptions.EncuestaNoEncontrada()
+    
+    preguntas = []
+    if hasattr(db_encuesta, 'categorias'):
+        for categoria in db_encuesta.categorias:
+            if hasattr(categoria, 'preguntas'):
+                preguntas.extend(categoria.preguntas)
+    
+    return preguntas
+
+def obtener_respuestas_por_encuesta(db: Session, encuesta_id: int):
+    """
+    Obtiene todas las respuestas asociadas a una encuesta específica.
+    """
+    # Verificar que la encuesta exista
+    encuesta = leer_encuesta(db, encuesta_id)
+    if encuesta is None:
+        raise exceptions.EncuestaNoEncontrada()
+    
+    stmt = (
+        select(Respuesta)
+        .join(Respuesta.encuesta_finalizada)  
+        .where(EncuestaFinalizada.encuesta_id == encuesta_id)
+    )
+
+    respuestas = db.scalars(stmt).all()
+    return respuestas
+

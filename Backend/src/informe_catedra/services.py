@@ -8,10 +8,12 @@ from src.preguntas.models import Pregunta
 
  # Crea un único InformeCatedra
 def crear_informe_catedra(db: Session, informe: schemas.InformeCatedraCreate):
-   
-    db_informe = models.InformeCatedra(titulo=informe.titulo)
+    db_informe = models.InformeCatedra(
+        titulo=informe.titulo,
+        asignatura_id=informe.asignatura_id
+    )
     db.add(db_informe)
-    db.flush()  
+    db.flush()
     db.commit()
     db.refresh(db_informe)
     return db_informe
