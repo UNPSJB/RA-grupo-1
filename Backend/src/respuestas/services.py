@@ -1,76 +1,90 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
-from src.database import get_db
-from . import schemas, services
+from sqlalchemy import select
+from src.respuestas.models import Respuesta
+from src.respuestas import schemas
 
-router = APIRouter(prefix="/respuestas", tags=["respuestas"])
-
-@router.post("/", response_model=schemas.RespuestaOut, status_code=status.HTTP_201_CREATED)
-def crear_respuesta(respuesta: schemas.RespuestaCreate, db: Session = Depends(get_db)):
+def crear_respuesta(db: Session, respuesta: schemas.RespuestaCreate) -> Respuesta:
     """
-    Crea una nueva respuesta
+    Crea una nueva respuesta en la base de datos
     """
-    try:
-        return services.crear_respuesta(db, respuesta)
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, 
-            detail=str(e)
-        )
+    db_respuesta = Respuesta(
+        alumno_id=respuesta.alumno_id,
+        pregunta_id=respuesta.pregunta_id,
+        encuesta_finalizada_id=respuesta.encuesta_finalizada_id,
+        ciclo_id=respuesta.ciclo_id,
+        respuesta_texto=respuesta.respuesta_texto,
+        opcion_id=respuesta.opcion_id
+    )
+    
+    db.add(db_respuesta)
+    db.commit()
+    db.refresh(db_respuesta)
+    return db_respuesta
 
-@router.post("/lote", response_model=list[schemas.RespuestaOut], status_code=status.HTTP_201_CREATED)
-def crear_respuestas_lote(respuestas: list[schemas.RespuestaCreate], db: Session = Depends(get_db)):
+def crear_respuestas_lote(db: Session, respuestas: list[schemas.RespuestaCreate]) -> list[Respuesta]:
     """
     Crea múltiples respuestas en lote
     """
-    try:
-        return services.crear_respuestas_lote(db, respuestas)
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
+    db_respuestas = []
+    
+    for respuesta in respuestas:
+        db_respuesta = Respuesta(
+            alumno_id=respuesta.alumno_id,
+            pregunta_id=respuesta.pregunta_id,
+            encuesta_finalizada_id=respuesta.encuesta_finalizada_id,
+            ciclo_id=respuesta.ciclo_id,
+            respuesta_texto=respuesta.respuesta_texto,
+            opcion_id=respuesta.opcion_id
         )
+        db_respuestas.append(db_respuesta)
+    
+    db.add_all(db_respuestas)
+    db.commit()
+    
+    for db_respuesta in db_respuestas:
+        db.refresh(db_respuesta)
+    
+    return db_respuestas
 
-@router.get("/", response_model=list[schemas.RespuestaOut])
-def listar_respuestas(
-    db: Session = Depends(get_db),
-    skip: int = Query(0, ge=0, description="Número de registros a saltar"),
-    limit: int = Query(100, ge=1, le=1000, description="Límite de registros")
-):
+def listar_respuestas(db: Session, skip: int = 0, limit: int = 100) -> list[Respuesta]:
     """
-    Obtiene todas las respuestas
+    Lista todas las respuestas con paginación
     """
-    return services.listar_respuestas(db, skip=skip, limit=limit)
+    return db.scalars(
+        select(Respuesta).offset(skip).limit(limit)
+    ).all()
 
-@router.get("/encuesta-finalizada/{encuesta_finalizada_id}", response_model=list[schemas.RespuestaOut])
-def obtener_respuestas_por_encuesta_finalizada(
-    encuesta_finalizada_id: int, 
-    db: Session = Depends(get_db)
-):
+def obtener_respuesta_por_id(db: Session, respuesta_id: int) -> Respuesta:
     """
-    Obtiene las respuestas por encuesta terminada
+    Obtiene una respuesta por su ID
     """
-    try:
-        return services.obtener_respuestas_por_encuesta_finalizada(db, encuesta_finalizada_id)
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    respuesta = db.scalar(
+        select(Respuesta).where(Respuesta.id == respuesta_id)
+    )
+    if not respuesta:
+        raise ValueError(f"Respuesta con ID {respuesta_id} no encontrada")
+    return respuesta
 
-@router.get("/pregunta/{pregunta_id}", response_model=list[schemas.RespuestaOut])
-def obtener_respuestas_por_pregunta(pregunta_id: int, db: Session = Depends(get_db)):
+def obtener_respuestas_por_alumno(db: Session, alumno_id: int) -> list[Respuesta]:
     """
-    Obtiene respuestas por pregunta
+    Obtiene todas las respuestas de un alumno
     """
-    try:
-        return services.obtener_respuestas_por_pregunta(db, pregunta_id)
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    return db.scalars(
+        select(Respuesta).where(Respuesta.alumno_id == alumno_id)
+    ).all()
 
-@router.get("/{respuesta_id}", response_model=schemas.RespuestaOut)
-def obtener_respuesta(respuesta_id: int, db: Session = Depends(get_db)):
+def obtener_respuestas_por_pregunta(db: Session, pregunta_id: int) -> list[Respuesta]:
     """
-    Obtiene una respuesta específica por ID
+    Obtiene todas las respuestas de una pregunta
     """
-    try:
-        return services.obtener_respuesta_por_id(db, respuesta_id)
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    return db.scalars(
+        select(Respuesta).where(Respuesta.pregunta_id == pregunta_id)
+    ).all()
+
+def obtener_respuestas_por_encuesta_finalizada(db: Session, encuesta_finalizada_id: int) -> list[Respuesta]:
+    """
+    Obtiene todas las respuestas de una encuesta finalizada
+    """
+    return db.scalars(
+        select(Respuesta).where(Respuesta.encuesta_finalizada_id == encuesta_finalizada_id)
+    ).all()
