@@ -6,10 +6,10 @@ from src.roles import schemas
 
 def listar_roles(db: Session) -> List[schemas.Rol]:
     roles = db.scalars(select(Rol)).all()
-    return [schemas.Rol.from_orm(rol) for rol in roles]
+    return roles
 
-def leer_rol(db: Session, rol_id: int) -> Optional[schemas.Rol]:
+def leer_rol(db: Session, rol_id: int) -> schemas.Rol:
     rol = db.scalar(select(Rol).where(Rol.id == rol_id))
-    if rol:
-        return schemas.Rol.from_orm(rol)
-    return None
+    if not rol:
+        raise ValueError(f"Rol con ID {rol_id} no encontrado")
+    return rol
