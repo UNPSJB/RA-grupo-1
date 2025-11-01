@@ -7,7 +7,7 @@ from src.alumnos import schemas, services
 router = APIRouter(prefix="/alumnos", tags=["alumnos"])
 
 @router.post("/", 
-             response_model=schemas.Alumno,
+             response_model=schemas.AlumnoResponse,
              status_code=status.HTTP_201_CREATED,
              summary="Crear un nuevo alumno",
              description="Crea un nuevo registro de alumno en el sistema")
@@ -21,7 +21,7 @@ def create_alumno(alumno: schemas.AlumnoCreate, db: Session = Depends(get_db)):
         )
 
 @router.get("/", 
-            response_model=List[schemas.Alumno],
+            response_model=List[schemas.AlumnoResponse],
             summary="Listar todos los alumnos",
             description="Retorna una lista de todos los alumnos registrados")
 def read_alumnos(
@@ -32,7 +32,7 @@ def read_alumnos(
     return services.listar_alumnos(db, skip=skip, limit=limit)
 
 @router.get("/{alumno_id}", 
-            response_model=schemas.Alumno,
+            response_model=schemas.AlumnoResponse,
             summary="Obtener alumno por ID",
             description="Retorna los detalles de un alumno específico")
 def read_alumno(alumno_id: int, db: Session = Depends(get_db)):
@@ -45,7 +45,7 @@ def read_alumno(alumno_id: int, db: Session = Depends(get_db)):
     return alumno
 
 @router.put("/{alumno_id}", 
-            response_model=schemas.Alumno,
+            response_model=schemas.AlumnoResponse,
             summary="Actualizar alumno",
             description="Actualiza la información de un alumno existente")
 def update_alumno(
@@ -88,7 +88,7 @@ def get_encuestas_disponibles(alumno_id: int, db: Session = Depends(get_db)):
     return encuestas
 
 @router.get("/{alumno_id}/asignaturas",
-            response_model=List[schemas.AsignaturaAlumno],
+            response_model=List[schemas.AsignaturaConDetalles],
             summary="Asignaturas del alumno",
             description="Retorna las asignaturas en las que está inscrito el alumno")
 def get_asignaturas_alumno(alumno_id: int, db: Session = Depends(get_db)):

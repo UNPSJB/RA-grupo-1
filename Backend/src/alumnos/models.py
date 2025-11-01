@@ -2,7 +2,7 @@ from sqlalchemy import Integer, String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.models import ModeloBase
 from typing import Optional, List, TYPE_CHECKING
-from src.vinculaciones.models import alumno_asignatura, alumno_encuesta
+from src.vinculaciones.models import asignatura_alumno, alumno_encuesta
 
 if TYPE_CHECKING:
     from src.respuestas.models import Respuesta
@@ -25,7 +25,7 @@ class Alumno(ModeloBase):
     
     asignaturas: Mapped[List["Asignatura"]] = relationship(
         "Asignatura",
-        secondary=alumno_asignatura,
+        secondary=asignatura_alumno,
         back_populates="alumnos"
     )
 

@@ -7,6 +7,7 @@ from typing import List, Optional, TYPE_CHECKING
 if TYPE_CHECKING:
     from src.vinculaciones.asignatura_docente.models import AsignaturaDocente
     from src.informe_catedra.models import InformeCatedra
+    from src.resultado_informe.models import ResultadoInforme
 
 class InformeCatedraFinalizado(ModeloBase):
    __tablename__ = "informe_catedra_finalizado"

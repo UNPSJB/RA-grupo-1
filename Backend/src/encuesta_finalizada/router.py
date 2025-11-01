@@ -18,7 +18,7 @@ def crear_encuesta_finalizada(encuesta: schemas.EncuestaFinalizadaCreate, db: Se
 
 @router.post("/con-respuestas", response_model=schemas.EncuestaFinalizada)
 def crear_encuesta_finalizada_con_respuestas(encuesta_data: schemas.EncuestaFinalizadaConRespuestasCreate, db: Session = Depends(get_db)):
-    return services.crear_encuesta_completa_con_respuestas(db, encuesta_data)
+    return services.crear_encuesta_finalizada_con_respuestas(db, encuesta_data)
 
 @router.get("/{encuesta_id}", response_model=schemas.EncuestaFinalizada)
 def obtener_encuesta_finalizada(encuesta_id: int, db: Session = Depends(get_db)):

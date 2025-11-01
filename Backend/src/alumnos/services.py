@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from src.alumnos.models import Alumno
 from src.alumnos import schemas, exceptions
 from src.personas.models import Persona  
-from src.vinculaciones.models import alumno_asignatura
+from src.vinculaciones.models import asignatura_alumno
 from src.encuestas.models import Encuesta
 from src.asignaturas.models import Asignatura
 
@@ -36,14 +36,6 @@ def leer_alumno(db: Session, alumno_id: int) -> schemas.AlumnoResponse:
     if db_alumno is None:
         raise exceptions.AlumnoNoEncontrado() 
     return db_alumno
-
-
-def leer_alumno(db: Session, alumno_id: int) -> schemas.AlumnoResponse:
-    db_alumno = db.scalar(select(Alumno).where(Alumno.id == alumno_id))
-    if db_alumno is None:
-        raise exceptions.AlumnoNoEncontrada()
-    return db_alumno
-
 
 def modificar_alumno(
     db: Session, alumno_id: int, alumno: schemas.AlumnoUpdate
@@ -80,18 +72,35 @@ def obtener_encuestas_disponibles(db: Session, alumno_id: int) -> List[schemas.E
     stmt = (
         select(Encuesta)
         .join(Asignatura, Encuesta.id == Asignatura.encuesta_id)
-        .join(alumno_asignatura, Asignatura.id == alumno_asignatura.c.asignatura_id)
-        .where(alumno_asignatura.c.alumno_id == alumno_id)
+        .join(asignatura_alumno, Asignatura.id == asignatura_alumno.c.asignatura_id)
+        .where(asignatura_alumno.c.alumno_id == alumno_id)
     )
     
     encuestas = db.scalars(stmt).all()
     return encuestas
 
-def obtener_asignaturas_alumno(db: Session, alumno_id: int) -> List[schemas.AsignaturaBase]:
-    # Obtiene asignaturas de un alumno
-    
+def obtener_asignaturas_alumno(db: Session, alumno_id: int) -> List[schemas.AsignaturaConDetalles]:
     alumno = leer_alumno(db, alumno_id)
-    return alumno.asignaturas
+    
+    # Query para obtener asignaturas con datos de la inscripción
+    stmt = (
+        select(
+            Asignatura.id,
+            Asignatura.nombre,
+            Asignatura.matricula,
+            asignatura_alumno.c.nota_cursada,
+            asignatura_alumno.c.anio,
+            asignatura_alumno.c.periodo
+        )
+        .join(asignatura_alumno, Asignatura.id == asignatura_alumno.c.asignatura_id)
+        .where(asignatura_alumno.c.alumno_id == alumno_id)
+    )
+    
+    resultados = db.execute(stmt).all()
+    return [schemas.AsignaturaConDetalles(**dict(zip(
+        ['id', 'nombre', 'matricula', 'nota_cursada', 'anio', 'periodo'],
+        resultado
+    ))) for resultado in resultados]
 
 def inscribir_alumno_asignatura(db: Session, alumno_id: int, asignatura_id: int) -> dict:
     # Inscribe alumno en una asignatura
@@ -104,10 +113,10 @@ def inscribir_alumno_asignatura(db: Session, alumno_id: int, asignatura_id: int)
         raise exceptions.AsignaturaNoEncontrada()
     
     # Verifica que no esté ya inscrito
-    stmt = select(alumno_asignatura).where(
+    stmt = select(asignatura_alumno).where(
         and_(
-            alumno_asignatura.c.alumno_id == alumno_id,
-            alumno_asignatura.c.asignatura_id == asignatura_id
+            asignatura_alumno.c.alumno_id == alumno_id,
+            asignatura_alumno.c.asignatura_id == asignatura_id
         )
     )
     existe_inscripcion = db.scalar(stmt)
@@ -116,7 +125,7 @@ def inscribir_alumno_asignatura(db: Session, alumno_id: int, asignatura_id: int)
     
     # Realiza la inscripción
     db.execute(
-        alumno_asignatura.insert().values(
+        asignatura_alumno.insert().values(
             alumno_id=alumno_id,
             asignatura_id=asignatura_id
         )

@@ -7,8 +7,8 @@ class Duracion(StrEnum):
     CUATRIMESTRE_1 = "PRIMER CUATRIMESTRE"
     CUATRIMESTRE_2 = "SEGUNDO CUATRIMESTRE"
 
-alumno_asignatura = Table(
-    "alumno_asignatura",
+asignatura_alumno = Table(
+    "asignatura_alumno",
     ModeloBase.metadata,
     Column("id", Integer, primary_key=True, index=True),
     Column("alumno_id", ForeignKey("alumnos.id")),

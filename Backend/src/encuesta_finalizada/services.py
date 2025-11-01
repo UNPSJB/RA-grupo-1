@@ -42,7 +42,7 @@ def crear_encuesta_finalizada_con_respuestas(db: Session, encuesta_data: schemas
     db.refresh(encuesta_db)
     
     from src.respuestas import services as respuestas_services
-    respuestas_services.guardar_respuestas_lote(db, encuesta_db.id, encuesta_data.respuestas)
+    respuestas_services.crear_respuestas_lote(db, encuesta_db.id, encuesta_data.respuestas)
     
     return obtener_encuesta_finalizada(db, encuesta_db.id)
 
