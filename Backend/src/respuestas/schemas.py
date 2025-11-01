@@ -41,3 +41,6 @@ class RespuestaFiltros(BaseModel):
     """Schema para filtrar respuestas en consultas"""
     encuesta_finalizada_id: Optional[int] = None
     pregunta_id: Optional[int] = None
+
+Respuesta = RespuestaOut
+RespuestaCreateEnEncuesta = RespuestaCreate

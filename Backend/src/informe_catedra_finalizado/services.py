@@ -8,7 +8,6 @@ from src.vinculaciones.asignatura_docente.models import AsignaturaDocente
 from src.vinculaciones.models import Duracion
 from src.resultado_informe import services as respuestas_services
 
-
 def obtener_informes_pendientes(db: Session, docente_id: int,anio: int,duracion: Duracion) -> List[dict]:
     relaciones = db.scalars(
         select(AsignaturaDocente)
@@ -37,6 +36,13 @@ def obtener_informes_pendientes(db: Session, docente_id: int,anio: int,duracion:
     
     return pendientes
 
+def obtener_informes_finalizados_docente(db: Session, docente_id: int) -> List[models.InformeCatedraFinalizado]:
+    informes = db.scalars(
+        select(InformeCatedraFinalizado)
+        .join(AsignaturaDocente, InformeCatedraFinalizado.asignatura_docente_id == AsignaturaDocente.id)
+        .where(AsignaturaDocente.docente_id == docente_id)
+    ).all()
+    return informes
 
 def verificar_informe_existente(db: Session, asignatura_docente_id: int) -> bool:
     informe = db.scalar(

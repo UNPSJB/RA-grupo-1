@@ -34,7 +34,7 @@ def obtener_indicadores(
     
     # Obtener encuesta asociada a la asignatura
     encuesta: Encuesta = asignatura.encuesta
-    if not encuesta:
+    if not asignatura.encuestas or len(asignatura.encuestas) == 0:
         return []
     
     # Obtener preguntas cerradas directamente desde la base de datos

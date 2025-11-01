@@ -11,6 +11,10 @@ router = APIRouter(prefix="/informe-catedra-finalizado", tags=["informes-catedra
 def listar_informes_pendientes(docente_id: int, anio: int, duracion: Duracion, db: Session = Depends(get_db)):
     return services.obtener_informes_pendientes(db, docente_id, anio, duracion)
 
+@router.get("/docente/{docente_id}/finalizados", response_model=List[schemas.InformeCatedraFinalizado])
+def listar_informes_finalizados_docentes(docente_id: int, db: Session = Depends(get_db)):
+    return services.obtener_informes_finalizados_docente(db, docente_id)
+
 @router.get("/existe")
 def verificar_informe_catedra_finalizado(docente_asignatura_id: int, db: Session = Depends(get_db)):
     existe = services.verificar_informe_existente(db, docente_asignatura_id)
