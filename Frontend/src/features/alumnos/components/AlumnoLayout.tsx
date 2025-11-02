@@ -14,8 +14,8 @@ export const AlumnoLayout = ({ children }: AlumnoLayoutProps) => {
   const { persona, loading, error } = usePersona();
 
   const alumnoNavLinks = [
-    { to: "/alumno/asignaturas", label: "Asignaturas cursadas" },
-    { to: "/alumno/detalles", label: "Asignatura detalle"},
+  //  { to: "/alumno/asignaturas", label: "Asignaturas cursadas" },
+  //  { to: "/alumno/detalles", label: "Asignatura detalle"},
     { to: "/alumno/incompletas", label: "Encuestas Incompletas" },
     { to: "/alumno/completadas", label: "Encuestas Completadas" }
   ];

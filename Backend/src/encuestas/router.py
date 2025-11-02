@@ -14,6 +14,13 @@ from src.encuestas.exceptions import (
 
 router = APIRouter(prefix="/encuestas", tags=["encuestas"])
 
+@router.get("/", 
+            response_model=List[schemas.Encuesta],
+            summary="Listar todas las encuestas",
+            description="Retorna una lista de todas las encuestas")
+def read_encuestas(db: Session = Depends(get_db)):
+    return services.listar_encuestas(db)
+
 @router.get("/{encuesta_id}", response_model=schemas.Encuesta)
 def read_encuesta(encuesta_id: int, db: Session = Depends(get_db)):
     # Obtiene una encuesta específica
@@ -40,17 +47,6 @@ def create_encuesta(encuesta: schemas.EncuestaCreate, db: Session = Depends(get_
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error interno del servidor: {str(e)}"
         )
-
-@router.get("/{encuesta_id}/alumnos", response_model=schemas.Encuesta)
-def read_encuesta(encuesta_id: int, db: Session = Depends(get_db)):
-    
-    encuesta = services.leer_encuesta(db, encuesta_id)
-    if not encuesta:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Encuesta no encontrada"
-        )
-    return encuesta
 
 @router.get("/{encuesta_id}/alumnos", response_model=List[schemas.EstadoEncuesta])
 def read_alumnos_encuesta(encuesta_id: int, db: Session = Depends(get_db)):

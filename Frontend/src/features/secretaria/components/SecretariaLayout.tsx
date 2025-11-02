@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { Navbar } from "../../../components/layout/Navbar/Navbar";
 import { Footer } from "../../../components/layout/Footer/Footer";
@@ -15,7 +15,7 @@ export const SecretariaLayout: React.FC = () => {
 
   const secretariaNavLinks = [
     { to: "/secretaria", label: "Panel Principal" },
-    { to: "/secretaria/preguntas", label: "Gestión de Preguntas" },
+  //  { to: "/secretaria/preguntas", label: "Gestión de Preguntas" },
     { to: "/secretaria/crear-encuesta", label: "Crear Encuesta" },
     { to: "/secretaria/panel-encuestas", label: "Panel Encuesta"},
     { 
@@ -65,37 +65,30 @@ export const SecretariaLayout: React.FC = () => {
       />
       <main className="secretaria-main-content">
         <Container fluid className="py-4">
-          <Row className="g-4 mb-5">
+          <Row className="mb-4">
             {metricas.map((metrica, index) => (
-              <Col key={index} xs={12} sm={6} lg={3}>
-                <Card className={`border-${metrica.color} h-100 shadow-sm`}>
-                  <Card.Body>
-                    <Row className="align-items-center">
-                      <Col xs={8}>
-                        <Card.Title className={`text-${metrica.color} mb-1`}>
+              <Col key={index} xl={3} md={6} className="mb-4">
+                <div className="card border-0 shadow-sm h-100">
+                  <div className="card-body">
+                    <div className="d-flex justify-content-between align-items-start">
+                      <div>
+                        <h6 className="card-title text-muted text-uppercase small">
                           {metrica.titulo}
-                        </Card.Title>
-                        <Card.Text className="text-muted small mb-2">
-                          {metrica.descripcion}
-                        </Card.Text>
-                        <h3 className={`text-${metrica.color} mb-0`}>
+                        </h6>
+                        <h2 className={`fw-bold text-${metrica.color} mb-1`}>
                           {metrica.valor.toLocaleString()}
-                        </h3>
-                      </Col>
-                      <Col xs={4} className="text-end">
-                        <i className={`bi ${metrica.icono} display-4 text-${metrica.color} opacity-75`}></i>
-                      </Col>
-                    </Row>
-                  </Card.Body>
-                </Card>
+                        </h2>
+                        <small className="text-muted">{metrica.descripcion}</small>
+                      </div>
+                      <div className={`bg-${metrica.color} bg-opacity-10 p-3 rounded`}>
+                        <i className={`bi ${metrica.icono} text-${metrica.color} fs-4`}></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </Col>
             ))}
           </Row>
-
-          {/* Contenido de las rutas hijas */}
-          <div className="secretaria-content">
-            <Outlet />
-          </div>
         </Container>
       </main>
       

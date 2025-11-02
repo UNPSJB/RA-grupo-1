@@ -33,7 +33,7 @@
 
 .navbar-custom .docente-nav-link:hover {
   color: #0000FF !important; 
-  background-color: rgba(30, 144, 255, 0.1);
+  background-color: #1e90ff1a;
 }
 
 .navbar-logo {
@@ -43,7 +43,7 @@
 
 /* Estilos para el área de usuario */
 .user-profile {
-  color: white;
+  color: #1a17d8;
   cursor: pointer;
   transition: all 0.3s ease;
   padding: 5px 10px;
@@ -71,14 +71,13 @@
 .user-dropdown-menu {
   border: none;
   border-radius: 10px;
-  box-shadow: 0 5px 15px #00000033;
+  box-shadow: 0 5px 15px #1323b9ef;
   margin-top: 10px;
   min-width: 200px;
 }
 
 .user-dropdown-header {
-  background: linear-gradient(135deg, #ffffff 0%, #053ae6bd 100%);
-  border-radius: 20px 0 0 0;
+  background: linear-gradient(135deg, #ecdfdffa 0%, #e5e8faf5 100%);
 }
 
 .dropdown-avatar {
@@ -90,7 +89,7 @@
 
 .dropdown-item-custom {
   padding: 10px 15px;
-  color: #495057;
+  color: #196fc5;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
@@ -126,5 +125,5 @@
 
 .navbar-custom .nav-link-custom[onclick]:hover {
   color: #c0392b !important;
-  background-color: rgba(231, 76, 60, 0.1);
+  background-color: #e74c3c1a;
 }
