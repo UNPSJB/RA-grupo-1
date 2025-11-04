@@ -39,7 +39,7 @@ export const PanelDepartamento: React.FC = () => {
             </Container>
         );
     }
-
+// ver este container para hacer hdu
     return(
         <Container className="informes-container">
             <div className="header-section">
