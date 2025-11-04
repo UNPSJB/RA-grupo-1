@@ -130,3 +130,35 @@
     font-size: 1.1rem;
     margin-bottom: 0;
 }
+
+/* features/encuestas/styles/encuestas.css */
+.bg-light-danger {
+  background-color: rgba(220, 53, 69, 0.05) !important;
+}
+
+.bg-light-warning {
+  background-color: #ffc1070d !important;
+}
+
+.border-danger {
+  border: 2px solid #dc3545 !important;
+}
+
+.border-warning {
+  border: 2px solid #ffc107 !important;
+}
+
+/* Animación sutil para contadores */
+.contador-tiempo {
+  transition: all 0.3s ease;
+}
+
+.contador-tiempo.por-vencer {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}

@@ -48,7 +48,7 @@ export const EncuestasIncompletas = () => {
                 alumnoId: alumnoId,
                 encuestaId: encuestaId,
                 nombreAsignatura: asignatura,
-                asignaturaId: encuestaId // Ajustar según tu modelo de datos
+                asignaturaId: encuestaId 
             }
         });
     };

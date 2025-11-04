@@ -18,7 +18,8 @@ import { CrearEncuesta } from '../features/secretaria/components/CrearEncuesta';
 import { PanelEncuestas } from '../features/secretaria/components/PanelEncuestas';
 import { EstadisticasEncuesta } from '../features/secretaria/components/EstadisticasEncuesta';
 import { CiclosPage } from "../features/ciclos/components/CiclosPage";
-import { EncuestaCicloBasico } from '../features/encuestas/components/EncuestaCicloBasico';
+import Encuestas from '../features/encuestas/components/Encuesta';
+import DetalleEncuesta from '../features/encuestas/components/DetalleEncuesta';
 
 //import SecretariaPreguntas from "../features/preguntas/components/SecretariaPreguntas";
 
@@ -36,7 +37,8 @@ function App() {
         <Route path="asignatura/:id" element={<AsignaturaDetalle />} />
         <Route path="incompletas" element={<EncuestasIncompletas />} />
         <Route path="completadas" element={<EncuestasCompletas />} />
-        <Route path="encuesta/:encuestaId/encuesta" element={<EncuestaCicloBasico />} />
+        <Route path="encuestas" element={<Encuestas />} />
+        <Route path="encuesta/:id" element={<DetalleEncuesta />} />
       </Route>
       
       <Route path="/docente" element={<DocenteLayout />}>

@@ -39,7 +39,7 @@ export default function ItemPregunta({
   const opcionSeleccionada = opciones.find((o) => o.id === seleccionada);
 
   return (
-    <div className="col-12 mb-3">
+    <div className="col-12 mb-4">
       <div className="card">
         <div className="card-body d-flex flex-column">
           <div className="mb-2">

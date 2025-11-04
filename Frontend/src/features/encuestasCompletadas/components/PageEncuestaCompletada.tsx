@@ -20,7 +20,7 @@ type EncuestaFinalizada = {
 };
 
 export default function EncuestasCompletadasPage() {
-  const alumnoId = 3; // HARCODEADO ACA VAN LOS DATOS DE LA API
+  const alumnoId = 3; 
   const [encuestas, setEncuestas] = useState<EncuestaFinalizada[]>([]);
 
   useEffect(() => {
