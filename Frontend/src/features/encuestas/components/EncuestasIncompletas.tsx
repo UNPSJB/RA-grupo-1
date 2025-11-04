@@ -1,12 +1,20 @@
 import { Card, Button, Badge, Spinner, Alert, Row, Col, Container } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import { useEncuestas } from '../hooks/useEncuestas';
 import '../styles/Encuestas.css';
-import { EstadoEncuesta, Cursado } from "../types/encuestasTypes";
+import { EstadoEncuesta, Cursado } from "../types/encuestaTypes";
 
 export const EncuestasIncompletas = () => {
+    const navigate = useNavigate();
     const { encuestas, loading, error, refetch } = useEncuestas();
 
-    const encuestasIncompletas = encuestas.filter(encuesta => encuesta.estado === EstadoEncuesta.ABIERTA);
+    // Filtrar solo encuestas abiertas
+    const encuestasIncompletas = encuestas.filter(
+        encuesta => encuesta.estado === EstadoEncuesta.ABIERTA
+    );
+
+    // ID del alumno (temporal, debería venir de auth)
+    const alumnoId = 1;
 
     const getBadgeVariant = (estado: EstadoEncuesta) => {
         return estado === EstadoEncuesta.ABIERTA ? 'danger' : 'success';
@@ -26,7 +34,23 @@ export const EncuestasIncompletas = () => {
     };
 
     const formatearFecha = (fecha: string) => {
-        return new Date(fecha).toLocaleDateString('es-ES');
+        return new Date(fecha).toLocaleDateString('es-ES', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+    };
+
+    const handleCompletarEncuesta = (encuestaId: number, asignatura: string) => {
+        // Navegar al formulario de encuesta con los datos necesarios
+        navigate(`/alumno/encuesta/${encuestaId}/encuesta`, {
+            state: {
+                alumnoId: alumnoId,
+                encuestaId: encuestaId,
+                nombreAsignatura: asignatura,
+                asignaturaId: encuestaId // Ajustar según tu modelo de datos
+            }
+        });
     };
 
     if (loading) {
@@ -36,7 +60,7 @@ export const EncuestasIncompletas = () => {
                     <Spinner animation="border" role="status" className="mb-3" variant="primary">
                         <span className="visually-hidden">Cargando...</span>
                     </Spinner>
-                    <p className="loading-text">Cargando encuestas...</p>
+                    <p className="loading-text">Cargando encuestas incompletas...</p>
                 </div>
             </Container>
         );
@@ -46,12 +70,16 @@ export const EncuestasIncompletas = () => {
         return (
             <Container className="mt-4">
                 <Alert variant="danger">
-                    <i className="bi bi-exclamation-triangle me-2"></i>
-                    Error al cargar las encuestas: {error}
+                    <Alert.Heading>
+                        <i className="bi bi-exclamation-triangle me-2"></i>
+                        Error al cargar las encuestas
+                    </Alert.Heading>
+                    <p className="mb-3">{error}</p>
+                    <Button variant="outline-danger" onClick={refetch}>
+                        <i className="bi bi-arrow-clockwise me-2"></i>
+                        Reintentar
+                    </Button>
                 </Alert>
-                <Button variant="outline-primary" onClick={refetch}>
-                    Reintentar
-                </Button>
             </Container>
         );
     }
@@ -64,7 +92,7 @@ export const EncuestasIncompletas = () => {
                     Encuestas Incompletas
                 </h1>
                 <p className="page-subtitle">
-                    Listado de encuestas pendientes de completar
+                    Selecciona una encuesta para completar
                 </p>
             </div>
 
@@ -73,8 +101,8 @@ export const EncuestasIncompletas = () => {
                     <div className="empty-icon">
                         <i className="bi bi-inbox"></i>
                     </div>
-                    <h3>No hay encuestas incompletas</h3>
-                    <p>Todas las encuestas están completadas o no hay encuestas abiertas.</p>
+                    <h3>No hay encuestas pendientes</h3>
+                    <p>Todas las encuestas están completadas o no hay encuestas abiertas en este momento.</p>
                 </div>
             ) : (
                 <Row>
@@ -87,7 +115,7 @@ export const EncuestasIncompletas = () => {
                                             bg={getBadgeVariant(encuesta.estado)}
                                             className="estado-badge"
                                         >
-                                            {encuesta.estado.toUpperCase()}
+                                            PENDIENTE
                                         </Badge>
                                         <Badge 
                                             bg={getCursadoBadgeVariant(encuesta.cursado)}
@@ -105,9 +133,18 @@ export const EncuestasIncompletas = () => {
                                     
                                     <div className="encuesta-details">
                                         <div className="detail-item">
-                                            <i className="bi bi-calendar-event me-2"></i>
+                                            <i className="bi bi-calendar-event me-2 text-danger"></i>
                                             <strong>Fecha límite:</strong>
-                                            <span className="ms-2">{formatearFecha(encuesta.fecha_fin)}</span>
+                                            <span className="ms-2 text-danger">
+                                                {formatearFecha(encuesta.fecha_fin)}
+                                            </span>
+                                        </div>
+                                        
+                                        <div className="detail-item mt-2">
+                                            <i className="bi bi-info-circle me-2 text-muted"></i>
+                                            <span className="text-muted">
+                                                Encuesta de satisfacción académica
+                                            </span>
                                         </div>
                                     </div>
                                 </Card.Body>
@@ -115,14 +152,12 @@ export const EncuestasIncompletas = () => {
                                 <Card.Footer className="card-footer-custom">
                                     <div className="d-grid gap-2">
                                         <Button 
-                                            variant={encuesta.estado === EstadoEncuesta.ABIERTA ? "primary" : "secondary"}
-                                            disabled={encuesta.estado === EstadoEncuesta.CERRADA}
+                                            variant="primary"
                                             className="action-btn"
+                                            onClick={() => handleCompletarEncuesta(encuesta.id, encuesta.asignatura)}
                                         >
-                                            {encuesta.estado === EstadoEncuesta.ABIERTA 
-                                                ? "Completar Encuesta" 
-                                                : "Encuesta Cerrada"
-                                            }
+                                            <i className="bi bi-pencil-square me-2"></i>
+                                            Completar Encuesta
                                         </Button>
                                     </div>
                                 </Card.Footer>
@@ -133,4 +168,4 @@ export const EncuestasIncompletas = () => {
             )}
         </Container>
     );
-}
+};

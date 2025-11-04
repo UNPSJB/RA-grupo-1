@@ -44,10 +44,9 @@ class Encuesta(ModeloBase):
     )
 
     categorias: Mapped[List["Categoria"]] = relationship(
-    "src.categorias.models.Categoria",
-    back_populates="encuesta"
+        "Categoria",
+        back_populates="encuesta"
     )
-
 
     # Verifica si la encuesta esta activa
     @property

@@ -193,7 +193,7 @@ export const GestionEncuestas = () => {
           <Modal.Title>Nueva Encuesta</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Formulario para crear nueva encuesta (en desarrollo)...</p>
+          <p>Formulario para crear nueva encuesta.</p>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>
