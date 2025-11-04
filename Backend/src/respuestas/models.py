@@ -17,11 +17,11 @@ class Respuesta(ModeloBase):
 
     # Campos para diferentes tipos de respuesta
     respuesta_texto: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    opcion_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    opcion_id: Mapped[Optional[int]] = mapped_column(Integer, ForeignKey("opciones.id"), nullable=True)
 
     progreso: Mapped[int] = mapped_column(Integer, default=0)
 
     # Relaciones
-    alumno: Mapped[Optional["Alumno"]] = relationship("Alumno", back_populates="respuestas", lazy="joined")
+    alumno: Mapped[Optional["Alumno"]] = relationship("Alumno", lazy="joined")
     pregunta: Mapped["Pregunta"] = relationship("Pregunta", back_populates="respuestas")
     opcion: Mapped[Optional["Opcion"]] = relationship("Opcion")
