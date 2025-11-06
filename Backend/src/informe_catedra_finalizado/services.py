@@ -7,7 +7,7 @@ from src.asignaturas.models import Asignatura
 from src.vinculaciones.asignatura_docente.models import AsignaturaDocente
 from src.vinculaciones.models import Duracion
 from src.resultado_informe import services as respuestas_services
-from src.resultado_informe.models import RespuestaInforme
+from src.resultado_informe.models import ResultadoInforme  
 from src.preguntas.models import Pregunta
 
 def obtener_informes_pendientes(db: Session, docente_id: int,anio: int,duracion: Duracion) -> List[dict]:
@@ -106,7 +106,7 @@ def obtener_informe_finalizado(db: Session, informe_id: int) -> models.InformeCa
         .where(models.InformeCatedraFinalizado.id == informe_id)
         .options(
             selectinload(models.InformeCatedraFinalizado.respuestas_informe)
-            .selectinload(RespuestaInforme.pregunta)
+            .selectinload(ResultadoInforme.pregunta)  
         )
     )
     

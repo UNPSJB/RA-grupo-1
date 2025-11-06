@@ -8,6 +8,7 @@ if TYPE_CHECKING:
     from src.vinculaciones.asignatura_docente.models import AsignaturaDocente
     from src.informe_catedra.models import InformeCatedra
     from src.resultado_informe.models import ResultadoInforme
+    from src.respuestas_informe.models import RespuestaInforme
 
 class InformeCatedraFinalizado(ModeloBase):
    __tablename__ = "informe_catedra_finalizado"
@@ -33,5 +34,10 @@ class InformeCatedraFinalizado(ModeloBase):
    )
    resultado_informe: Mapped[List["ResultadoInforme"]] = relationship(
       "ResultadoInforme", 
+      back_populates="informe_catedra_finalizado"
+   )
+
+   respuestas_informe: Mapped[List["RespuestaInforme"]] = relationship(
+      "RespuestaInforme", 
       back_populates="informe_catedra_finalizado"
    )

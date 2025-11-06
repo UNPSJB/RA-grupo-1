@@ -31,7 +31,6 @@ def crear_informe_catedra_finalizado(
 def obtener_informe_catedra_finalizado(informe_id: int, db: Session = Depends(get_db)):
     return services.obtener_informe_finalizado(db, informe_id)
 
-
 @router.get("/departamento/{departamento_id}", response_model=List[schemas.InformeCatedraFinalizado])
 def obtener_informes_por_departamento(departamento_id: int, db: Session = Depends(get_db)):
     return services.obtener_informes_por_departamento(db, departamento_id)

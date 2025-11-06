@@ -23,3 +23,12 @@ def get_indicadores_existentes(informe_id: int, db: Session = Depends(get_db)):
 @router.get("/cantidad_encuestas_finalizadas", response_model=int)
 def get_cantidad_encuestas_finalizadas(id_asignatura: int, anio: int, duracion: Duracion, db: Session = Depends(get_db)):
     return services.cantidad_encuestas_finalizadas(db, id_asignatura, anio, duracion)
+
+@router.get("/respuestas_abiertas", response_model=List[schemas.IndicadoresAbiertosCategoria])
+def obtener_respuestas_abiertas(
+    id_asignatura: int,
+    anio: int,
+    duracion: Duracion,
+    db: Session = Depends(get_db)
+):
+    return services.obtener_respuestas_abiertas_por_asignatura(db, id_asignatura, anio, duracion)

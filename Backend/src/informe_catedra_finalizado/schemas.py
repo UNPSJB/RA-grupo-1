@@ -11,7 +11,7 @@ class InformeCatedraFinalizadoBase(BaseModel):
     contenido: Optional[str] = None
     cantidadAlumnos: Optional[int] = None
     anio: Optional[int] = None
-    duracio: Optional[Duracion] = None
+    duracion: Optional[Duracion] = None  
     cantidadComisionesTeoricas: Optional[int] = None
     cantidadComisionesPracticas: Optional[int] = None
 
@@ -32,7 +32,7 @@ class InformePendiente(BaseModel):
     docente_asignatura_id: int
     model_config = {"from_attributes": True}
 
-class InformeCatedraFinalizadoDetalle(InformeCatedraFinalizadoDetalle):
+class InformeCatedraFinalizadoDetalle(InformeCatedraFinalizadoBase): 
     id: int
     resultado_informe: List[RespuestaConPregunta] = []
 

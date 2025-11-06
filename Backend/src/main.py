@@ -23,6 +23,11 @@ from src.ciclos.models import CicloEncuesta
 from src.indicadores.models import IndicadoresInforme
 from src.informe_catedra_finalizado.models import InformeCatedraFinalizado
 from src.resultado_informe.models import ResultadoInforme
+from src.informe_sintetico_finalizado.models import InformeSinteticoFinalizado
+from src.pregunta_informe_sintetico.models import PreguntaInformeSintetico
+from src.respuestas_informe.models import RespuestaInforme
+from src.informe_sintetico.models import InformeSintetico
+
 
 # Tablas de vinculación van al final
 from src.vinculaciones.models import pregunta_opcion
@@ -49,6 +54,9 @@ from src.ciclos.router import router as ciclos_router
 from src.informe_catedra_finalizado.router import router as informe_catedra_finalizado_router
 from src.informe_sintetico.router import router as informe_sintetico_router
 from src.resultado_informe.router import router as resultado_informe_router
+from src.informe_sintetico_finalizado.router import router as informe_sintetico_finalizado_router
+from src.pregunta_informe_sintetico.router import router as pregunta_informe_sintetico_router
+from src.respuestas_informe.router import router as respuestas_informe_router
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -98,6 +106,9 @@ app.include_router(ciclos_router)
 app.include_router(informe_catedra_finalizado_router)
 app.include_router(informe_sintetico_router)
 app.include_router(resultado_informe_router)
+app.include_router(informe_sintetico_finalizado_router)
+app.include_router(pregunta_informe_sintetico_router)
+app.include_router(respuestas_informe_router)
 
 @app.get("/")
 def read_root():

@@ -17,3 +17,14 @@ class IndicadoresCategoria(BaseModel):
     categoria_texto: str
     promedio_categoria: List[OpcionPorcentaje]
     preguntas: List[IndicadoresPregunta]
+
+class IndicadoresAbiertosPregunta(BaseModel):
+    id_pregunta: int
+    oracion: str
+    respuestas: List[str]
+
+class IndicadoresAbiertosCategoria(BaseModel):
+    categoria_cod: str
+    categoria_texto: str
+    preguntas: List[IndicadoresAbiertosPregunta]
+
