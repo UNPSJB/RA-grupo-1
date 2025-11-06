@@ -55,8 +55,8 @@ export const AsignaturasCursadas = () => {
             cantidadAlumnos: 45,
             encuestasContestadas: 38,
             porcentajeCompletado: 84,
-            fechaInicio: "2024-03-01",
-            fechaFin: "2024-07-15",
+            fechaInicio: "2025-03-01",
+            fechaFin: "2025-07-15",
             estadoEncuesta: 'completada'
           },
           {
@@ -67,8 +67,8 @@ export const AsignaturasCursadas = () => {
             cantidadAlumnos: 32,
             encuestasContestadas: 25,
             porcentajeCompletado: 78,
-            fechaInicio: "2024-03-01",
-            fechaFin: "2024-07-20",
+            fechaInicio: "2025-03-01",
+            fechaFin: "2025-07-20",
             estadoEncuesta: 'en-progreso'
           },
           {
@@ -79,8 +79,8 @@ export const AsignaturasCursadas = () => {
             cantidadAlumnos: 28,
             encuestasContestadas: 15,
             porcentajeCompletado: 54,
-            fechaInicio: "2024-03-15",
-            fechaFin: "2024-07-30",
+            fechaInicio: "2025-03-15",
+            fechaFin: "2025-07-30",
             estadoEncuesta: 'en-progreso'
           },
         ];

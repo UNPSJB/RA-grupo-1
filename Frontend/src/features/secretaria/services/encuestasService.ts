@@ -2,15 +2,15 @@ import { Pregunta, Encuesta, EstadisticasEncuesta, TipoPregunta, CategoriaPregun
 
 const API_BASE = 'http://127.0.0.1:8000';
 
-// Datos mock
+// Datos harcodeados
 const categoriasMock: CategoriaPregunta[] = [
-  { id: 1, codigo: 'A', nombre: 'Planificación de la Enseñanza', orden: 1 },
-  { id: 2, codigo: 'B', nombre: 'Desarrollo de la Enseñanza', orden: 2 },
-  { id: 3, codigo: 'C', nombre: 'Evaluación del Aprendizaje', orden: 3 },
-  { id: 4, codigo: 'D', nombre: 'Clima del Aula', orden: 4 },
-  { id: 5, codigo: 'E', nombre: 'Recursos y Materiales', orden: 5 },
-  { id: 6, codigo: 'F', nombre: 'Desarrollo Profesional', orden: 6 },
-  { id: 7, codigo: 'G', nombre: 'Sugerencias y Comentarios', orden: 7 }
+  { id: 1, codigo: 'A', nombre: 'Información general', orden: 1 },
+  { id: 2, codigo: 'B', nombre: 'Comunicación y desarrollo de la asignatura ', orden: 2 },
+  { id: 3, codigo: 'C', nombre: 'Metodología.', orden: 3 },
+  { id: 4, codigo: 'D', nombre: 'Evaluación', orden: 4 },
+  { id: 5, codigo: 'E', nombre: 'Actuación de los miembros de la Cátedra', orden: 5 },
+  { id: 6, codigo: 'F', nombre: 'Institucional', orden: 6 },
+  { id: 7, codigo: 'G', nombre: 'OPINIÓN GLOBAL', orden: 7 }
 ];
 
 const preguntasMock: Pregunta[] = [

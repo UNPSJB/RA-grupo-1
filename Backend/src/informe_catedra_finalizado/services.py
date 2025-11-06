@@ -1,5 +1,5 @@
 from typing import List
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session, joinedload, selectinload
 from sqlalchemy import select
 from src.informe_catedra_finalizado import schemas, models, exceptions
 from src.informe_catedra_finalizado.models import InformeCatedraFinalizado
@@ -7,6 +7,8 @@ from src.asignaturas.models import Asignatura
 from src.vinculaciones.asignatura_docente.models import AsignaturaDocente
 from src.vinculaciones.models import Duracion
 from src.resultado_informe import services as respuestas_services
+from src.resultado_informe.models import RespuestaInforme
+from src.preguntas.models import Pregunta
 
 def obtener_informes_pendientes(db: Session, docente_id: int,anio: int,duracion: Duracion) -> List[dict]:
     relaciones = db.scalars(
@@ -99,7 +101,16 @@ def crear_informe_finalizado(db: Session, informe_data: schemas.InformeCatedraFi
 
 
 def obtener_informe_finalizado(db: Session, informe_id: int) -> models.InformeCatedraFinalizado:
-    informe = db.scalar(select(InformeCatedraFinalizado).where(InformeCatedraFinalizado.id == informe_id))
+    stmt = (
+        select(models.InformeCatedraFinalizado)
+        .where(models.InformeCatedraFinalizado.id == informe_id)
+        .options(
+            selectinload(models.InformeCatedraFinalizado.respuestas_informe)
+            .selectinload(RespuestaInforme.pregunta)
+        )
+    )
+    
+    informe = db.scalar(stmt)
     if not informe:
         raise exceptions.InformeFinalizadoNoEncontrado()
     return informe

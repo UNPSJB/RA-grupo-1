@@ -21,6 +21,7 @@ import { CiclosPage } from "../features/ciclos/components/CiclosPage";
 import Encuestas from '../features/encuestas/components/Encuesta';
 import DetalleEncuesta from '../features/encuestas/components/DetalleEncuesta';
 
+
 //import SecretariaPreguntas from "../features/preguntas/components/SecretariaPreguntas";
 
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -58,7 +59,6 @@ function App() {
         <Route path="crear-encuesta" element={<CrearEncuesta />} />
         <Route path="estadisticas/:encuestaId" element={<EstadisticasEncuesta />} />
         <Route path="panel-encuestas" element={<PanelEncuestas />} />
-        <Route index element={<CiclosPage />} />
         <Route path="ciclos" element={<CiclosPage />} />
       </Route>
     </Routes>

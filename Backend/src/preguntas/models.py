@@ -30,12 +30,7 @@ class Pregunta(ModeloBase):
     # RELACIÓN 
     respuestas = relationship("Respuesta", back_populates="pregunta", lazy="select")
 
-    opciones: Mapped[List["Opcion"]] = relationship(
-        "Opcion",
-        secondary=pregunta_opcion,
-        back_populates="preguntas",
-        lazy="select"
-    )
+    opciones = relationship("Opcion", back_populates="pregunta", cascade="all, delete-orphan")
 
     categoria: Mapped["Categoria"] = relationship(
         "src.categorias.models.Categoria",

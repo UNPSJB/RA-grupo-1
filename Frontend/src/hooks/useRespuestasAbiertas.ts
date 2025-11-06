@@ -20,7 +20,7 @@ export function useRespuestasAbiertas() {
       respuesta: 'La explicación de los patrones de diseño fue excelente. El profesor utiliza ejemplos prácticos que ayudan a entender mejor los conceptos. Me gustó mucho el enfoque hands-on de la asignatura.',
       asignatura: 'Desarrollo de Software',
       asignaturaId: 1,
-      fecha: '2024-10-05',
+      fecha: '2025-10-05',
       sentimiento: 'positivo',
       categoria: 'Metodología'
     },
@@ -30,7 +30,7 @@ export function useRespuestasAbiertas() {
       respuesta: 'Sería útil tener más tiempo para los trabajos prácticos. A veces sentí que las entregas estaban muy juntas y no daba el tiempo suficiente para profundizar en los temas.',
       asignatura: 'Desarrollo de Software',
       asignaturaId: 1,
-      fecha: '2024-10-04',
+      fecha: '2025-10-04',
       sentimiento: 'neutral',
       categoria: 'Organización'
     },
@@ -40,7 +40,7 @@ export function useRespuestasAbiertas() {
       respuesta: 'Excelente comunicación. El profesor siempre está disponible para consultas y responde rápido por los canales de comunicación. Explica con claridad y paciencia.',
       asignatura: 'Desarrollo de Software',
       asignaturaId: 1,
-      fecha: '2024-10-03',
+      fecha: '2025-10-03',
       sentimiento: 'positivo',
       categoria: 'Comunicación'
     },
@@ -50,7 +50,7 @@ export function useRespuestasAbiertas() {
       respuesta: 'Los ejercicios de algoritmos fueron desafiantes pero muy educativos. Me ayudaron a pensar de manera más lógica y estructurada. La teoría está bien balanceada con la práctica.',
       asignatura: 'Algoritmos y Estructuras de Datos',
       asignaturaId: 3,
-      fecha: '2024-10-02',
+      fecha: '2025-10-02',
       sentimiento: 'positivo',
       categoria: 'Contenido'
     },
@@ -60,7 +60,7 @@ export function useRespuestasAbiertas() {
       respuesta: 'Los parciales son muy difíciles. Creo que deberían estar más alineados con lo que vemos en clase. A veces hay preguntas que no se cubrieron lo suficiente en las clases.',
       asignatura: 'Algoritmos y Estructuras de Datos',
       asignaturaId: 3,
-      fecha: '2024-10-01',
+      fecha: '2025-10-01',
       sentimiento: 'negativo',
       categoria: 'Evaluación'
     },
@@ -70,7 +70,7 @@ export function useRespuestasAbiertas() {
       respuesta: 'El asignatural está muy completo. Las presentaciones son claras y los videos complementarios son de gran ayuda. También los ejercicios adicionales están muy buenos.',
       asignatura: 'Ingeniería de Software',
       asignaturaId: 2,
-      fecha: '2024-09-30',
+      fecha: '2025-09-30',
       sentimiento: 'positivo',
       categoria: 'asignaturales'
     },
@@ -80,7 +80,7 @@ export function useRespuestasAbiertas() {
       respuesta: 'Me gustó el enfoque en metodologías ágiles. Es muy aplicable al mundo laboral real. Las dinámicas de grupo también fueron muy enriquecedoras.',
       asignatura: 'Ingeniería de Software',
       asignaturaId: 2,
-      fecha: '2024-09-29',
+      fecha: '2025-09-29',
       sentimiento: 'positivo',
       categoria: 'Metodología'
     },
@@ -90,7 +90,7 @@ export function useRespuestasAbiertas() {
       respuesta: 'Tal vez incluir más casos de estudio de proyectos reales. Sería interesante ver ejemplos de empresas conocidas y cómo aplican estos conceptos.',
       asignatura: 'Ingeniería de Software',
       asignaturaId: 2,
-      fecha: '2024-09-28',
+      fecha: '2025-09-28',
       sentimiento: 'neutral',
       categoria: 'Contenido'
     },
@@ -100,7 +100,7 @@ export function useRespuestasAbiertas() {
       respuesta: 'Una de las mejores asignaturas que cursé. El profesor demuestra pasión por lo que enseña y eso se transmite. Aprendí mucho y me siento preparado para aplicar estos conocimientos.',
       asignatura: 'Desarrollo de Software',
       asignaturaId: 1,
-      fecha: '2024-09-27',
+      fecha: '2025-09-27',
       sentimiento: 'positivo',
       categoria: 'General'
     },
@@ -110,7 +110,7 @@ export function useRespuestasAbiertas() {
       respuesta: 'El ritmo de la clase a veces es muy rápido. Sería bueno dedicar más tiempo a los conceptos más complejos como recursión y árboles.',
       asignatura: 'Algoritmos y Estructuras de Datos',
       asignaturaId: 3,
-      fecha: '2024-09-26',
+      fecha: '2025-09-26',
       sentimiento: 'neutral',
       categoria: 'Metodología'
     }

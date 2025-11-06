@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { 
   Container, 
   Row, 
@@ -9,193 +9,195 @@ import {
   Alert, 
   Badge, 
   Accordion,
-  Modal 
+  ListGroup
 } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useSecretaria } from '../hooks/useSecretaria';
-import { Pregunta } from '../types/encuestasTypes';
-
+import '../styles/CrearEncuesta.css';
 
 export const CrearEncuesta = () => {
-  const { preguntas, categorias, crearEncuesta, crearPregunta, eliminarPregunta } = useSecretaria();
+  const { preguntas, categorias, crearEncuesta, crearPregunta } = useSecretaria();
   const navigate = useNavigate();
   
-  // Estados del formulario principal
+  // Formulario de encuesta
   const [formData, setFormData] = useState({
     titulo: '',
     descripcion: '',
     rolDestinatario: 'alumno'
   });
-  
-  // Estados de selección
+
+  // Selección de preguntas
   const [preguntasSeleccionadas, setPreguntasSeleccionadas] = useState<number[]>([]);
   const [categoriasSeleccionadas, setCategoriasSeleccionadas] = useState<number[]>([]);
-  
-  // Estados de gestión de preguntas
+
+  // Preguntas abiertas
   const [nuevaPreguntaAbierta, setNuevaPreguntaAbierta] = useState('');
-  const [creandoPregunta, setCreandoPregunta] = useState(false);
-  
-  // Estados para eliminación
-  const [preguntaAEliminar, setPreguntaAEliminar] = useState<number | null>(null);
-  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
-  
-  // Estados de feedback
+  const [categoriaAbierta, setCategoriaAbierta] = useState<number | null>(null);
+
+  // Preguntas cerradas
+  const [nuevaPreguntaCerrada, setNuevaPreguntaCerrada] = useState('');
+  const [categoriaCerrada, setCategoriaCerrada] = useState<number | null>(null);
+  const [opcionesTexto, setOpcionesTexto] = useState<string[]>([]);
+  const [nuevaOpcionTexto, setNuevaOpcionTexto] = useState('');
+
+  // Feedback
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  // Agrupar preguntas por categoría
+  // Agrupar preguntas
   const preguntasAgrupadas = categorias.map(categoria => ({
     ...categoria,
     preguntas: preguntas.filter(p => p.categoriaId === categoria.id)
   }));
 
-  // Manejo de selección de preguntas
-  const togglePregunta = (preguntaId: number) => {
-    setPreguntasSeleccionadas(prev => 
-      prev.includes(preguntaId)
-        ? prev.filter(id => id !== preguntaId)
-        : [...prev, preguntaId]
+  const togglePregunta = (id: number) => {
+    setPreguntasSeleccionadas(prev =>
+      prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]
     );
   };
 
-  const getPreguntaSeleccionada = (preguntaId: number) => {
-    return preguntasSeleccionadas.includes(preguntaId);
-  };
-
-  // Manejo de selección de categorías
   const toggleCategoria = (categoriaId: number) => {
     const categoria = preguntasAgrupadas.find(c => c.id === categoriaId);
     if (!categoria) return;
 
     if (categoriasSeleccionadas.includes(categoriaId)) {
-      // Deseleccionar categoría y todas sus preguntas
       setCategoriasSeleccionadas(prev => prev.filter(id => id !== categoriaId));
-      const idsPreguntasCategoria = categoria.preguntas.map(p => p.id);
-      setPreguntasSeleccionadas(prev => prev.filter(id => !idsPreguntasCategoria.includes(id)));
+      setPreguntasSeleccionadas(prev => prev.filter(id => !categoria.preguntas.some(p => p.id === id)));
     } else {
-      // Seleccionar categoría y todas sus preguntas
       setCategoriasSeleccionadas(prev => [...prev, categoriaId]);
-      const idsPreguntasCategoria = categoria.preguntas.map(p => p.id);
-      setPreguntasSeleccionadas(prev => [...prev, ...idsPreguntasCategoria]);
+      setPreguntasSeleccionadas(prev => [...prev, ...categoria.preguntas.map(p => p.id)]);
     }
   };
 
-  const getCategoriaSeleccionada = (categoriaId: number) => {
-    return categoriasSeleccionadas.includes(categoriaId);
-  };
-
-  // Crear nueva pregunta abierta
+  // Crear pregunta abierta
   const crearPreguntaAbiertaHandler = async () => {
     if (!nuevaPreguntaAbierta.trim()) {
-      setError('El texto de la pregunta no puede estar vacío');
+      setError("El texto de la pregunta no puede estar vacío");
+      return;
+    }
+
+    if (!categoriaAbierta) {
+      setError("Debes seleccionar una categoría");
       return;
     }
 
     try {
-      setCreandoPregunta(true);
-      const preguntaCreada = await crearPregunta(
-        nuevaPreguntaAbierta, 
-        'abierta', 
-        undefined, 
-        7 // Categoría G - Sugerencias
-      );
-      
-      setNuevaPreguntaAbierta('');
-      setSuccess('Pregunta abierta creada exitosamente');
+      await crearPregunta(nuevaPreguntaAbierta, "abierta", undefined, categoriaAbierta);
+      setNuevaPreguntaAbierta("");
+      setCategoriaAbierta(null);
+      setSuccess("✅ Pregunta abierta creada");
+      setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
-      setError('Error al crear la pregunta');
-    } finally {
-      setCreandoPregunta(false);
+      setError("Error al crear pregunta abierta");
+      console.error(err);
     }
   };
 
-  // Manejo de eliminación de preguntas
-  const handleEliminarPregunta = (preguntaId: number) => {
-    setPreguntaAEliminar(preguntaId);
-    setShowConfirmDelete(true);
+  // Agregar opción a la lista temporal
+  const agregarOpcion = () => {
+    if (!nuevaOpcionTexto.trim()) {
+      setError("El texto de la opción no puede estar vacío");
+      return;
+    }
+    
+    if (opcionesTexto.includes(nuevaOpcionTexto.trim())) {
+      setError("Esta opción ya existe");
+      return;
+    }
+
+    setOpcionesTexto(prev => [...prev, nuevaOpcionTexto.trim()]);
+    setNuevaOpcionTexto('');
   };
 
-  const confirmarEliminacion = async () => {
-    if (preguntaAEliminar) {
-      try {
-        await eliminarPregunta(preguntaAEliminar);
-        
-        // Remover de seleccionadas si estaba seleccionada
-        if (preguntasSeleccionadas.includes(preguntaAEliminar)) {
-          setPreguntasSeleccionadas(prev => prev.filter(id => id !== preguntaAEliminar));
-        }
-        
-        setSuccess('Pregunta eliminada exitosamente');
-      } catch (err) {
-        setError('Error al eliminar la pregunta');
-      } finally {
-        setShowConfirmDelete(false);
-        setPreguntaAEliminar(null);
-      }
+  // Eliminar opción de la lista temporal
+  const eliminarOpcion = (texto: string) => {
+    setOpcionesTexto(prev => prev.filter(op => op !== texto));
+  };
+
+  // Crear pregunta cerrada
+  const crearPreguntaCerradaHandler = async () => {
+    if (!nuevaPreguntaCerrada.trim()) {
+      setError("El texto de la pregunta no puede estar vacío");
+      return;
+    }
+
+    if (!categoriaCerrada) {
+      setError("Debes seleccionar una categoría");
+      return;
+    }
+    
+    if (opcionesTexto.length < 2) {
+      setError("Debes agregar al menos 2 opciones");
+      return;
+    }
+
+    try {
+      await crearPregunta(nuevaPreguntaCerrada, "opcion_multiple", opcionesTexto, categoriaCerrada);
+      
+      setNuevaPreguntaCerrada("");
+      setCategoriaCerrada(null);
+      setOpcionesTexto([]);
+      setSuccess("✅ Pregunta cerrada creada");
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err) {
+      setError("Error al crear pregunta cerrada");
+      console.error(err);
     }
   };
 
-  // Envío del formulario
+  // Crear encuesta
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (preguntasSeleccionadas.length === 0) {
-      setError('Selecciona al menos una pregunta');
+
+    if (!formData.titulo.trim()) {
+      setError("El título es obligatorio");
       return;
     }
-
-    if (!formData.titulo) {
-      setError('El título de la encuesta es obligatorio');
+    
+    if (preguntasSeleccionadas.length === 0) {
+      setError("Selecciona al menos una pregunta");
       return;
     }
 
     try {
-      const preguntasParaEncuesta = preguntas.filter(p => 
-        preguntasSeleccionadas.includes(p.id)
-      ).map((p, index) => ({
-        ...p,
-        orden: index + 1
-      }));
-
-      const categoriasParaEncuesta = categorias.filter(c =>
-        categoriasSeleccionadas.includes(c.id)
+      await crearEncuesta(
+        formData.titulo, 
+        formData.descripcion, 
+        formData.rolDestinatario, 
+        preguntasSeleccionadas
       );
-
-      navigate('/secretaria');
+      navigate("/secretaria");
     } catch (err) {
-      setError('Error al crear la encuesta');
-      console.error('Error:', err);
+      setError("Error al crear la encuesta");
+      console.error(err);
     }
   };
 
   return (
     <Container fluid className="py-4">
-      <Row>
-        <Col>
-          <h1 className="h2">Crear Nueva Encuesta</h1>
-        </Col>
-      </Row>
 
-      {error && <Alert variant="danger" onClose={() => setError(null)} dismissible>{error}</Alert>}
-      {success && <Alert variant="success" onClose={() => setSuccess(null)} dismissible>{success}</Alert>}
+      {error && <Alert variant="danger" dismissible onClose={() => setError(null)}>{error}</Alert>}
+      {success && <Alert variant="success" dismissible onClose={() => setSuccess(null)}>{success}</Alert>}
 
       <Form onSubmit={handleSubmit}>
         <Row>
+
+          {/* Izquierda */}
           <Col md={8}>
-            {/* Información de la Encuesta */}
-            <Card className="mb-4">
-              <Card.Header>
-                <h5 className="mb-0">Información de la Encuesta</h5>
+
+            {/* Información */}
+            <Card className="mb-4 shadow-sm">
+              <Card.Header className="bg-primary text-white">
+                <h5 className="mb-0">📋 Información de la Encuesta</h5>
               </Card.Header>
               <Card.Body>
+
                 <Form.Group className="mb-3">
-                  <Form.Label>Título de la Encuesta *</Form.Label>
+                  <Form.Label>Título *</Form.Label>
                   <Form.Control
-                    type="text"
                     value={formData.titulo}
                     onChange={(e) => setFormData({ ...formData, titulo: e.target.value })}
-                    placeholder="Ej: Encuesta de Satisfacción Docente - Primer Semestre 2025"
-                    required
+                    placeholder="Ej: Encuesta de Satisfacción 2025"
                   />
                 </Form.Group>
 
@@ -210,206 +212,300 @@ export const CrearEncuesta = () => {
                   />
                 </Form.Group>
 
-                <Row>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Destinatario</Form.Label>
-                      <Form.Select
-                        value={formData.rolDestinatario}
-                        onChange={(e) => setFormData({ ...formData, rolDestinatario: e.target.value })}
-                      >
-                        <option value="alumno">Alumnos</option>
-                        <option value="docente">Docentes</option>
-                        <option value="todos">Todos</option>
-                      </Form.Select>
-                    </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>Destinatario</Form.Label>
+                  <Form.Select
+                    value={formData.rolDestinatario}
+                    onChange={(e) => setFormData({ ...formData, rolDestinatario: e.target.value })}
+                  >
+                    <option value="alumno">Alumnos</option>
+                    <option value="docente">Docentes</option>
+                    <option value="todos">Todos</option>
+                  </Form.Select>
+                </Form.Group>
+
+              </Card.Body>
+            </Card>
+
+            {/* Pregunta abierta */}
+            <Card className="mb-4 shadow-sm">
+              <Card.Header className="bg-success text-white">
+                <h5 className="mb-0">📝 Agregar Pregunta Abierta</h5>
+              </Card.Header>
+              <Card.Body>
+                
+                <Form.Group className="mb-3">
+                  <Form.Label>Categoría *</Form.Label>
+                  <Form.Select
+                    value={categoriaAbierta || ''}
+                    onChange={(e) => setCategoriaAbierta(Number(e.target.value) || null)}
+                  >
+                    <option value="">Selecciona una categoría...</option>
+                    {categorias.map(cat => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.codigo} - {cat.nombre}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+
+                  <Form.Group className="mb-3">
+                  <Form.Label>Descripción</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    value={formData.descripcion}
+                    onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
+                    placeholder="Ej: ¿Qué aspectos del curso te parecieron más útiles y cuáles crees que podrían mejorarse?"
+                  />
+                </Form.Group>
+                
+                <Row className="mt-2">
+                  <Col md={12}>
+                    <Button 
+                      className="w-100" 
+                      variant="success"
+                      onClick={crearPreguntaAbiertaHandler}
+                      disabled={!nuevaPreguntaAbierta.trim() || !categoriaAbierta}
+                    >
+                      ✓ Agregar Pregunta Abierta
+                    </Button>
                   </Col>
                 </Row>
               </Card.Body>
             </Card>
 
-            {/* Crear Nueva Pregunta Abierta */}
-            <Card className="mb-4">
-              <Card.Header>
-                <h5 className="mb-0">Crear Nueva Pregunta Abierta</h5>
+            {/* Pregunta cerrada */}
+            <Card className="mb-4 shadow-sm">
+              <Card.Header className="bg-info text-white">
+                <h5 className="mb-0">☑️ Agregar Pregunta Cerrada</h5>
               </Card.Header>
               <Card.Body>
+
                 <Form.Group className="mb-3">
-                  <Form.Label>Texto de la pregunta *</Form.Label>
-                  <Form.Control 
-                    type="text" 
-                    placeholder="Ingresa el texto de la pregunta..."
-                    value={nuevaPreguntaAbierta}
-                    onChange={(e) => setNuevaPreguntaAbierta(e.target.value)}
-                  />
+                  <Form.Label>Categoría *</Form.Label>
+                  <Form.Select
+                    value={categoriaCerrada || ''}
+                    onChange={(e) => setCategoriaCerrada(Number(e.target.value) || null)}
+                  >
+                    <option value="">Selecciona una categoría...</option>
+                    {categorias.map(cat => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.codigo} - {cat.nombre}
+                      </option>
+                    ))}
+                  </Form.Select>
                 </Form.Group>
+
+                <Form.Control
+                  className="mb-3"
+                  placeholder="Ej: ¿Cómo calificarías la explicación del docente?"
+                  value={nuevaPreguntaCerrada}
+                  onChange={(e) => setNuevaPreguntaCerrada(e.target.value)}
+                />
+
+                {/* Lista de opciones agregadas */}
+                {opcionesTexto.length > 0 && (
+                  <div className="mb-3">
+                    <div className="text-muted mb-2">
+                      <strong>Opciones agregadas ({opcionesTexto.length}):</strong>
+                    </div>
+                    <ListGroup>
+                      {opcionesTexto.map((opcion, index) => (
+                        <ListGroup.Item 
+                          key={index}
+                          className="d-flex justify-content-between align-items-center"
+                        >
+                          <span>
+                            <Badge bg="secondary" className="me-2">{index + 1}</Badge>
+                            {opcion}
+                          </span>
+                          <Button 
+                            variant="outline-danger" 
+                            size="sm"
+                            onClick={() => eliminarOpcion(opcion)}
+                          >
+                            ✕
+                          </Button>
+                        </ListGroup.Item>
+                      ))}
+                    </ListGroup>
+                  </div>
+                )}
+
+                {/* Agregar nueva opción */}
+                <Row className="mb-3">
+                  <Col md={9}>
+                    <Form.Control
+                      placeholder="Escribe una opción de respuesta..."
+                      value={nuevaOpcionTexto}
+                      onChange={(e) => setNuevaOpcionTexto(e.target.value)}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          agregarOpcion();
+                        }
+                      }}
+                    />
+                  </Col>
+                  <Col md={3}>
+                    <Button
+                      className="w-100"
+                      variant="outline-secondary"
+                      onClick={agregarOpcion}
+                      disabled={!nuevaOpcionTexto.trim()}
+                    >
+                      + Opción
+                    </Button>
+                  </Col>
+                </Row>
+
                 <Button 
-                  variant="outline-primary"
-                  onClick={crearPreguntaAbiertaHandler}
-                  disabled={!nuevaPreguntaAbierta.trim() || creandoPregunta}
+                  className="w-100" 
+                  variant="info" 
+                  onClick={crearPreguntaCerradaHandler}
+                  disabled={!nuevaPreguntaCerrada.trim() || !categoriaCerrada || opcionesTexto.length < 2}
                 >
-                  {creandoPregunta ? 'Creando...' : 'Crear Pregunta Abierta'}
+                  Agregar Pregunta Cerrada
                 </Button>
+
               </Card.Body>
             </Card>
+
           </Col>
 
-          {/* Panel de Resumen */}
+          {/* Derecha */}
           <Col md={4}>
-            <Card className="sticky-top" style={{ top: '20px' }}>
-              <Card.Header>
-                <h5 className="mb-0">Resumen</h5>
+            <Card className="shadow-sm sticky-summary">
+              <Card.Header className="bg-dark text-white">
+                <h5 className="mb-0">📊 Resumen</h5>
               </Card.Header>
               <Card.Body>
-                <div className="mb-3">
-                  <strong>Categorías seleccionadas:</strong>{' '}
-                  <Badge bg="primary">{categoriasSeleccionadas.length}</Badge>
+                <div className="mb-2">
+                  <strong>Categorías seleccionadas:</strong> 
+                  <Badge bg="primary" className="ms-2">{categoriasSeleccionadas.length}</Badge>
                 </div>
                 <div className="mb-3">
-                  <strong>Preguntas seleccionadas:</strong>{' '}
-                  <Badge bg="success">{preguntasSeleccionadas.length}</Badge>
+                  <strong>Preguntas seleccionadas:</strong> 
+                  <Badge bg="success" className="ms-2">{preguntasSeleccionadas.length}</Badge>
                 </div>
+                
+                <hr />
+                
+                <div className="mb-3">
+                  <small className="text-muted">
+                    {formData.titulo ? (
+                      <>✓ Título definido</>
+                    ) : (
+                      <>⚠️ Falta título</>
+                    )}
+                  </small>
+                </div>
+
                 <Button 
-                  variant="primary" 
                   type="submit" 
                   className="w-100"
+                  variant="primary"
+                  size="lg"
+                  disabled={!formData.titulo.trim() || preguntasSeleccionadas.length === 0}
                 >
-                  <i className="bi bi-check-circle me-2"></i>
-                  Crear Encuesta
+                  🚀 Crear Encuesta
                 </Button>
               </Card.Body>
             </Card>
-          </Col>
-        </Row>
 
-        {/* Selección de Preguntas por Categoría */}
-        <Row>
-          <Col>
-            <Card>
+            {/* Leyenda de categorías */}
+            <Card className="shadow-sm mt-3">
               <Card.Header>
-                <h5 className="mb-0">Seleccionar Preguntas por Categoría</h5>
-                <small className="text-muted">
-                  Organiza las preguntas por categorías temáticas del sistema universitario
-                </small>
+                <h6 className="mb-0">📚 Categorías Disponibles</h6>
               </Card.Header>
-              <Card.Body>
-                {preguntas.length === 0 ? (
-                  <Alert variant="info">
-                    No hay preguntas disponibles. Primero crea algunas preguntas en la sección de Gestión de Preguntas.
-                  </Alert>
-                ) : (
-                  <Accordion>
-                    {preguntasAgrupadas.map((categoria) => (
-                      <Accordion.Item key={categoria.id} eventKey={categoria.id.toString()}>
-                        <Accordion.Header>
-                          <div className="d-flex align-items-center">
-                            <Form.Check
-                              type="checkbox"
-                              checked={getCategoriaSeleccionada(categoria.id)}
-                              onChange={(e) => {
-                                e.stopPropagation();
-                                toggleCategoria(categoria.id);
-                              }}
-                              className="me-3"
-                            />
-                            <strong>{categoria.codigo}: {categoria.nombre}</strong>
-                            <Badge bg="secondary" className="ms-2">
-                              {categoria.preguntas.length} preguntas
-                            </Badge>
-                          </div>
-                        </Accordion.Header>
-                        <Accordion.Body>
-                          {categoria.preguntas.length === 0 ? (
-                            <Alert variant="info" className="mb-0">
-                              No hay preguntas en esta categoría
-                            </Alert>
-                          ) : (
-                            <Row>
-                              {categoria.preguntas.map((pregunta) => (
-                                <Col key={pregunta.id} md={6} className="mb-3">
-                                  <Card 
-                                    className={`h-100 cursor-pointer ${
-                                      getPreguntaSeleccionada(pregunta.id) ? 'border-primary' : ''
-                                    }`}
-                                    onClick={() => togglePregunta(pregunta.id)}
-                                    style={{ cursor: 'pointer' }}
-                                  >
-                                    <Card.Body>
-                                      <div className="d-flex align-items-start">
-                                        <Form.Check
-                                          type="checkbox"
-                                          checked={getPreguntaSeleccionada(pregunta.id)}
-                                          onChange={() => togglePregunta(pregunta.id)}
-                                          className="me-2 mt-1"
-                                        />
-                                        <div className="flex-grow-1">
-                                          <div className="d-flex justify-content-between align-items-start mb-2">
-                                            <div>
-                                              <Badge 
-                                                bg={pregunta.tipo === 'abierta' ? 'primary' : 'success'} 
-                                                className="mb-1"
-                                              >
-                                                {pregunta.tipo === 'abierta' ? 'Abierta' : 'Cerrada'}
-                                              </Badge>
-                                              <Badge bg="secondary" className="ms-1">
-                                                Orden: {pregunta.orden}
-                                              </Badge>
-                                            </div>
-                                            <Button
-                                              variant="outline-danger"
-                                              size="sm"
-                                              onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleEliminarPregunta(pregunta.id);
-                                              }}
-                                              title="Eliminar pregunta"
-                                            >
-                                              <i className="bi bi-trash"></i>
-                                            </Button>
-                                          </div>
-                                          <p className="mb-2">{pregunta.texto}</p>
-                                          {pregunta.tipo === 'cerrada' && pregunta.opciones && (
-                                            <small className="text-muted">
-                                              <strong>Opciones:</strong> {pregunta.opciones.join(', ')}
-                                            </small>
-                                          )}
-                                        </div>
-                                      </div>
-                                    </Card.Body>
-                                  </Card>
-                                </Col>
-                              ))}
-                            </Row>
-                          )}
-                        </Accordion.Body>
-                      </Accordion.Item>
-                    ))}
-                  </Accordion>
-                )}
+              <Card.Body className="p-2">
+                <ListGroup variant="flush">
+                  {categorias.map(cat => (
+                    <ListGroup.Item key={cat.id} className="py-1 px-2">
+                      <Badge bg="secondary" className="me-2">{cat.codigo}</Badge>
+                      <small>{cat.nombre}</small>
+                    </ListGroup.Item>
+                  ))}
+                </ListGroup>
               </Card.Body>
             </Card>
           </Col>
+
         </Row>
       </Form>
 
-      {/* Modal de Confirmación de Eliminación */}
-      <Modal show={showConfirmDelete} onHide={() => setShowConfirmDelete(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Confirmar Eliminación</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          ¿Estás seguro de que quieres eliminar esta pregunta? 
-          Esta acción no se puede deshacer.
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowConfirmDelete(false)}>
-            Cancelar
-          </Button>
-          <Button variant="danger" onClick={confirmarEliminacion}>
-            Eliminar
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      {/* Selector de preguntas */}
+      <Card className="mt-5 shadow-sm">
+        <Card.Header className="bg-light">
+          <h5>✅ Seleccionar Preguntas Existentes</h5>
+          <small className="text-muted">Agrupadas por categorías</small>
+        </Card.Header>
+        <Card.Body>
+
+          {preguntasAgrupadas.length === 0 ? (
+            <Alert variant="info">
+              No hay preguntas disponibles. Crea preguntas usando los formularios de arriba.
+            </Alert>
+          ) : (
+            <Accordion alwaysOpen>
+              {preguntasAgrupadas.map(categoria => (
+                <Accordion.Item key={categoria.id} eventKey={categoria.id.toString()}>
+                  <Accordion.Header>
+                    <Form.Check
+                      type="checkbox"
+                      className="me-3"
+                      checked={categoriasSeleccionadas.includes(categoria.id)}
+                      onClick={(e) => { 
+                        e.stopPropagation(); 
+                        toggleCategoria(categoria.id); 
+                      }}
+                      onChange={() => {}}
+                    />
+                    <Badge bg="secondary" className="me-2">{categoria.codigo}</Badge>
+                    <strong>{categoria.nombre}</strong>
+                    <Badge bg="primary" className="ms-2">{categoria.preguntas.length}</Badge>
+                  </Accordion.Header>
+
+                  <Accordion.Body>
+                    {categoria.preguntas.length === 0 ? (
+                      <p className="text-muted">No hay preguntas en esta categoría</p>
+                    ) : (
+                      <Row>
+                        {categoria.preguntas.map(p => (
+                          <Col md={6} key={p.id} className="mb-3">
+                            <Card 
+                              className={`p-3 card-pregunta ${preguntasSeleccionadas.includes(p.id) ? "border-primary border-2" : ""}`}
+                              onClick={() => togglePregunta(p.id)}
+                              style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+                            >
+                              <div className="d-flex align-items-start">
+                                <Form.Check 
+                                  checked={preguntasSeleccionadas.includes(p.id)} 
+                                  readOnly 
+                                  className="me-2"
+                                />
+                                <div>
+                                  <Badge bg={p.tipo === 'abierta' ? 'success' : 'info'} className="mb-2">
+                                    {p.tipo === 'abierta' ? '📝 Abierta' : '☑️ Cerrada'}
+                                  </Badge>
+                                  <div>{p.texto}</div>
+                                </div>
+                              </div>
+                            </Card>
+                          </Col>
+                        ))}
+                      </Row>
+                    )}
+                  </Accordion.Body>
+                </Accordion.Item>
+              ))}
+            </Accordion>
+          )}
+
+        </Card.Body>
+      </Card>
+
     </Container>
   );
 };
