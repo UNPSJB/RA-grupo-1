@@ -102,3 +102,4 @@ app.include_router(resultado_informe_router)
 @app.get("/")
 def read_root():
     return {"message": "Backend de Reporte de encuestas 🚀"}
+  

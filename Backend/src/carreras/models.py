@@ -1,10 +1,11 @@
 from sqlalchemy import Integer, String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.models import ModeloBase
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 if TYPE_CHECKING:
     from src.departamentos.models import Departamento
+    from src.informe_sintetico.models import InformeSintetico
 
 class Carrera(ModeloBase):
     __tablename__ = "carreras"
@@ -14,3 +15,7 @@ class Carrera(ModeloBase):
     departamento_id: Mapped[int] = mapped_column(Integer, ForeignKey("departamentos.id"))
     
     departamento: Mapped["Departamento"] = relationship("Departamento", back_populates="carreras")
+    informes_sinteticos: Mapped[List["InformeSintetico"]] = relationship(
+        "InformeSintetico", back_populates="carrera"
+    )
+#relacion con informe sintentico
