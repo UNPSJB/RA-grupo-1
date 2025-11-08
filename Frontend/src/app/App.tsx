@@ -1,5 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import { RoleSelection } from '../features/inicio/components/RoleSelection';
+import { LoginAlumno } from '../features/alumnos/components/LoginAlumno';
+import { ProtectedRoute } from '../features/alumnos/components/ProtectedRoute';
 import { AlumnoLayout } from '../features/alumnos/components/AlumnoLayout';
 import { AsignaturasCursadas } from '../features/alumnos/components/AsignaturasCursadas';
 import { AsignaturaDetalle } from '../features/alumnos/components/AsignaturaDetalle';
@@ -20,9 +22,8 @@ import { EstadisticasEncuesta } from '../features/secretaria/components/Estadist
 import { CiclosPage } from "../features/ciclos/components/CiclosPage";
 import Encuestas from '../features/encuestas/components/Encuesta';
 import DetalleEncuesta from '../features/encuestas/components/DetalleEncuesta';
-
-
-//import SecretariaPreguntas from "../features/preguntas/components/SecretariaPreguntas";
+import { NuevaEncuesta } from '../features/secretaria/components/NuevaEncuesta';
+import { CompletarEncuesta } from '../features/encuestas/components/CompletarEncuesta';
 
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -31,17 +32,31 @@ import 'bootstrap/dist/js/bootstrap.bundle.min';
 function App() {
   return (
     <Routes>
+      {/* Ruta principal */}
       <Route index element={<RoleSelection />} />
       
-      <Route path="/alumno" element={<AlumnoLayout />}> 
+      {/* Ruta de login de alumno (NO protegida) */}
+      <Route path="/alumno/login" element={<LoginAlumno />} />
+      
+      {/* Rutas de alumno (PROTEGIDAS) */}
+      <Route 
+        path="/alumno" 
+        element={
+          <ProtectedRoute>
+            <AlumnoLayout />
+          </ProtectedRoute>
+        }
+      > 
         <Route path="asignaturas" element={<AsignaturasCursadas />} />
         <Route path="asignatura/:id" element={<AsignaturaDetalle />} />
         <Route path="incompletas" element={<EncuestasIncompletas />} />
+        <Route path="encuestas/:encuestaId/completar" element={<CompletarEncuesta />} />
         <Route path="completadas" element={<EncuestasCompletas />} />
         <Route path="encuestas" element={<Encuestas />} />
         <Route path="encuesta/:id" element={<DetalleEncuesta />} />
       </Route>
       
+      {/* Rutas de docente */}
       <Route path="/docente" element={<DocenteLayout />}>
         <Route index element={<PanelDocente />} /> 
         <Route path="reportes" element={<div>Reportes de Encuestas</div>} />
@@ -49,17 +64,20 @@ function App() {
         <Route path="asignatura/:asignaturaId" element={<DetalleAsignatura />} />
       </Route>
 
+      {/* Rutas de departamento */}
       <Route path="/departamento" element={<DepartamentoLayout />}>
         <Route index element={<PanelDepartamento />} />
         <Route path="gestion-preguntas" element={<GestionPreguntas />} />
         <Route path="gestion-encuestas" element={<GestionEncuestas />} />
       </Route>
 
+      {/* Rutas de secretaría */}
       <Route path="/secretaria" element={<SecretariaLayout />}>
         <Route path="crear-encuesta" element={<CrearEncuesta />} />
         <Route path="estadisticas/:encuestaId" element={<EstadisticasEncuesta />} />
         <Route path="panel-encuestas" element={<PanelEncuestas />} />
         <Route path="ciclos" element={<CiclosPage />} />
+        <Route path="/secretaria/nueva-encuesta" element={<NuevaEncuesta />} />
       </Route>
     </Routes>
   );

@@ -57,6 +57,7 @@ from src.resultado_informe.router import router as resultado_informe_router
 from src.informe_sintetico_finalizado.router import router as informe_sintetico_finalizado_router
 from src.pregunta_informe_sintetico.router import router as pregunta_informe_sintetico_router
 from src.respuestas_informe.router import router as respuestas_informe_router
+from src.auth.router import router as auth_router
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -76,6 +77,7 @@ app = FastAPI(root_path=ROOT_PATH, lifespan=db_creation_lifespan)
 
 origins = [
     "http://localhost:5173", 
+    "http://127.0.0.1:5173",
 ]
 
 
@@ -109,6 +111,7 @@ app.include_router(resultado_informe_router)
 app.include_router(informe_sintetico_finalizado_router)
 app.include_router(pregunta_informe_sintetico_router)
 app.include_router(respuestas_informe_router)
+app.include_router(auth_router)
 
 @app.get("/")
 def read_root():

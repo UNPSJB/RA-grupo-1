@@ -1,5 +1,6 @@
 import { Card, Button, Badge, Spinner, Alert, Row, Col, Container } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { useEncuestas } from '../hooks/useEncuestas';
 import '../styles/Encuestas.css';
 import { EstadoEncuesta, Cursado } from "../types/encuestaTypes";
@@ -7,6 +8,11 @@ import { EstadoEncuesta, Cursado } from "../types/encuestaTypes";
 export const EncuestasIncompletas = () => {
     const navigate = useNavigate();
     const { encuestas, loading, error, refetch } = useEncuestas();
+
+    // Refrescar datos cuando el componente se monta
+    useEffect(() => {
+        refetch();
+    }, []);
 
     // Filtrar solo encuestas abiertas
     const encuestasIncompletas = encuestas.filter(
@@ -25,12 +31,20 @@ export const EncuestasIncompletas = () => {
             case Cursado.PrimerCuatrimestre:
                 return 'primary';
             case Cursado.SegundoCuatrimestre:
-                return 'secondary';
+                return 'info';
             case Cursado.Anual:
                 return 'warning';
             default:
                 return 'dark';
         }
+    };
+
+    const formatearCursado = (cursado: string) => {
+        const cursadoUpper = cursado.toUpperCase();
+        if (cursadoUpper.includes('PRIMER')) return '1° Cuatrimestre';
+        if (cursadoUpper.includes('SEGUNDO')) return '2° Cuatrimestre';
+        if (cursadoUpper.includes('ANUAL')) return 'Anual';
+        return cursado;
     };
 
     const formatearFecha = (fecha: string) => {
@@ -41,14 +55,13 @@ export const EncuestasIncompletas = () => {
         });
     };
 
-    const handleCompletarEncuesta = (encuestaId: number, asignatura: string) => {
-        // Navegar al formulario de encuesta con los datos necesarios
-        navigate(`/alumno/encuesta/${encuestaId}/encuesta`, {
+    const handleCompletarEncuesta = (encuestaId: number, titulo: string, asignaturaId: number) => {
+        navigate(`/alumno/encuestas/${encuestaId}/completar`, {
             state: {
                 alumnoId: alumnoId,
                 encuestaId: encuestaId,
-                nombreAsignatura: asignatura,
-                asignaturaId: encuestaId 
+                nombreAsignatura: titulo,
+                asignaturaId: asignaturaId
             }
         });
     };
@@ -108,53 +121,76 @@ export const EncuestasIncompletas = () => {
                 <Row>
                     {encuestasIncompletas.map((encuesta) => (
                         <Col md={6} lg={4} key={encuesta.id} className="mb-4">
-                            <Card className="encuesta-card h-100">
-                                <Card.Header className="card-header-custom">
-                                    <div className="d-flex justify-content-between align-items-center">
+                            <Card className="encuesta-card h-100 shadow-sm">
+                                <Card.Header className="card-header-custom bg-white border-bottom">
+                                    <div className="d-flex justify-content-between align-items-center mb-2">
                                         <Badge 
                                             bg={getBadgeVariant(encuesta.estado)}
                                             className="estado-badge"
                                         >
+                                            <i className="bi bi-exclamation-circle me-1"></i>
                                             PENDIENTE
                                         </Badge>
                                         <Badge 
                                             bg={getCursadoBadgeVariant(encuesta.cursado)}
                                             className="cursado-badge"
                                         >
-                                            {encuesta.cursado}
+                                            {formatearCursado(encuesta.cursado)}
+                                        </Badge>
+                                    </div>
+                                    <div className="d-flex align-items-center gap-2 mt-2">
+                                        <Badge bg="dark" className="px-2 py-1">
+                                            <i className="bi bi-mortarboard me-1"></i>
+                                            {encuesta.carrera}
                                         </Badge>
                                     </div>
                                 </Card.Header>
                                 
                                 <Card.Body className="card-body-custom">
-                                    <Card.Title className="asignatura-title">
-                                        {encuesta.asignatura}
+                                    <Card.Title className="asignatura-title mb-3">
+                                        <i className="bi bi-book me-2 text-primary"></i>
+                                        {encuesta.titulo}
                                     </Card.Title>
                                     
                                     <div className="encuesta-details">
-                                        <div className="detail-item">
-                                            <i className="bi bi-calendar-event me-2 text-danger"></i>
-                                            <strong>Fecha límite:</strong>
-                                            <span className="ms-2 text-danger">
-                                                {formatearFecha(encuesta.fecha_fin)}
+                                        {encuesta.sede && (
+                                            <div className="detail-item mb-2">
+                                                <i className="bi bi-geo-alt-fill me-2 text-primary"></i>
+                                                <strong>Sede:</strong>
+                                                <span className="ms-2">
+                                                    {encuesta.sede}
+                                                </span>
+                                            </div>
+                                        )}
+                                        
+                                        <div className="detail-item mb-2">
+                                            <i className="bi bi-calendar-check me-2 text-success"></i>
+                                            <strong>Inicio:</strong>
+                                            <span className="ms-2">
+                                                {formatearFecha(encuesta.fecha_inicio)}
                                             </span>
                                         </div>
                                         
-                                        <div className="detail-item mt-2">
-                                            <i className="bi bi-info-circle me-2 text-muted"></i>
-                                            <span className="text-muted">
-                                                Encuesta de satisfacción académica
+                                        <div className="detail-item">
+                                            <i className="bi bi-calendar-x me-2 text-danger"></i>
+                                            <strong>Vence:</strong>
+                                            <span className="ms-2 text-danger fw-bold">
+                                                {formatearFecha(encuesta.fecha_fin)}
                                             </span>
                                         </div>
                                     </div>
                                 </Card.Body>
                                 
-                                <Card.Footer className="card-footer-custom">
+                                <Card.Footer className="card-footer-custom bg-light">
                                     <div className="d-grid gap-2">
                                         <Button 
                                             variant="primary"
                                             className="action-btn"
-                                            onClick={() => handleCompletarEncuesta(encuesta.id, encuesta.asignatura)}
+                                            onClick={() => handleCompletarEncuesta(
+                                                encuesta.id, 
+                                                encuesta.titulo, 
+                                                encuesta.asignatura_id
+                                            )}
                                         >
                                             <i className="bi bi-pencil-square me-2"></i>
                                             Completar Encuesta

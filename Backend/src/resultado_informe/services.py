@@ -10,7 +10,7 @@ def _crear_respuesta_db(informe_catedra_finalizado_id: int, pregunta_id: int, te
         asignatura_id=asignatura_id
     )
 
-def guardar_respuesta(db: Session, respuesta: schemas.RespuestaInformeCreate) -> models.ResultadoInforme:  # Cambiado aquí
+def guardar_respuesta(db: Session, respuesta: schemas.RespuestaInformeCreate) -> models.ResultadoInforme:  
     respuesta_db = _crear_respuesta_db(
         respuesta.informe_catedra_finalizado_id,  
         respuesta.pregunta_id,
@@ -23,7 +23,7 @@ def guardar_respuesta(db: Session, respuesta: schemas.RespuestaInformeCreate) ->
     
     return respuesta_db
 
-def guardar_respuestas_lote(db: Session, respuestas: List[schemas.RespuestaInformeCreate]) -> List[models.ResultadoInforme]:  # Cambiado aquí
+def guardar_respuestas_lote(db: Session, respuestas: List[schemas.RespuestaInformeCreate]) -> List[models.ResultadoInforme]: 
     respuestas_db = []
     
     for respuesta_data in respuestas:

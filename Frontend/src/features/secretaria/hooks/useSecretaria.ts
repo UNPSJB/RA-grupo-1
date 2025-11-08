@@ -39,7 +39,7 @@ export const useSecretaria = () => {
   const crearPregunta = async (
     texto: string, 
     tipo: TipoPregunta, 
-    opciones?: string[], // Solo strings ahora
+    opciones?: string[], 
     categoriaId?: number,
     encuestaId?: number
   ) => {
@@ -105,13 +105,114 @@ export const useSecretaria = () => {
     }
   };
 
-  const eliminarPregunta = async (encuestaId: number, preguntaId: number) => {
+  const editarPregunta = async (
+    preguntaId: number,
+    texto: string,
+    opciones?: string[]
+  ) => {
     try {
       setLoading(true);
       setError(null);
-    
-      await encuestasService.eliminarPregunta(encuestaId, preguntaId);
-  
+
+      console.log('📝 Editando pregunta:', preguntaId);
+
+      // 1. Actualizar el texto de la pregunta
+      const response = await fetch(`http://127.0.0.1:8000/preguntas/${preguntaId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          texto: texto
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al actualizar la pregunta');
+      }
+
+      const preguntaActualizada = await response.json();
+      console.log('✅ Pregunta actualizada:', preguntaActualizada);
+
+      // 2. Si tiene opciones, actualizarlas
+      if (opciones && opciones.length > 0) {
+        console.log('📝 Actualizando opciones...');
+
+        // Primero, obtener las opciones existentes
+        const preguntaActual = preguntas.find(p => p.id === preguntaId);
+        
+        if (preguntaActual && preguntaActual.opciones) {
+          // Eliminar opciones antiguas
+          for (const opcion of preguntaActual.opciones) {
+            try {
+              await fetch(`http://127.0.0.1:8000/opciones/${opcion.id}`, {
+                method: 'DELETE'
+              });
+              console.log(`🗑️ Opción eliminada: "${opcion.texto}"`);
+            } catch (err) {
+              console.error('Error eliminando opción:', err);
+            }
+          }
+        }
+
+        // Crear nuevas opciones
+        for (const opcionTexto of opciones) {
+          try {
+            const opcionCreada = await fetch('http://127.0.0.1:8000/opciones/', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                texto: opcionTexto,
+                contenido: opcionTexto,
+                pregunta_id: preguntaId
+              })
+            });
+
+            if (!opcionCreada.ok) {
+              console.error(`❌ Error creando opción "${opcionTexto}"`);
+            } else {
+              console.log(`✅ Opción creada: "${opcionTexto}"`);
+            }
+          } catch (err) {
+            console.error(`❌ Error creando opción "${opcionTexto}":`, err);
+          }
+        }
+      }
+
+      // 3. Recargar preguntas para obtener la versión actualizada
+      await cargarDatosIniciales();
+      
+      setSuccess('Pregunta actualizada exitosamente');
+      
+      return preguntaActualizada;
+
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Error al editar la pregunta';
+      setError(errorMessage);
+      console.error('❌ Error editando pregunta:', err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const eliminarPregunta = async (preguntaId: number) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      console.log('🗑️ Eliminando pregunta:', preguntaId);
+
+      // Eliminar la pregunta
+      const response = await fetch(`http://127.0.0.1:8000/preguntas/${preguntaId}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al eliminar la pregunta');
+      }
+
+      console.log('✅ Pregunta eliminada');
+
+      // Actualizar el estado local
       setPreguntas(prev => prev.filter(p => p.id !== preguntaId));
       setSuccess('Pregunta eliminada exitosamente');
     
@@ -119,7 +220,7 @@ export const useSecretaria = () => {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error al eliminar la pregunta';
       setError(errorMessage);
-      console.error('Error eliminando pregunta:', err);
+      console.error('❌ Error eliminando pregunta:', err);
       throw err;
     } finally {
       setLoading(false);
@@ -184,6 +285,7 @@ export const useSecretaria = () => {
     error,
     success,
     crearPregunta,
+    editarPregunta,     
     eliminarPregunta,
     crearEncuesta,
     cargarEstadisticas,

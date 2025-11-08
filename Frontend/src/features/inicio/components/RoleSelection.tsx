@@ -13,7 +13,7 @@ export const RoleSelection = () => {
       title: 'Alumno',
       description: 'Accede para completar tus encuestas',
       icon: 'bi-person',
-      path: '/alumno/incompletas',
+      path: '/alumno/login',
       variant: 'primary'
     },
     {

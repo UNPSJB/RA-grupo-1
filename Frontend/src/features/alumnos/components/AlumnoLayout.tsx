@@ -1,28 +1,60 @@
-import { Outlet } from "react-router-dom";
+// features/alumnos/components/AlumnoLayout.tsx
+import { Outlet, useNavigate } from "react-router-dom";
 import { Container } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/Alumno.css"
-import { usePersona } from "../../../hooks/usePersona";
 import { Navbar } from "../../../components/layout/Navbar/Navbar";
 import { Footer } from "../../../components/layout/Footer/Footer";
+import { useEffect, useState } from "react";
 
 interface AlumnoLayoutProps {
   children?: React.ReactNode;
 }
 
 export const AlumnoLayout = ({ children }: AlumnoLayoutProps) => {
-  const { persona, loading, error } = usePersona();
+  const navigate = useNavigate();
+  const [alumnoInfo, setAlumnoInfo] = useState({
+    nombre: '',
+    apellido: '',
+    email: ''
+  });
+
+  useEffect(() => {
+    // Cargar información del alumno desde localStorage
+    const nombre = localStorage.getItem('alumno_nombre') || '';
+    const apellido = localStorage.getItem('alumno_apellido') || '';
+    const email = localStorage.getItem('alumno_email') || '';
+    
+    setAlumnoInfo({ nombre, apellido, email });
+  }, []);
+
+  const handleLogout = () => {
+    // Limpiar localStorage
+    localStorage.removeItem('alumno_token');
+    localStorage.removeItem('alumno_id');
+    localStorage.removeItem('alumno_nombre');
+    localStorage.removeItem('alumno_apellido');
+    localStorage.removeItem('alumno_email');
+    
+    // Redirigir al inicio
+    navigate('/');
+  };
 
   const alumnoNavLinks = [
-  //  { to: "/alumno/asignaturas", label: "Asignaturas cursadas" },
-  //  { to: "/alumno/detalles", label: "Asignatura detalle"},
     { to: "/alumno/incompletas", label: "Encuestas Incompletas" },
     { to: "/alumno/completadas", label: "Encuestas Completadas" }
   ];
 
   return (
     <div className="alumno">
-      <Navbar navLinks={alumnoNavLinks} />
+      <Navbar 
+        navLinks={alumnoNavLinks}
+        userInfo={{
+          nombre: `${alumnoInfo.nombre} ${alumnoInfo.apellido}`,
+          email: alumnoInfo.email
+        }}
+        onLogout={handleLogout}
+      />
       <main className="main-content">
         <Container className="content-container">
           <Outlet />

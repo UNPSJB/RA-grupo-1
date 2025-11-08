@@ -1,4 +1,5 @@
 import { Card, Button, Badge, Spinner, Alert, Row, Col, Container } from 'react-bootstrap';
+import { useEffect } from 'react';
 import { useEncuestas } from "../hooks/useEncuestas";
 import '../styles/Encuestas.css'; 
 import { EstadoEncuesta, Cursado } from "../types/encuestaTypes";
@@ -6,12 +7,21 @@ import { EstadoEncuesta, Cursado } from "../types/encuestaTypes";
 export const EncuestasCompletas = () => {
     const { encuestas, loading, error, refetch } = useEncuestas();
     
+    // Refrescar datos cuando el componente se monta
+    useEffect(() => {
+        refetch();
+    }, []);
+    
     const encuestasCompletas = encuestas.filter(encuesta => {
         return encuesta.estado === EstadoEncuesta.CERRADA;
     });
 
     const formatearFecha = (fecha: string) => {
-        return new Date(fecha).toLocaleDateString('es-ES');
+        return new Date(fecha).toLocaleDateString('es-ES', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
     };
 
     const getCursadoBadgeVariant = (cursado: Cursado) => {
@@ -85,6 +95,7 @@ export const EncuestasCompletas = () => {
                                             bg="success"
                                             className="estado-badge"
                                         >
+                                            <i className="bi bi-check-circle me-1"></i>
                                             COMPLETADA
                                         </Badge>
                                         <Badge 
@@ -98,6 +109,7 @@ export const EncuestasCompletas = () => {
                                 
                                 <Card.Body className="card-body-custom">
                                     <Card.Title className="asignatura-title">
+                                        <i className="bi bi-book me-2"></i>
                                         {encuesta.asignatura}
                                     </Card.Title>
                                     
@@ -113,11 +125,12 @@ export const EncuestasCompletas = () => {
                                 <Card.Footer className="card-footer-custom">
                                     <div className="d-grid gap-2">
                                         <Button 
-                                            variant="primary"
+                                            variant="outline-success"
                                             className="action-btn"
+                                            disabled
                                         >
                                             <i className="bi bi-check-circle me-2"></i>
-                                            Ver encuesta
+                                            Encuesta completada
                                         </Button>
                                     </div>
                                 </Card.Footer>
