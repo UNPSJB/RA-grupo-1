@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+// datos que representan la carrera
 
 type Carrera = {
   id: number;
@@ -8,6 +9,7 @@ type Carrera = {
 };
 
 export default function SeleccionCarrera() {
+  //guarda la seleccion en memoria y al iniciar intenta leer desde localstore para "recordar" la seleccion entre sessiones
   const [carreras, setCarreras] = useState<Carrera[]>([]);
   const [filtro, setFiltro] = useState("");
   const [seleccionadaId, setSeleccionadaId] = useState<number | null>(() => {
@@ -20,10 +22,14 @@ export default function SeleccionCarrera() {
       return null;
     }
   });
-  const [mensaje, setMensaje] = useState<string | null>(null);
+  
+  const [mensaje, setMensaje] = useState<string | null>(null); // guarda mensaje de error o exito
   const apiBase = "http://127.0.0.1:8000";
   useEffect(() => {
-    // Intentar primero la ruta con facultad. Si falla, usar /carreras.
+    // intenta pedir las carreras del back pero a carreras/con-facultad con el try
+    //si esta ruta no existe prueba con carrera 
+    // si ninguna anda lanza la expecion con un mensaje de error
+
     const tryFetch = async () => {
       try {
         const res = await fetch(`${apiBase}/carreras/con-facultad`);
@@ -45,7 +51,9 @@ export default function SeleccionCarrera() {
     };
     tryFetch();
   }, []);
-
+//agarra todas las carreras y las devuelve solo las que conciden con el filtro
+//convierta todo los datos de entrada en minisculas para evitar conflictos 
+//si el filtro esta vacio devuelve todas las carrera PREGUNTAR A BRUNO
   const carrerasFiltradas = carreras.filter((c) => {
     const q = filtro.trim().toLowerCase();
     if (!q) return true;
@@ -53,17 +61,15 @@ export default function SeleccionCarrera() {
     const facultad = (c.facultad || "").toLowerCase();
     return nombre.includes(q) || facultad.includes(q);
   });
-
+//cuando se hace clic en la carra se guarda en memoria en el localstorage y se marca
+//muestra el mensaje de confirmado y despues de 1500ms redirecciona al informes
   const handleSelect = (c: Carrera) => {
     localStorage.setItem("carreraSeleccionada", JSON.stringify(c));
     setSeleccionadaId(c.id);
-    // emitir evento global opcional
     window.dispatchEvent(new CustomEvent("carreraChanged", { detail: c }));
     setMensaje(`✅ Carrera guardada: ${c.nombre}`);
-    // redirigir al módulo de informes (ajusta la ruta si es otra)
-    setTimeout(() => {
-      window.location.href = "/departamento/informes";
-    }, 700);
+    window.location.href = "/departamento/informes";
+
   };
 
   return (
