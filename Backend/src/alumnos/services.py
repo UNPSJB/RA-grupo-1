@@ -78,6 +78,29 @@ def obtener_encuestas_disponibles(db: Session, alumno_id: int) -> List[schemas.E
     
     encuestas = db.scalars(stmt).all()
     return encuestas
+#ver que onda
+def obtener_encuestas_incompletas(db: Session, alumno_id: int):
+    # Obtener encuestas disponibles primero
+    encuestas_disponibles = obtener_encuestas_disponibles(db, alumno_id)
+
+    # Traemos las encuestas ya completadas por el alumno
+    from sqlalchemy import text
+    encuestas_completadas = db.execute(text("""
+        SELECT encuesta_id 
+        FROM alumno_encuesta
+        WHERE alumno_id = :alumno_id
+    """), {"alumno_id": alumno_id}).fetchall()
+
+    ids_completadas = {row[0] for row in encuestas_completadas}
+
+    # Filtramos solo las NO completadas
+    encuestas_incompletas = [
+        encuesta for encuesta in encuestas_disponibles
+        if encuesta.id not in ids_completadas
+    ]
+
+    return encuestas_incompletas
+
 
 def obtener_asignaturas_alumno(db: Session, alumno_id: int) -> List[schemas.AsignaturaConDetalles]:
     alumno = leer_alumno(db, alumno_id)

@@ -86,6 +86,19 @@ def get_encuestas_disponibles(alumno_id: int, db: Session = Depends(get_db)):
             detail="Alumno no encontrado"
         )
     return encuestas
+#ver que onda
+@router.get("/{alumno_id}/encuestas/incompletas",
+            summary="Obtener encuestas incompletas de un alumno",
+            description="Retorna las encuestas que el alumno aún no ha completado")
+def get_encuestas_incompletas(alumno_id: int, db: Session = Depends(get_db)):
+    encuestas = services.obtener_encuestas_incompletas(db, alumno_id)
+    if encuestas is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No se encontraron encuestas para el alumno {alumno_id}"
+        )
+    return encuestas
+
 
 @router.get("/{alumno_id}/asignaturas",
             response_model=List[schemas.AsignaturaConDetalles],
