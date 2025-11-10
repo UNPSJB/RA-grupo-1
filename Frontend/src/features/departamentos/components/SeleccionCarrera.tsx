@@ -59,7 +59,7 @@ const handleSelect = (c: Carrera) => {
   localStorage.setItem("carreraSeleccionada", JSON.stringify(c));
   setSeleccionadaId(c.id);
   window.dispatchEvent(new CustomEvent("carreraChanged", { detail: c }));
-  setMensaje(`✅ Carrera guardada: ${c.nombre}`);
+  //setMensaje(`✅ Carrera guardada: ${c.nombre}`);
 };
 
 
