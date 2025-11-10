@@ -275,7 +275,6 @@ export const NuevaEncuesta = () => {
       {/* Selector de tipo de plantilla */}
       <Card className="mb-4 shadow-sm border-0">
         <Card.Header className="bg-gradient text-white" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-          <h5 className="mb-0">🎯 Tipo de Plantilla</h5>
         </Card.Header>
         <Card.Body className="p-4">
           <p className="text-muted mb-4">Selecciona el tipo de encuesta que deseas crear:</p>
@@ -545,23 +544,6 @@ export const NuevaEncuesta = () => {
                     <strong>Preguntas seleccionadas:</strong> 
                     <Badge bg="success" className="ms-2">{preguntasSeleccionadas.length}</Badge>
                   </div>
-                </Card.Body>
-              </Card>
-
-              {/* Leyenda de categorías */}
-              <Card className="shadow-sm mt-3">
-                <Card.Header>
-                  <h6 className="mb-0">📚 Categorías Disponibles</h6>
-                </Card.Header>
-                <Card.Body className="p-2">
-                  <ListGroup variant="flush">
-                    {categorias.map(cat => (
-                      <ListGroup.Item key={cat.id} className="py-1 px-2">
-                        <Badge bg="secondary" className="me-2">{cat.codigo}</Badge>
-                        <small>{cat.nombre}</small>
-                      </ListGroup.Item>
-                    ))}
-                  </ListGroup>
                 </Card.Body>
               </Card>
             </Col>

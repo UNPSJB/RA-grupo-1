@@ -507,7 +507,7 @@ export function CompletarEncuesta() {
                 <i className="bi bi-mortarboard-fill me-2"></i>
                 Encuesta de Evaluación Docente
               </h4>
-              <p className="mb-0 small" style={{ color: 'rgba(255,255,255,0.8)' }}>
+              <p className="mb-0 small" style={{ color: '#ffffffcc' }}>
                 {nombreAsignatura || 'Desarrollo de Software'}
               </p>
             </div>
@@ -524,7 +524,7 @@ export function CompletarEncuesta() {
             </div>
             <BSProgressBar 
               now={progreso} 
-              style={{ height: '8px', backgroundColor: 'rgba(255,255,255,0.3)' }}
+              style={{ height: '8px', backgroundColor: '#ffffff4d' }}
               className="rounded"
             />
           </div>
@@ -545,7 +545,7 @@ export function CompletarEncuesta() {
               <span className="me-3 fs-4">{getCategoriaIcon(categoriaActiva.codigo)}</span>
               <div>
                 <h5 className="mb-0 text-white">{categoriaActiva.nombre}</h5>
-                <small style={{ color: 'rgba(255,255,255,0.8)' }}>
+                <small style={{ color: '#ffffffcc' }}>
                   Responde Sí, No o NPO (No puedo opinar) según corresponda
                 </small>
               </div>
@@ -604,7 +604,7 @@ export function CompletarEncuesta() {
                                         name={`pregunta-${pregunta.id}-${sub.id}`}
                                         label={opcion}
                                         checked={isSelected}
-                                        onChange={() => handleRespuesta(pregunta.id, opcion, sub.id)}
+                                        onChange={() => handleRespuesta(pregunta.id, opcion)}
                                         style={{ cursor: 'pointer' }}
                                       />
                                     </div>

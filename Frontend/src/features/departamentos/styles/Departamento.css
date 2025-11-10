@@ -27,13 +27,13 @@
 .encuesta-card {
   border: none;
   border-radius: 15px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px #0000001a;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .encuesta-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 15px #00000026;
 }
 
 .encuesta-info {
