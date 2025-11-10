@@ -3,9 +3,9 @@ from src.models import ModeloBase
 from enum import auto, StrEnum
 
 class Duracion(StrEnum):
-    ANUAL = "ANUAL"
-    CUATRIMESTRE_1 = "PRIMER CUATRIMESTRE"
-    CUATRIMESTRE_2 = "SEGUNDO CUATRIMESTRE"
+    anual = "anual"
+    cuatrimestre_1 = "primer cuatrimestre"
+    cuatrimestre_2 = "segundo cuatrimestre"
 
 asignatura_alumno = Table(
     "asignatura_alumno",

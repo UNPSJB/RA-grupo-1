@@ -5,7 +5,7 @@ from src.informe_catedra_finalizado import schemas, services, models
 from typing import List
 from src.vinculaciones.models import Duracion
 
-router = APIRouter(prefix="/informe-catedra-finalizado", tags=["informes-catedra-finalizados"])
+router = APIRouter(prefix="/informe-catedra-finalizado", tags=["informe-catedra-finalizados"])
 
 @router.get("/docente/{docente_id}/pendientes", response_model=List[schemas.InformePendiente])
 def listar_informes_pendientes(docente_id: int, anio: int, duracion: Duracion, db: Session = Depends(get_db)):
@@ -22,7 +22,7 @@ def verificar_informe_catedra_finalizado(docente_asignatura_id: int, db: Session
 
 @router.post("/", response_model=schemas.InformeCatedraFinalizado)
 def crear_informe_catedra_finalizado(
-    informe: schemas.InformeCatedraFinalizadoConRespuestasCreate, 
+    informe: schemas.InformeCatedraFinalizadoCreate, 
     db: Session = Depends(get_db) 
 ):
     return services.crear_informe_finalizado(db, informe)
