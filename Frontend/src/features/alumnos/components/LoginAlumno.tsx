@@ -1,8 +1,8 @@
-// src/features/alumno/components/LoginAlumno.tsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Card, Form, Button, Alert, InputGroup } from 'react-bootstrap';
 import { Eye, EyeSlash, PersonCircle } from 'react-bootstrap-icons';
+import '../styles/LoginAlumno.css';
 
 export const LoginAlumno = () => {
   const navigate = useNavigate();
@@ -73,22 +73,16 @@ export const LoginAlumno = () => {
   };
 
   return (
-    <div style={{ 
-      minHeight: '100vh', 
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      display: 'flex',
-      alignItems: 'center',
-      padding: '2rem 0'
-    }}>
-      <Container style={{ maxWidth: '500px' }}>
-        <Card className="shadow-lg border-0" style={{ borderRadius: '15px' }}>
+    <div className="login-alumno-container">
+      <Container className="login-alumno-wrapper">
+        <Card className="login-alumno-card shadow-lg border-0">
           <Card.Body className="p-5">
             <div className="text-center mb-4">
               <div className="mb-3">
-                <PersonCircle size={80} className="text-primary" />
+                <PersonCircle className="login-alumno-icon" />
               </div>
-              <h2 className="fw-bold mb-2">Acceso de Alumno</h2>
-              <p className="text-muted">
+              <h2 className="login-alumno-title">Acceso de Alumno</h2>
+              <p className="login-alumno-subtitle">
                 Ingresa tus credenciales para continuar
               </p>
             </div>
@@ -101,8 +95,8 @@ export const LoginAlumno = () => {
             )}
 
             <Form onSubmit={handleSubmit}>
-              <Form.Group className="mb-3">
-                <Form.Label className="fw-semibold">
+              <Form.Group className="login-alumno-form-group mb-3">
+                <Form.Label className="login-alumno-label">
                   <i className="bi bi-person-fill me-2"></i>
                   Usuario
                 </Form.Label>
@@ -117,8 +111,8 @@ export const LoginAlumno = () => {
                 />
               </Form.Group>
 
-              <Form.Group className="mb-4">
-                <Form.Label className="fw-semibold">
+              <Form.Group className="login-alumno-form-group-last mb-4">
+                <Form.Label className="login-alumno-label">
                   <i className="bi bi-lock-fill me-2"></i>
                   Contraseña
                 </Form.Label>
@@ -141,7 +135,7 @@ export const LoginAlumno = () => {
                 </InputGroup>
               </Form.Group>
 
-              <div className="d-grid gap-2 mb-3">
+              <div className="login-alumno-button-group">
                 <Button
                   variant="primary"
                   type="submit"
@@ -172,8 +166,8 @@ export const LoginAlumno = () => {
                 </Button>
               </div>
 
-              <div className="text-center mt-4">
-                <small className="text-muted">
+              <div className="login-alumno-footer-text">
+                <small>
                   <i className="bi bi-info-circle me-1"></i>
                   ¿Problemas para acceder? Contacta al departamento de alumnos
                 </small>
@@ -182,22 +176,22 @@ export const LoginAlumno = () => {
           </Card.Body>
         </Card>
 
-        <Card className="mt-4 border-0 shadow-sm">
+        <Card className="login-alumno-info-card mt-4 shadow-sm">
           <Card.Body className="p-4">
-            <h6 className="fw-bold mb-3">
+            <h6 className="login-alumno-info-title">
               <i className="bi bi-lightbulb-fill text-warning me-2"></i>
               Información importante
             </h6>
-            <ul className="list-unstyled mb-0">
-              <li className="mb-2">
+            <ul className="login-alumno-info-list">
+              <li className="login-alumno-info-item">
                 <i className="bi bi-check-circle-fill text-success me-2"></i>
                 Usa tu usuario y contraseña institucional
               </li>
-              <li className="mb-2">
+              <li className="login-alumno-info-item">
                 <i className="bi bi-check-circle-fill text-success me-2"></i>
                 Completa todas las encuestas pendientes
               </li>
-              <li className="mb-0">
+              <li className="login-alumno-info-item">
                 <i className="bi bi-check-circle-fill text-success me-2"></i>
                 Tu opinión es importante para mejorar
               </li>
