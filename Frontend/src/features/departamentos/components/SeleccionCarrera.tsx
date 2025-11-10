@@ -30,25 +30,18 @@ export default function SeleccionCarrera() {
     //si esta ruta no existe prueba con carrera 
     // si ninguna anda lanza la expecion con un mensaje de error
 
-    const tryFetch = async () => {
-      try {
-        const res = await fetch(`${apiBase}/carreras/con-facultad`);
-        if (!res.ok) throw new Error("sin /con-facultad");
-        const data = await res.json();
-        setCarreras(data);
-        return;
-      } catch {
-        try {
-          const res2 = await fetch(`${apiBase}/carreras`);
-          if (!res2.ok) throw new Error("no /carreras");
-          const data2 = await res2.json();
-          setCarreras(data2);
-        } catch (err) {
-          console.error("Error cargando carreras:", err);
-          setMensaje("Error al obtener las carreras desde el backend.");
-        }
-      }
-    };
+const tryFetch = async () => {
+  try {
+    const res = await fetch(`${apiBase}/carreras`);
+    if (!res.ok) throw new Error("Error al obtener carreras");
+    const data = await res.json();
+    setCarreras(data);
+  } catch (err) {
+    console.error("Error cargando carreras:", err);
+    setMensaje("Error al obtener las carreras desde el backend.");
+  }
+};
+
     tryFetch();
   }, []);
 //agarra todas las carreras y las devuelve solo las que conciden con el filtro
@@ -61,16 +54,14 @@ export default function SeleccionCarrera() {
     const facultad = (c.facultad || "").toLowerCase();
     return nombre.includes(q) || facultad.includes(q);
   });
-//cuando se hace clic en la carra se guarda en memoria en el localstorage y se marca
-//muestra el mensaje de confirmado y despues de 1500ms redirecciona al informes
-  const handleSelect = (c: Carrera) => {
-    localStorage.setItem("carreraSeleccionada", JSON.stringify(c));
-    setSeleccionadaId(c.id);
-    window.dispatchEvent(new CustomEvent("carreraChanged", { detail: c }));
-    setMensaje(`✅ Carrera guardada: ${c.nombre}`);
-    window.location.href = "/departamento/informes";
 
-  };
+const handleSelect = (c: Carrera) => {
+  localStorage.setItem("carreraSeleccionada", JSON.stringify(c));
+  setSeleccionadaId(c.id);
+  window.dispatchEvent(new CustomEvent("carreraChanged", { detail: c }));
+  setMensaje(`✅ Carrera guardada: ${c.nombre}`);
+};
+
 
   return (
     <div className="p-4">
