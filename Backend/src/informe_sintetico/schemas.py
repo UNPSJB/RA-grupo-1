@@ -6,6 +6,7 @@ from src.pregunta_informe_sintetico.schemas import PreguntaInformeSintetico
 
 class InformeSinteticoBase(BaseModel):
     titulo: str
+    contentido: str
     descripcion: Optional[str] = None
     carrera_id: Optional[int] = None
     fecha: date
