@@ -24,3 +24,5 @@ def crear_informe_sintetico(db: Session, informe: schemas.InformeSinteticoCreate
     db.commit()
     db.refresh(db_informe)
     return db_informe
+
+create_informe = crear_informe_sintetico
