@@ -9,6 +9,7 @@ import { DocenteLayout } from '../features/docentes/components/DocenteLayout';
 import { EncuestasIncompletas } from '../features/encuestas/components/EncuestasIncompletas';
 import { EncuestasCompletas } from '../features/encuestas/components/EncuestasCompletas';
 import { PanelDocente } from '../features/docentes/components/PanelDocente';
+import InformeCatedraDetalle from "../features/informeCatedra/components/InformeCatedraDetalle";
 import { MisAsignaturas } from '../features/docentes/components/MisAsignaturas';
 import { DetalleAsignatura} from '../features/docentes/components/DetalleAsignatura';
 import { DepartamentoLayout } from '../features/departamentos/components/DepartamentoLayout';
@@ -63,6 +64,8 @@ function App() {
         <Route path="mis-asignaturas" element={<MisAsignaturas />} />
         <Route path="asignatura/:asignaturaId" element={<DetalleAsignatura />} />
       </Route>
+
+        <Route path="/informes-catedra/:id" element={<InformeCatedraDetalle />} />
 
       {/* Rutas de departamento */}
       <Route path="/departamento" element={<DepartamentoLayout />}>
