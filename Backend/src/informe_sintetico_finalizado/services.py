@@ -70,19 +70,19 @@ def get_elementos_pregunta2B(db: Session, id_dpto: int, id_carrera: int, anio: i
             continue
 
         b: RespuestaInforme = next((r for r in informe_finalizado.respuestas_informe 
-              if r.pregunta.enunciado == "B: Comunicación y desarrollo de la asignatura"), None)
+              if r.pregunta.oracion == "B: Comunicación y desarrollo de la asignatura"), None)
 
         c: RespuestaInforme = next((r for r in informe_finalizado.respuestas_informe
-                if r.pregunta.enunciado == "C: Metodología"), None)
+                if r.pregunta.oracion == "C: Metodología"), None)
 
         d: RespuestaInforme = next((r for r in informe_finalizado.respuestas_informe
-                if r.pregunta.enunciado == "D: Evaluación"), None)
+                if r.pregunta.oracion == "D: Evaluación"), None)
 
         et: RespuestaInforme = next((r for r in informe_finalizado.respuestas_informe
-                if r.pregunta.enunciado == "E(TEORIA): Actuación de los miembros de la Cátedra "), None)
+                if r.pregunta.oracion == "E(TEORIA): Actuación de los miembros de la Cátedra "), None)
 
         ep: RespuestaInforme = next((r for r in informe_finalizado.respuestas_informe
-                if r.pregunta.enunciado == "E(PRACTICA): Actuación de los miembros de la Cátedra "), None)
+                if r.pregunta.oracion == "E(PRACTICA): Actuación de los miembros de la Cátedra "), None)
 
         elemento = schemas.TablaPregunta2BItem(
             Asignatura = Asignatura,
@@ -126,13 +126,13 @@ def get_elementos_pregunta2(db: Session, id_dpto: int, id_carrera: int, anio: in
             continue
 
         r_horas: RespuestaInforme = next((r for r in informe_finalizado.respuestas_informe
-                if r.pregunta.enunciado.strip() == "Clases teóricas %"), None)
+                if r.pregunta.oracion.strip() == "Clases teóricas %"), None)
         
         r_practica: RespuestaInforme = next((r for r in informe_finalizado.respuestas_informe
-                if r.pregunta.enunciado.strip() == "Clases prácticas %"), None)
+                if r.pregunta.oracion.strip() == "Clases prácticas %"), None)
         
         r_justificacion: RespuestaInforme = next((r for r in informe_finalizado.respuestas_informe 
-                if r.pregunta.enunciado.strip() == "Justificación"), None)
+                if r.pregunta.oracion.strip() == "Justificación"), None)
 
         elemento = schemas.TablaPregunta2Item(
             Asignatura = Asignatura,
@@ -216,19 +216,19 @@ def get_elementos_pregunta2C(db: Session, id_dpto: int, id_carrera: int, anio: i
             continue
 
         r_ap_e: RespuestaInforme = next((r for r in informe_finalizado.respuestas_informe
-                if r.pregunta.enunciado.strip() == "Aspectos positivos: Proceso Enseñanza"), None)
+                if r.pregunta.oracion.strip() == "Aspectos positivos: Proceso Enseñanza"), None)
         
         r_ap_a: RespuestaInforme = next((r for r in informe_finalizado.respuestas_informe
-                if r.pregunta.enunciado.strip() == "Aspectos positivos: Proceso de aprendizaje"), None)
+                if r.pregunta.oracion.strip() == "Aspectos positivos: Proceso de aprendizaje"), None)
         
         r_o_e: RespuestaInforme = next((r for r in informe_finalizado.respuestas_informe
-                if r.pregunta.enunciado.strip() == "Obstáculos: Proceso Enseñanza"), None)
+                if r.pregunta.oracion.strip() == "Obstáculos: Proceso Enseñanza"), None)
         
         r_o_a: RespuestaInforme = next((r for r in informe_finalizado.respuestas_informe
-                if r.pregunta.enunciado.strip() == "Obstáculos: Proceso de aprendizaje"), None)
+                if r.pregunta.oracion.strip() == "Obstáculos: Proceso de aprendizaje"), None)
         
         r_est: RespuestaInforme = next((r for r in informe_finalizado.respuestas_informe
-                if r.pregunta.enunciado.strip() == "Estrategias a implementar"), None)
+                if r.pregunta.oracion.strip() == "Estrategias a implementar"), None)
         
         
         respuestas_obj = schemas.RespuestasSeccion2C(
@@ -277,19 +277,19 @@ def get_elementos_pregunta2C(db: Session, id_dpto: int, id_carrera: int, anio: i
             continue
 
         r_ap_e: RespuestaInforme = next((r for r in informe_finalizado.respuestas_informe
-                if r.pregunta.enunciado.strip() == "Aspectos positivos: Proceso Enseñanza"), None)
+                if r.pregunta.oracion.strip() == "Aspectos positivos: Proceso Enseñanza"), None)
         
         r_ap_a: RespuestaInforme = next((r for r in informe_finalizado.respuestas_informe
-                if r.pregunta.enunciado.strip() == "Aspectos positivos: Proceso de aprendizaje"), None)
+                if r.pregunta.oracion.strip() == "Aspectos positivos: Proceso de aprendizaje"), None)
         
         r_o_e: RespuestaInforme = next((r for r in informe_finalizado.respuestas_informe
-                if r.pregunta.enunciado.strip() == "Obstáculos: Proceso Enseñanza"), None)
+                if r.pregunta.oracion.strip() == "Obstáculos: Proceso Enseñanza"), None)
         
         r_o_a: RespuestaInforme = next((r for r in informe_finalizado.respuestas_informe
-                if r.pregunta.enunciado.strip() == "Obstáculos: Proceso de aprendizaje"), None)
+                if r.pregunta.oracion.strip() == "Obstáculos: Proceso de aprendizaje"), None)
         
         r_est: RespuestaInforme = next((r for r in informe_finalizado.respuestas_informe
-                if r.pregunta.enunciado.strip() == "Estrategias a implementar"), None)
+                if r.pregunta.oracion.strip() == "Estrategias a implementar"), None)
         
         
         respuestas_obj = schemas.RespuestasSeccion2C(
@@ -342,12 +342,12 @@ def obtener_temas_desarrollados(
 
         respuesta_porcentaje: RespuestaInforme = next(
             (r for r in informe_finalizado.respuestas_informe 
-             if r.pregunta.enunciado == "Cantidad de temas desarrollados %"), 
+             if r.pregunta.oracion == "Cantidad de temas desarrollados %"), 
             None
         )
         respuesta_estrategias: RespuestaInforme = next(
             (r for r in informe_finalizado.respuestas_informe 
-             if r.pregunta.enunciado == "Estrategias"), 
+             if r.pregunta.oracion == "Estrategias"), 
             None
         )
 
@@ -397,10 +397,10 @@ def get_actividades_docentes(
 
         lista_docentes_actividades: List[schemas.DocenteConActividades] = []
 
-        def find_response_text(enunciado: str) -> Optional[str]:
+        def find_response_text(oracion: str) -> Optional[str]:
             r = next(
                 (r for r in informe_finalizado.respuestas_informe
-                    if r.pregunta.enunciado.strip() == enunciado.strip()),
+                    if r.pregunta.oracion.strip() == oracion.strip()),
                 None
             )
             return r.texto_respuesta if r and r.texto_respuesta else None
@@ -454,8 +454,8 @@ def get_actividades_docentes(
 
 def get_bibliografia_equipamiento(db: Session, id_dpto: int, id_carrera: int, anio: int, duracion: str) -> List[schemas.EquipamientoBibliografia]:
 
-    pregunta_equipamiento = db.scalars(select(Pregunta.id).where(Pregunta.enunciado.ilike("equipamiento"))).first()
-    pregunta_bibliografia = db.scalars(select(Pregunta.id).where(Pregunta.enunciado.ilike("bibliografia"))).first()
+    pregunta_equipamiento = db.scalars(select(Pregunta.id).where(Pregunta.oracion.ilike("equipamiento"))).first()
+    pregunta_bibliografia = db.scalars(select(Pregunta.id).where(Pregunta.oracion.ilike("bibliografia"))).first()
     
     if not pregunta_equipamiento or not pregunta_bibliografia:
         return []
@@ -546,10 +546,10 @@ def get_desempeno_auxiliares(db: Session, id_dpto: int, id_carrera: int, anio: i
     ROLES = ['jtp', 'auxiliar de primera', 'auxiliar de segunda']
     TIPOS_PREGUNTA = ['nombre', 'calificación', 'justificación']
 
-    sub_filtros = [func.lower(Pregunta.enunciado).contains(rol) for rol in ROLES]
+    sub_filtros = [func.lower(Pregunta.oracion).contains(rol) for rol in ROLES]
     
     preguntas_relevantes = db.execute(
-        select(Pregunta.id, Pregunta.enunciado)
+        select(Pregunta.id, Pregunta.oracion)
         .where(or_(*sub_filtros)) 
         .where(Pregunta.categoria_id == ID_CATEGORIA_DESEMPENO)
     ).all()
@@ -557,11 +557,11 @@ def get_desempeno_auxiliares(db: Session, id_dpto: int, id_carrera: int, anio: i
     
     mapa_ids = {}
     
-    for id_pregunta, enunciado in preguntas_relevantes: 
-        enunciado_lower = enunciado.lower()
+    for id_pregunta, oracion in preguntas_relevantes: 
+        oracion_lower = oracion.lower()
         
-        rol_key = next((r for r in ROLES if r in enunciado_lower), None)
-        tipo_key = next((t for t in TIPOS_PREGUNTA if t in enunciado_lower), None)
+        rol_key = next((r for r in ROLES if r in oracion_lower), None)
+        tipo_key = next((t for t in TIPOS_PREGUNTA if t in oracion_lower), None)
         
         if rol_key and tipo_key:
             if rol_key not in mapa_ids:

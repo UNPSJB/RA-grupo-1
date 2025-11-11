@@ -9,7 +9,7 @@ interface Categoria {
 
 interface Pregunta {
   id: number;
-  enunciado: string;
+  oracion: string;
   categoria_id: number;
   encuesta_id: number;
   tipo: "cerrada" | "abierta"; 

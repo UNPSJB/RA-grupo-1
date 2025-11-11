@@ -76,7 +76,7 @@ def obtener_indicadores(db: Session, id_asignatura: int, anio: int, duracion: Du
 
                 preguntas_info.append(
                     schemas.DatosEstadisticosPregunta(
-                        id_pregunta=pregunta.enunciado,
+                        id_pregunta=pregunta.oracion,
                         datos=datos_opciones
                     )
                 )
@@ -227,14 +227,14 @@ def recuperar_indicadores(
         
         indicadores.append(
             schemas.IndicadoresPregunta(
-                id_pregunta=str(pregunta.enunciado) if pregunta else f"Pregunta {informe.id_pregunta_encuesta}",
+                id_pregunta=str(pregunta.oracion) if pregunta else f"Pregunta {informe.id_pregunta_encuesta}",
                 indicadores=opciones
             )
         )
     
     return [
     schemas.IndicadoresPregunta(
-        id_pregunta=str(pregunta.enunciado) if pregunta else f"Pregunta {informe.id_pregunta_encuesta}",
+        id_pregunta=str(pregunta.oracion) if pregunta else f"Pregunta {informe.id_pregunta_encuesta}",
         indicadores=[
             schemas.OpcionPorcentaje(
                 opcion_id=str(opcion.contenido) if opcion else f"Opción {dato.id_opcion}",
@@ -309,7 +309,7 @@ def obtener_respuestas_abiertas_por_asignatura(
         resultado.append(
             schemas.DatosAbiertosPregunta(
                 id_pregunta=pregunta.id,
-                enunciado=pregunta.enunciado,
+                oracion=pregunta.oracion,
                 respuestas=respuestas_pregunta
             )
         )

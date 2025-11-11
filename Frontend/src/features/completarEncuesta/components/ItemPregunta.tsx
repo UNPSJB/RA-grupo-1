@@ -2,7 +2,7 @@ import ListOpciones from "./ListOpciones";
 
 interface Pregunta {
   id: number;
-  enunciado: string;
+  oracion: string;
 }
 
 interface Opcion {
@@ -44,7 +44,7 @@ export default function ItemPregunta({
         <div className="card-body d-flex flex-column">
           <div className="mb-2">
             <span className="text-muted me-2">{index + 1}.</span>
-            <span>{pregunta.enunciado}</span>
+            <span>{pregunta.oracion}</span>
           </div>
 
           {esAbierta ? (

@@ -8,7 +8,7 @@ interface Opcion {
 
 interface Pregunta {
   id: number;
-  enunciado: string;
+  oracion: string;
   categoria_id: number;
   encuesta_id: number;
   tipo: "cerrada" | "abierta";
@@ -165,7 +165,7 @@ export default function EncuestaFinalizadaDetalle() {
 
                 return (
                   <li key={r.id} className="list-group-item">
-                    {pregunta.enunciado}
+                    {pregunta.oracion}
                     <br />
                     <span>
                       Respuesta: {respuestaTexto}

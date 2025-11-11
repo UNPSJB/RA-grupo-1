@@ -4,7 +4,7 @@ import GestorCategoria from "../components/GestorCategoria";
 import GestorOpciones from "../components/GestorOpciones";   
 
 interface CategoriaTemp { cod: string; texto: string; }
-interface PreguntaTemp { enunciado: string; categoria_cod: string; tipo: 'abierta' | 'cerrada'; opcion_ids: number[]; }
+interface PreguntaTemp { oracion: string; categoria_cod: string; tipo: 'abierta' | 'cerrada'; opcion_ids: number[]; }
 interface Opcion { id: number; contenido: string; }
 
 export default function InformeCatedraBaseForm() {
@@ -16,7 +16,7 @@ export default function InformeCatedraBaseForm() {
     const [preguntas, setPreguntas] = useState<PreguntaTemp[]>([]);
     const [opcionesCatalogo, setOpcionesCatalogo] = useState<Opcion[]>([]); 
 
-    const [nuevoEnunciado, setNuevoEnunciado] = useState("");
+    const [nuevoOracion, setNuevoOracion] = useState("");
     const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("");
     const [nuevoTipoPregunta, setNuevoTipoPregunta] = useState<'abierta' | 'cerrada'>('abierta'); 
     const [opcionesSeleccionadas, setOpcionesSeleccionadas] = useState<number[]>([]); 
@@ -28,7 +28,7 @@ export default function InformeCatedraBaseForm() {
     }, []);
 
     const agregarPregunta = () => {
-        if (!nuevoEnunciado.trim() || !categoriaSeleccionada || categorias.length === 0) {
+        if (!nuevoOracion.trim() || !categoriaSeleccionada || categorias.length === 0) {
             alert("Ingresa una pregunta y selecciona una categoría.");
             return;
         }
@@ -38,14 +38,14 @@ export default function InformeCatedraBaseForm() {
         }
 
         const nuevaPregunta: PreguntaTemp = {
-            enunciado: nuevoEnunciado,
+            oracion: nuevoOracion,
             categoria_cod: categoriaSeleccionada,
             tipo: nuevoTipoPregunta,
             opcion_ids: nuevoTipoPregunta === 'cerrada' ? opcionesSeleccionadas : [],
         };
 
         setPreguntas(prev => [...prev, nuevaPregunta]);
-        setNuevoEnunciado("");
+        setNuevoOracion("");
         setOpcionesSeleccionadas([]);
     };
 
@@ -100,7 +100,7 @@ export default function InformeCatedraBaseForm() {
                 const endpoint = preg.tipo === 'cerrada' ? "http://localhost:8000/preguntas/cerrada" : "http://localhost:8000/preguntas/abierta";   
                 const payload = {
                     categoria_id: categoria.id,
-                    enunciado: preg.enunciado,
+                    oracion: preg.oracion,
                     tipo: preg.tipo, 
                     ...(preg.tipo === 'cerrada' && { opcion_ids: preg.opcion_ids }), 
                 };
@@ -112,7 +112,7 @@ export default function InformeCatedraBaseForm() {
 
                 if (!resPreg.ok) { 
                      const errorData = await resPreg.json();
-                     throw new Error(errorData.detail || `Error al crear la pregunta: ${preg.enunciado}`);
+                     throw new Error(errorData.detail || `Error al crear la pregunta: ${preg.oracion}`);
                 }
             }
 
@@ -170,8 +170,8 @@ export default function InformeCatedraBaseForm() {
                                 </div>
                             </div>
                             <div className="mb-3">
-                                <label className="form-label fw-bold">Enunciado</label>
-                                <textarea className="form-control" rows={2} value={nuevoEnunciado} onChange={(e) => setNuevoEnunciado(e.target.value)} disabled={cargando || categorias.length === 0} />
+                                <label className="form-label fw-bold">Oracion</label>
+                                <textarea className="form-control" rows={2} value={nuevoOracion} onChange={(e) => setNuevoOracion(e.target.value)} disabled={cargando || categorias.length === 0} />
                             </div>
                             {nuevoTipoPregunta === 'cerrada' && (
                                 <GestorOpciones
@@ -183,7 +183,7 @@ export default function InformeCatedraBaseForm() {
                                 />
                             )}
                             <div className="d-flex justify-content-end mt-2">
-                                <button type="button" className="btn btn-primary" onClick={agregarPregunta} disabled={cargando || categorias.length === 0 || !nuevoEnunciado.trim() || !categoriaSeleccionada || (nuevoTipoPregunta === 'cerrada' && opcionesSeleccionadas.length === 0)} >
+                                <button type="button" className="btn btn-primary" onClick={agregarPregunta} disabled={cargando || categorias.length === 0 || !nuevoOracion.trim() || !categoriaSeleccionada || (nuevoTipoPregunta === 'cerrada' && opcionesSeleccionadas.length === 0)} >
                                     Agregar una Pregunta a la Lista
                                 </button>
                             </div>
@@ -194,7 +194,7 @@ export default function InformeCatedraBaseForm() {
                                     <li key={i} className={`list-group-item d-flex justify-content-between align-items-center ${preg.tipo === 'cerrada' ? 'bg-info-subtle' : ''}`}>
                                         <span>
                                             <strong className={`badge ${preg.tipo === 'cerrada' ? 'bg-primary' : 'bg-secondary'} me-2`}>{preg.tipo.toUpperCase()}</strong>
-                                            <strong className="text-primary">[{preg.categoria_cod}]</strong> {preg.enunciado}
+                                            <strong className="text-primary">[{preg.categoria_cod}]</strong> {preg.oracion}
                                         </span>
                                         <button type="button" className="btn btn-danger btn-sm" onClick={() => eliminarPregunta(i)} disabled={cargando}>Eliminar</button>
                                     </li>

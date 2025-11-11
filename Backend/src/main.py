@@ -116,3 +116,4 @@ app.include_router(auth_router)
 @app.get("/")
 def read_root():
     return {"message": "Backend de Reporte de encuestas 🚀"}
+  
