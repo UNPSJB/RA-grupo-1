@@ -1,6 +1,6 @@
 from typing import List
 from sqlalchemy.orm import Session, joinedload, selectinload
-from sqlalchemy import select
+from sqlalchemy import select, func
 from src.informe_catedra_finalizado import schemas, models, exceptions
 from src.informe_catedra_finalizado.models import InformeCatedraFinalizado
 from src.asignaturas.models import Asignatura
@@ -38,7 +38,7 @@ def obtener_informes_pendientes(db: Session, docente_id: int,anio: int,duracion:
     
     return pendientes
 
-def obtener_informes_finalizados_docente(db: Session, docente_id: int) -> List[models.InformeCatedraFinalizado]:
+def obtener_informes_finalizados(db: Session, docente_id: int) -> List[models.InformeCatedraFinalizado]:
     informes = db.scalars(
         select(InformeCatedraFinalizado)
         .join(AsignaturaDocente, InformeCatedraFinalizado.asignatura_docente_id == AsignaturaDocente.id)
@@ -123,3 +123,53 @@ def obtener_informes_por_departamento(db: Session, departamento_id: int) -> List
         .where(Asignatura.departamento_id == departamento_id)
     ).all()
     return informes
+
+def obtener_informe_finalizado_detalle(db: Session, informe_id: int) -> dict:
+    stmt = (
+        select(models.InformeCatedraFinalizado)
+        .where(models.InformeCatedraFinalizado.id == informe_id)
+        .options(
+            selectinload(models.InformeCatedraFinalizado.respuestas_informe)
+            .selectinload(respuestas_informe.pregunta),
+            joinedload(models.InformeCatedraFinalizado.asignatura_docente) 
+                .joinedload(AsignaturaDocente.asignatura),
+            joinedload(models.InformeCatedraFinalizado.asignatura_docente)
+                .joinedload(AsignaturaDocente.docente)
+        )
+    )
+    
+    informe = db.scalar(stmt)
+    if not informe:
+        raise exceptions.InformeFinalizadoNoEncontrado()
+    
+    informe_dict = {
+        "id": informe.id,
+        "docente_materia_id": informe.docente_materia_id,
+        "informe_catedra_base_id": informe.informe_catedra_base_id,
+        "titulo": informe.titulo,
+        "contenido": informe.contenido,
+        "cantidadAlumnos": informe.cantidadAlumnos,
+        "anio": informe.anio,
+        "periodo": informe.periodo,
+        "cantidadComisionesTeoricas": informe.cantidadComisionesTeoricas,
+        "cantidadComisionesPracticas": informe.cantidadComisionesPracticas,
+        "respuestas_informe": informe.respuestas_informe,
+        
+        "materiaId": -1, 
+        "materiaNombre": None,
+        "materiaCodigo": None,
+        "docenteResponsable": None,
+        "sede": "Trelew" 
+    }
+
+    if informe.docente_materia:
+        if informe.docente_materia.materia:
+            informe_dict["materiaId"] = informe.docente_materia.materia.id
+            informe_dict["materiaNombre"] = informe.docente_materia.materia.nombre
+            informe_dict["materiaCodigo"] = informe.docente_materia.materia.matricula
+        
+        if informe.docente_materia.docente:
+            docente = informe.docente_materia.docente
+            informe_dict["docenteResponsable"] = f"{docente.nombre} {docente.apellido}"
+
+    return informe_dict

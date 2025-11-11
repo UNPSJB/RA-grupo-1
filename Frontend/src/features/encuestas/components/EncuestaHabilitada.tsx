@@ -31,7 +31,7 @@ export default function EncuestasHabilitadas({ encuestas, alumnoId }: Props) {
         encuesta_id: encuesta.encuesta_id.toString(),
         asignatura_id: encuesta.asignatura_id.toString(),
         anio: Cursado.AnioActual.toString(),
-        periodo: 'cuatrimestre 1'
+        duracion: 'cuatrimestre 1'
       });
 
       const response = await fetch(`http://localhost:8000/encuesta-completada/existe?${params}`);

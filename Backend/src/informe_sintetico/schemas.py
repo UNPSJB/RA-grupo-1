@@ -1,19 +1,16 @@
 from pydantic import BaseModel
-from datetime import date
 from typing import List, Optional
 from src.informe_sintetico_finalizado.schemas import InformeSinteticoFinalizado
 from src.pregunta_informe_sintetico.schemas import PreguntaInformeSintetico
 
-class InformeSinteticoBase(BaseModel):
+class InformeSintetico(BaseModel):
     titulo: str
     descripcion: Optional[str] = None
-    carrera_id: Optional[int] = None
-    fecha: date
 
-class InformeSinteticoCreate(InformeSinteticoBase):
+class InformeSinteticoCreate(InformeSintetico):
     pass
 
-class InformeSintetico(InformeSinteticoBase):
+class InformeSintetico(InformeSintetico):
     id: int
     preguntas: List[PreguntaInformeSintetico] = []
 

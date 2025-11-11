@@ -28,7 +28,7 @@ interface EncuestaFinalizada {
   encuesta_id: number;
   asignatura_id: number;
   anio: number;
-  periodo: string;
+  duracion: string;
   respuestas: Respuesta[];
 }
 
@@ -124,7 +124,7 @@ export default function EncuestaFinalizadaDetalle() {
           <div className="alert alert-info">
             <strong>Año:</strong> {encuesta.anio}
             <br />
-            <strong>Período:</strong> {encuesta.periodo}
+            <strong>Período:</strong> {encuesta.duracion}
           </div>
 
           <h5 className="mt-4">Respuestas</h5>

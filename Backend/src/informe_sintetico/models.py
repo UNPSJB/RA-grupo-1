@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Text, Date, ForeignKey
 from sqlalchemy.orm import relationship, Mapped
 from src.models import ModeloBase  
-from typing import List
+from typing import List, Optional
 
 class InformeSintetico(ModeloBase):
     __tablename__ = "informe_sintetico"
@@ -21,5 +21,10 @@ class InformeSintetico(ModeloBase):
 
     informes_finalizados: Mapped[List["InformeSinteticoFinalizado"]] = relationship(
         "InformeSinteticoFinalizado",
+        back_populates="informe_base"
+    )
+
+    carreras: Mapped[List["Carrera"]] = relationship(
+        "Carrera",
         back_populates="informe_base"
     )

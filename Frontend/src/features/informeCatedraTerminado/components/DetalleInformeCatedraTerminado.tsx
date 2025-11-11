@@ -7,10 +7,10 @@ interface InformeCatedraTerminado {
   titulo: string;
   contenido: string;
   anio: number;
-  periodo: string;
+  duracion: string;
 }
-export function verPeriodo(periodo: string) {
-  switch (periodo) {
+export function verDuracion(duracion: string) {
+  switch (duracion) {
     case "PRIMER_CUATRI":
       return "Primer Cuatrimestre";
     case "SEGUNDO_CUATRI":
@@ -18,7 +18,7 @@ export function verPeriodo(periodo: string) {
     case "ANUAL":
       return "Anual";
     default:
-      return periodo;
+      return duracion;
   }
 }
 
@@ -47,7 +47,7 @@ export default function InformeCatedraDetail() {
             <strong>Año:</strong> {informe.anio}
           </p>
           <p className="mb-2">
-            <strong>Período:</strong> {verPeriodo(informe.periodo)}
+            <strong>Período:</strong> {verDuracion(informe.duracion)}
           </p>
           <div className="alert alert-info mt-3">
             <strong>Contenido:</strong> <br /> {informe.contenido}

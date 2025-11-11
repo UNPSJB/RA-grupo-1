@@ -69,7 +69,7 @@ class AsignaturaConDetalles(BaseModel):
     # Datos de la inscripción (desde asignatura_alumno)
     nota_cursada: Optional[int] = None
     anio: Optional[int] = None
-    periodo: Optional[str] = None
+    duracion: Optional[str] = None
     
     class Config:
         from_attributes = True
