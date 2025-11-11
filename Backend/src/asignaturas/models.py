@@ -1,9 +1,10 @@
 from __future__ import annotations
-from sqlalchemy import Integer, String, ForeignKey
+from sqlalchemy import Integer, String, ForeignKey, Column
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import Optional, List, TYPE_CHECKING
+from enum import auto, StrEnum
 from src.models import ModeloBase
-from src.vinculaciones.models import asignatura_alumno, informe_catedra_asignatura
+from src.vinculaciones.models import asignatura_alumno, asignatura_carrera
 
 if TYPE_CHECKING:
     from src.vinculaciones.asignatura_docente.models import AsignaturaDocente
@@ -12,6 +13,7 @@ if TYPE_CHECKING:
     from src.departamentos.models import Departamento
     from src.encuesta_finalizada.models import EncuestaFinalizada
     from src.informe_catedra.models import InformeCatedra
+    from src.carreras.models import Carrera
 
 class Asignatura(ModeloBase):
     __tablename__ = "asignaturas"
@@ -31,21 +33,25 @@ class Asignatura(ModeloBase):
         back_populates="asignaturas"
     )
 
-    encuestas: Mapped[List["Encuesta"]] = relationship(
-        "Encuesta", 
-        back_populates="asignatura"
+    carreras: Mapped[Optional[List["Carrera"]]] = relationship(
+        "Carrera",
+        secondary=asignatura_carrera,
+        back_populates="asignaturas"
     )
 
-    departamento_id: Mapped[int] = mapped_column(Integer, ForeignKey("departamentos.id"), nullable=False)
+    encuesta_id: Mapped[int] = mapped_column(ForeignKey("encuesta_id"))
 
-    departamento: Mapped["Departamento"] = relationship("Departamento", back_populates="asignaturas")
+    encuesta: Mapped[List["Encuesta"]] = relationship(
+        "Encuesta", 
+        back_populates="asignaturas"
+    )
 
-    encuestas_finalizadas: Mapped[List["EncuestaFinalizada"]] = relationship(
+    encuestas_finalizadas: Mapped[Optional[List["EncuestaFinalizada"]]] = relationship(
         "EncuestaFinalizada", 
         back_populates="asignatura"
     )
 
-    informes_catedra: Mapped[List["InformeCatedra"]] = relationship(
-        "InformeCatedra",
-        back_populates="asignatura"  
-    )
+    departamento_id: Mapped[int] = mapped_column(Integer, ForeignKey("departamentos.id"), nullable=False)
+    departamento: Mapped["Departamento"] = relationship("Departamento", back_populates="asignaturas")
+    informes_catedra_id = Column(Integer, ForeignKey("informe_catedra.id"))
+    informes_catedra = relationship("InformeCatedra", back_populates="asignaturas")
