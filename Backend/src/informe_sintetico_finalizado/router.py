@@ -119,8 +119,8 @@ def get_bibliografia_equipamiento(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al obtener bibliografía y equipamiento: {str(e)}")
 
-@router.get("/actividades-docentes/", response_model=List[schemas.ActividadesPorMateriaItem])
-def get_actividades_docentes_por_materia(
+@router.get("/actividades-docentes/", response_model=List[schemas.ActividadesPorAsignaturaItem])
+def get_actividades_docentes_por_asignatura(
     id_dpto: int,
     id_carrera: int,
     anio: int,
@@ -131,7 +131,7 @@ def get_actividades_docentes_por_materia(
         elementos = services.get_actividades_docentes(db, id_dpto, id_carrera, anio, duracion)
         return elementos
     except Exception as e:
-        print(f"Error en get_actividades_docentes_por_materia: {e}")
+        print(f"Error en get_actividades_docentes_por_asignatura: {e}")
         raise HTTPException(status_code=500, detail=f"Error al obtener actividades docentes: {str(e)}")
 
 @router.get("/desempeno_auxiliares/", response_model=List[schemas.TablaDesempenoAuxiliar])

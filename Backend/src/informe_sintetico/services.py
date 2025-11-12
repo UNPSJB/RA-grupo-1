@@ -34,14 +34,3 @@ def get_preguntas_informe_sintetico(db: Session, informe_id: int) -> List [pregu
     return informe.preguntas
     
 
-<<<<<<< HEAD
-=======
-def crear_informe_sintetico(db: Session, informe: schemas.InformeSinteticoCreate) -> models.InformeSintetico:
-    db_informe = models.InformeSintetico(**informe.model_dump())
-    db.add(db_informe)
-    db.commit()
-    db.refresh(db_informe)
-    return db_informe
-
-create_informe = crear_informe_sintetico
->>>>>>> 36acc76b4cd641a710ecc46f4ba0eb0e155d4010

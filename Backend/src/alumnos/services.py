@@ -33,7 +33,7 @@ def crear_alumno(db: Session, alumno: schemas.AlumnoCreate) -> schemas.AlumnoRes
 def listar_alumnos(db: Session, skip: int = 0, limit: int = 100) -> List[schemas.AlumnoResponse]:
     return db.scalars(select(Alumno).offset(skip).limit(limit)).all()
 
-def leer_alumno(db: Session, alumno_id: int) -> schemas.Alumno:
+def leer_alumno(db: Session, alumno_id: int) -> schemas.AlumnoResponse:
     db_alumno = db.scalar(select(Alumno).where(Alumno.id == alumno_id))
     if db_alumno is None:
         raise exceptions.AlumnoNoEncontrado() 

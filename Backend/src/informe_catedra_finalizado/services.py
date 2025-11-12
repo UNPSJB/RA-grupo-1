@@ -67,7 +67,7 @@ def crear_informe_finalizado(db: Session, informe_data: schemas.InformeCatedraFi
     
     existe = db.scalar(
         select(InformeCatedraFinalizado)
-        .where(InformeCatedraFinalizado.docente_asignatura_id == informe_data.docente_asignatura_id)
+        .where(InformeCatedraFinalizado.asignatura_docente_id == informe_data.asignatura_docente_id)
     )
     if existe:
         raise exceptions.InformeFinzalizadoYaExiste()
@@ -118,7 +118,7 @@ def obtener_informe_finalizado(db: Session, informe_id: int) -> models.InformeCa
 def obtener_informes_por_departamento(db: Session, departamento_id: int) -> List[models.InformeCatedraFinalizado]:
     informes = db.scalars(
         select(InformeCatedraFinalizado)
-        .join(AsignaturaDocente, InformeCatedraFinalizado.docente_asignatura_id == AsignaturaDocente.id)
+        .join(AsignaturaDocente, InformeCatedraFinalizado.asignatura_docente_id == AsignaturaDocente.id)
         .join(Asignatura, AsignaturaDocente.asignatura_id == Asignatura.id)
         .where(Asignatura.departamento_id == departamento_id)
     ).all()
@@ -144,7 +144,7 @@ def obtener_informe_finalizado_detalle(db: Session, informe_id: int) -> dict:
     
     informe_dict = {
         "id": informe.id,
-        "docente_materia_id": informe.docente_materia_id,
+        "asignatura_docente_id": informe.asignatura_docente_id,
         "informe_catedra_base_id": informe.informe_catedra_base_id,
         "titulo": informe.titulo,
         "contenido": informe.contenido,
@@ -155,21 +155,21 @@ def obtener_informe_finalizado_detalle(db: Session, informe_id: int) -> dict:
         "cantidadComisionesPracticas": informe.cantidadComisionesPracticas,
         "respuestas_informe": informe.respuestas_informe,
         
-        "materiaId": -1, 
-        "materiaNombre": None,
-        "materiaCodigo": None,
+        "asignaturaId": -1, 
+        "asignaturaNombre": None,
+        "asignaturaCodigo": None,
         "docenteResponsable": None,
         "sede": "Trelew" 
     }
 
-    if informe.docente_materia:
-        if informe.docente_materia.materia:
-            informe_dict["materiaId"] = informe.docente_materia.materia.id
-            informe_dict["materiaNombre"] = informe.docente_materia.materia.nombre
-            informe_dict["materiaCodigo"] = informe.docente_materia.materia.matricula
+    if informe.asignatura_docente:
+        if informe.asignatura_docente.asignatura:
+            informe_dict["asignaturaId"] = informe.asignatura_docente.asignatura.id
+            informe_dict["asignaturaNombre"] = informe.asignatura_docente.asignatura.nombre
+            informe_dict["asignaturaCodigo"] = informe.asignatura_docente.asignatura.matricula
         
-        if informe.docente_materia.docente:
-            docente = informe.docente_materia.docente
+        if informe.asignatura_docente.docente:
+            docente = informe.asignatura_docente.docente
             informe_dict["docenteResponsable"] = f"{docente.nombre} {docente.apellido}"
 
     return informe_dict

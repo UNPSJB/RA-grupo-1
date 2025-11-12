@@ -4,7 +4,7 @@ from typing import List, Optional
 from src.resultado_informe.schemas import RespuestaInformeSintetico
 from src.resultado_informe import schemas as respuestas_schemas
 from src.vinculaciones.models import Duracion
-from src.asignaturas.schemas import Asignatura
+from src.asignaturas import schemas as asignatura_schemas
 
 class InformeSinteticoFinalizadoBase(BaseModel):
     titulo: str
@@ -24,26 +24,19 @@ class InformeSinteticoFinalizado(InformeSinteticoFinalizadoBase):
     class Config:
         from_attributes = True
 
-class TablaPregunta2BItem(BaseModel):
-    asignatura: Asignatura
+class TablaPregunta2Item(BaseModel):
+    Asignatura: asignatura_schemas.Asignatura
     porcentaje_teoricas: str
     porcentaje_practicas: str
     justificacion: Optional[str] = None
 
-class InformacionGeneral(BaseModel):
-    asignatura: Asignatura
-    codigo: int
-    nombre: str
-    cantidad_alumnos: int
-    cantidad_comisiones_teoriacas: int
-    cantidad_comisiones_practicas: int
-
     model_config = {"from_attributes": True}
 
-class TemasDesarrolladosItem(BaseModel):
-    asignatura: Asignatura
-    porcentaje_texto: Optional[str] = None
-    estrategia_texto: Optional[str] = None
+class TablaPregunta2BItem(BaseModel):
+    asignatura: asignatura_schemas.Asignatura
+    porcentaje_teoricas: str
+    porcentaje_practicas: str
+    justificacion: Optional[str] = None
 
     model_config = {"from_attributes": True}
 
@@ -55,8 +48,26 @@ class RespuestasSeccion2C(BaseModel):
     estrategias: Optional[str] = None    
 
 class TablaPregunta2CItem(BaseModel):
-    asignatura: Asignatura
+    asignatura: asignatura_schemas.Asignatura
     respuestas: RespuestasSeccion2C
+
+    model_config = {"from_attributes": True}
+
+class InformacionGeneral(BaseModel):
+    asignatura: asignatura_schemas.Asignatura
+    codigo: int
+    nombre: str
+    cantidad_alumnos: int
+    cantidad_comisiones_teoriacas: int
+    cantidad_comisiones_practicas: int
+
+    model_config = {"from_attributes": True}
+
+
+class TemasDesarrolladosItem(BaseModel):
+    asignatura: asignatura_schemas.Asignatura
+    porcentaje_texto: Optional[str] = None
+    estrategia_texto: Optional[str] = None
 
     model_config = {"from_attributes": True}
 
@@ -73,13 +84,14 @@ class DocenteConActividades(BaseModel):
     actividades: ActividadesDocente
 
 class ActividadesPorAsignaturaItem(BaseModel):
-    asignatura: Asignatura
+    asignatura: asignatura_schemas.Asignatura
     docentes: List[DocenteConActividades]
 
     model_config = {"from_attributes": True}
 
+
 class EquipamientoBibliografia(BaseModel):
-    asignatura: Asignatura
+    asignatura: asignatura_schemas.Asignatura
     bibliografia: str
     equipamiento: str
 
@@ -93,8 +105,9 @@ class DesempenoAuxiliarDetalle(BaseModel):
     calificacion_I: bool = False  
     justificacion: str
 
+
 class TablaDesempenoAuxiliar(BaseModel):
-    asignatura: Asignatura
+    asignatura: asignatura_schemas.Asignatura
     auxiliares: List[DesempenoAuxiliarDetalle]
     
     model_config = {"from_attributes": True}

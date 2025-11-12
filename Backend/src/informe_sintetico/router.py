@@ -3,16 +3,11 @@ from sqlalchemy.orm import Session
 from src.informe_sintetico import schemas, services, exceptions
 from src.pregunta_informe_sintetico import schemas as pregunta_schemas
 from src.database import get_db
-<<<<<<< HEAD
 from typing import List
-=======
-from src.informe_sintetico import schemas, services
->>>>>>> 36acc76b4cd641a710ecc46f4ba0eb0e155d4010
 from src.informe_sintetico.models import InformeSintetico
 
 router = APIRouter(prefix="/informes_sinteticos", tags=["informes_sinteticos"])
 
-<<<<<<< HEAD
 @router.post("/", response_model=schemas.InformeSintetico, status_code=status.HTTP_201_CREATED)
 def crear_informe_sintetico_route(informe: schemas.InformeSinteticoCreate, db: Session = Depends(get_db)):
     return services.crear_informe_sintetico(db, informe)
@@ -21,7 +16,7 @@ def crear_informe_sintetico_route(informe: schemas.InformeSinteticoCreate, db: S
 def get_informes_sinteticos_route(db: Session = Depends(get_db)):
     return services.get_informes_sinteticos(db)
 
-@router.get("/{informe_id}", response_model=schemas.InformeSinteticoBase)
+@router.get("/{informe_id}", response_model=schemas.InformeSintetico)
 def get_informe_sintetico_route(informe_id: int, db: Session = Depends(get_db)):
     try:
         return services.get_informe_sintetico(db, informe_id)
@@ -35,9 +30,6 @@ def get_preguntas_informe_sintetico_route(informe_id: int, db: Session = Depends
     except exceptions.InformeSinteticoNoEncontrado:
         raise HTTPException(status_code=404, detail="Informe no encontrado")
     
-=======
-
->>>>>>> 36acc76b4cd641a710ecc46f4ba0eb0e155d4010
 @router.get("/")
 def get_informes(carrera_id: int | None = None, db: Session = Depends(get_db)):
     try:

@@ -22,11 +22,9 @@ def leer_carrera(db: Session, carrera_id: int) -> schemas.Carrera:
     return db_carrera
 
 def listar_carreras(db: Session) -> List[schemas.Carrera]:
-    #devuelve todas las carreras ordenadas por nombre
     return db.scalars(select(Carrera).order_by(Carrera.nombre)).all()
 
 def listar_carreras_por_departamento(db: Session, departamento_id: int) -> List[schemas.Carrera]:
-<<<<<<< HEAD
     return db.scalars(select(Carrera).where(Carrera.departamento_id == departamento_id)).all()
 
 def informes_sinteticos_pendientes(db: Session, departamento_id: int) -> List[schemas.Carrera]:
@@ -42,11 +40,3 @@ def informes_sinteticos_pendientes(db: Session, departamento_id: int) -> List[sc
         .where(Carrera.id.not_in(descarte))
     )
     return db.scalars(stmt).all()
-=======
-    #devuelve carreras filtradas por departamento
-    return db.scalars(
-        select(Carrera)
-        .where(Carrera.departamento_id == departamento_id)
-        .order_by(Carrera.nombre)
-    ).all()
->>>>>>> 36acc76b4cd641a710ecc46f4ba0eb0e155d4010

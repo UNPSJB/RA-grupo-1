@@ -36,7 +36,7 @@ export const PanelDocente: React.FC = () => {
             <div className="card-body">
               <div className="d-flex justify-content-between align-items-start">
                 <div>
-                  <h6 className="card-title text-muted text-uppercase small">Total Materias</h6>
+                  <h6 className="card-title text-muted text-uppercase small">Total Asignaturas</h6>
                   <h2 className="fw-bold text-primary mb-1">{docenteData.asignaturas}</h2>
                   <small className="text-muted">Semestre {docenteData.semestre}</small>
                 </div>
@@ -55,7 +55,7 @@ export const PanelDocente: React.FC = () => {
                 <div>
                   <h6 className="card-title text-muted text-uppercase small">Total alumnos</h6>
                   <h2 className="fw-bold text-success mb-1">{docenteData.alumnos}</h2>
-                  <small className="text-muted">Todas las materias</small>
+                  <small className="text-muted">Todas las asignaturas</small>
                 </div>
                 <div className="bg-success bg-opacity-10 p-3 rounded">
                   <i className="bi bi-people text-success fs-4"></i>
@@ -146,7 +146,7 @@ export const PanelDocente: React.FC = () => {
                 </div>
                 <div className="list-group-item border-0 px-0 py-2">
                   <span className="badge bg-success me-2">2</span>
-                  <span>Materias sin evaluaciones</span>
+                  <span>Asignaturas sin evaluaciones</span>
                 </div>
               </div>
             </div>

@@ -45,6 +45,6 @@ asignatura_carrera = Table(
     "asignatura_carrera",
     ModeloBase.metadata,
     Column("id", Integer, primary_key=True, index=True),
-    Column("asignatura_id", ForeignKey("asignatura.id")),
-    Column("carrera_id", ForeignKey("carreas.id"))
+    Column("asignatura_id", ForeignKey("asignaturas.id")),
+    Column("carrera_id", ForeignKey("carreras.id"))
 )

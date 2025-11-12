@@ -15,3 +15,15 @@ class RespuestaInforme(RespuestaInformeBase):
 
     class Config:
         from_attributes = True
+
+class RespuestaConPregunta(RespuestaInforme):
+    pregunta_texto: Optional[str] = None
+
+class RespuestaInformeSintetico(BaseModel):
+    pregunta_id: int
+    texto_respuesta: Optional[str] = None
+    asignatura_id: int
+    informe_sintetico_finalizado_id: int
+
+    class Config:
+        from_attributes = True
