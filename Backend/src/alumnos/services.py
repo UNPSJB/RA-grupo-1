@@ -64,20 +64,6 @@ def eliminar_alumno(db: Session, alumno_id: int) -> dict:
     db.commit()
     return {"message": f"Alumno con ID {alumno_id} eliminado correctamente"}
 
-def obtener_encuestas_disponibles(db: Session, alumno_id: int) -> List[schemas.EncuestaDisponible]:
-    # Verifica que el alumno existe
-    alumno = leer_alumno(db, alumno_id)
-    
-    stmt = (
-        select(Encuesta)
-        .join(Asignatura, Encuesta.id == Asignatura.encuesta_id)
-        .join(asignatura_alumno, Asignatura.id == asignatura_alumno.c.asignatura_id)
-        .where(asignatura_alumno.c.alumno_id == alumno_id)
-    )
-    
-    encuestas = db.scalars(stmt).all()
-    return encuestas
-
 def obtener_asignaturas_alumno(db: Session, alumno_id: int) -> List[schemas.AsignaturaConDetalles]:
     alumno = leer_alumno(db, alumno_id)
     
@@ -131,29 +117,6 @@ def inscribir_alumno_asignatura(db: Session, alumno_id: int, asignatura_id: int)
     db.commit()
     
     return {"message": "Alumno inscrito correctamente en la asignatura"}
-
-def listar_encuestas_disponibles(db: Session, alumno_id: int):
-    descarte = (
-        select(EncuestaFinalizada.id)
-        .where(EncuestaFinalizada.alumno_id == alumno_id)
-        .where(EncuestaFinalizada.anio == ANIO_ACTUAL)
-        .where(EncuestaFinalizada.duracion == DURACION_ACTUAL)
-        .where(EncuestaFinalizada.encuesta_id == Encuesta.id)
-    )
-    
-    stmt = (
-        select(Asignatura.nombre, Encuesta.nombre, Asignatura.id, Asignatura.encuesta_id)
-        .join(asignatura_alumno, asignatura_alumno.c.asignatura_id == Asignatura.id)
-        .join(Encuesta, Encuesta.id == Asignatura.encuesta_id)
-        .where(asignatura_alumno.c.alumno_id == alumno_id)
-        .where(asignatura_alumno.c.anio == ANIO_ACTUAL)
-        .where(asignatura_alumno.c.duracion == DURACION_ACTUAL)
-        .where(~exists(descarte))
-    )
-
-    resultados = db.execute(stmt).all()
-
-    return [{"asignatura": m, "encuesta": e, "asignatura_id": asignatura_id, "encuesta_id": encuesta_id} for m, e, asignatura_id, encuesta_id in resultados]    
 
 def obtener_alumnos_por_asignatura_y_duracion(db: Session, asignatura_id: int, anio: int, duracion: Duracion) -> List[Alumno]:
     stmt = (

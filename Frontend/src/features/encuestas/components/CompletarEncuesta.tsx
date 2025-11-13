@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Container, Card, Button, Form, Alert, Badge, Row, Col, ProgressBar as BSProgressBar } from 'react-bootstrap';
 import { ArrowLeft, ArrowRight, CheckCircle } from 'react-bootstrap-icons';
+import { enviarRespuestasEncuesta } from "../services/encuestasService";
 
 interface Categoria {
   id: number;
@@ -423,39 +424,23 @@ export function CompletarEncuesta() {
   };
 
   const handleEnviar = async () => {
-    try {
-      const respuestasArray = Array.from(respuestas.values()).map(r => ({
-        preguntaId: r.preguntaId,
-        opcionSeleccionada: r.opcionSeleccionada,
-        textoRespuesta: r.textoRespuesta,
-        subrespuestas: r.subrespuestas ? Object.fromEntries(r.subrespuestas) : undefined
-      }));
-      
-      console.log('Enviando respuestas:', {
-        alumnoId,
-        encuestaId,
-        asignaturaId,
-        respuestas: respuestasArray
-      });
+  try {
+    const respuestasArray = Array.from(respuestas.values()).map(r => ({
+      pregunta_id: r.preguntaId,
+      opcion_seleccionada: r.opcionSeleccionada,
+      texto_respuesta: r.textoRespuesta,
+      subrespuestas: r.subrespuestas ? Object.fromEntries(r.subrespuestas) : undefined
+    }));
 
-      // LLAMADA A LA API
-      // await fetch(`http://127.0.0.1:8000/encuestas/${encuestaId}/respuestas`, {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ 
-      //     alumno_id: alumnoId,
-      //     asignatura_id: asignaturaId,
-      //     respuestas: respuestasArray 
-      //   })
-      // });
+    await enviarRespuestasEncuesta(alumnoId, parseInt(encuestaId!), asignaturaId, respuestasArray);
 
-      alert('¡Encuesta completada exitosamente!');
-      navigate('/alumno/completadas');
-    } catch (error) {
-      console.error('Error enviando encuesta:', error);
-      alert('Error al enviar la encuesta');
-    }
-  };
+    alert("✅ ¡Encuesta completada exitosamente!");
+    navigate("/alumno/completadas");
+  } catch (error) {
+    console.error("❌ Error enviando encuesta:", error);
+    alert("Error al enviar la encuesta. Intenta nuevamente.");
+  }
+};
 
   const handleVolver = () => {
     if (window.confirm('¿Estás seguro de que quieres salir? Se perderán las respuestas no guardadas.')) {

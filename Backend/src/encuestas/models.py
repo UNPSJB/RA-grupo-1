@@ -32,7 +32,7 @@ class Encuesta(ModeloBase):
     activa: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     
-    # ✅ Relación hacia Asignatura (muchas encuestas pertenecen a una asignatura)
+  
     asignatura_id: Mapped[int] = mapped_column(Integer, ForeignKey("asignaturas.id"))
     asignatura: Mapped["Asignatura"] = relationship(
         "Asignatura",
@@ -48,10 +48,18 @@ class Encuesta(ModeloBase):
         back_populates="encuesta"
     )
 
+    preguntas = relationship("Pregunta", back_populates="encuesta", cascade="all, delete")
+
     categorias: Mapped[List["Categoria"]] = relationship(
         "Categoria",
         back_populates="encuesta"
     )
+
+    finalizaciones = relationship("EncuestaFinalizada", back_populates="encuesta", cascade="all, delete")
+
+    encuesta = relationship("Encuesta", back_populates="finalizaciones")
+    asignatura = relationship("Asignatura", lazy="joined")
+    docente = relationship("Docente", lazy="joined")
 
     # Verifica si la encuesta está activa
     @property

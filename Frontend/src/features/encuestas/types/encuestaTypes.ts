@@ -129,6 +129,19 @@ export interface PreguntaAbierta {
   seccion: string;
 }
 
+export interface EncuestaAlumnoInfo {
+  id: number;
+  nombre: string;
+  asignatura: string;
+  docente: string;
+  ciclo_lectivo: string;
+  fecha_inicio?: string;
+  fecha_fin?: string;
+  estado?: string;
+  cursado?: string;
+}
+
+
 export interface FormularioCicloBasico {
   encuesta: {
     id: number;
