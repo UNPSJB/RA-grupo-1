@@ -2,9 +2,15 @@ from __future__ import annotations
 from sqlalchemy import Integer, String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.models import ModeloBase
+from src.opciones.models import Opcion
 from src.vinculaciones.models import pregunta_opcion
+from src.database import Base
 import enum
-from typing import List
+from typing import List, TYPE_CHECKING   
+
+
+if TYPE_CHECKING:
+    from src.respuestas.models import Respuesta
 
 class TipoPreguntaEnum(str, enum.Enum):
     ABIERTA = "abierta"
@@ -18,31 +24,19 @@ class Pregunta(ModeloBase):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     texto: Mapped[str] = mapped_column(String(250), nullable=False)
     encuesta_id: Mapped[int] = mapped_column(Integer, ForeignKey("encuestas.id"))
-    categoria_id: Mapped[int] = mapped_column(Integer, ForeignKey("categorias.id"), nullable=True)
 
-<<<<<<< HEAD
-    
-=======
     respuestas: Mapped[List["Respuesta"]] = relationship("Respuesta", back_populates="pregunta")
 
->>>>>>> 17f9bfd0057ca1f072f560b53f86d560fa9ce7e8
     tipo: Mapped[TipoPreguntaEnum] = mapped_column(
         String(50), 
         nullable=False, 
         default=TipoPreguntaEnum.ABIERTA
     )
 
-    # RELACIÓN 
-    respuestas = relationship("Respuesta", back_populates="pregunta", lazy="select")
-
+     # Relación para preguntas de opción múltiple
     opciones: Mapped[List["Opcion"]] = relationship(
         "Opcion",
         secondary=pregunta_opcion,
-        back_populates="preguntas",
-        lazy="select"
-    )
-
-    categoria: Mapped["Categoria"] = relationship(
-        "src.categorias.models.Categoria",
         back_populates="preguntas"
     )
+
