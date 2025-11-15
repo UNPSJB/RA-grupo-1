@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import type { Asignatura } from "../../asignaturas/types/asignaturaTypes";
 import { Link } from "react-router-dom";
+import ROUTES from "../../paths";
 
 type Respuesta = {
   id: number;

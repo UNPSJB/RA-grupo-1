@@ -237,9 +237,8 @@ class EncuestaAlumnoInfo(BaseModel):
     asignatura: str
     docente: str
     ciclo_lectivo: str
-    fecha_inicio: Optional[str]
-    fecha_fin: Optional[str]
-    estado: Optional[str]
+    fecha_inicio: Optional[str] = None
+    fecha_fin: Optional[str] = None
+    estado: Optional[str] = None
 
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes":True}

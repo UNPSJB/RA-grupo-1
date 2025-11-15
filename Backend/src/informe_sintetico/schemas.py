@@ -12,6 +12,5 @@ class InformeSinteticoCreate(InformeSintetico):
 class InformeSintetico(InformeSintetico):
     id: int
     preguntas: List[PreguntaInformeSintetico] = []
-
-    class Config:
-        orm_mode = True
+    
+    model_config = {"from_attributes":True}

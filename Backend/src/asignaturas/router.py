@@ -27,8 +27,6 @@ def crear_asignatura(asignatura: schemas.AsignaturaCreate, db: Session = Depends
                 detail="No hay departamentos disponibles. Crea un departamento primero."
             )
         asignatura.departamento_id = primer_departamento.id
-        print(f"⚠️  Asignando departamento por defecto ID: {primer_departamento.id} a asignatura: {asignatura.nombre}")
-    
     return services.crear_asignatura(db, asignatura)
 
 @router.put("/{asignatura_id}", response_model=schemas.Asignatura)

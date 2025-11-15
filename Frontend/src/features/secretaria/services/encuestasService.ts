@@ -232,7 +232,7 @@ export const encuestasService = {
             tipo: pregunta.tipo,
             respuestas: pregunta.tipo === 'cerrada' 
               ? ['Siempre', 'Frecuentemente', 'Frecuentemente', 'Ocasionalmente', 'Siempre']
-              : ['Muy buen curso', 'Podría mejorar', 'Excelente material'],
+              : ['Muy buen curso', 'Podría mejorar', 'Excelente asignaturasl'],
             estadisticas: pregunta.tipo === 'cerrada' ? {
               'Siempre': 20,
               'Frecuentemente': 15,

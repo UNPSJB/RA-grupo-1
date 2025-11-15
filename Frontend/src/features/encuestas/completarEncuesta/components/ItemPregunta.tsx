@@ -1,4 +1,4 @@
-import ListOpciones from "./ListOpciones";
+import ListOpciones from "./DropDownOpciones";
 
 interface Pregunta {
   id: number;

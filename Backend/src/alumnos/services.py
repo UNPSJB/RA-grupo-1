@@ -30,6 +30,28 @@ def crear_alumno(db: Session, alumno: schemas.AlumnoCreate) -> schemas.AlumnoRes
     db.refresh(_alumno)
     return _alumno
 
+def listar_encuestas_disponibles(db: Session, alumno_id: int):
+    descarte = (
+        select(EncuestaFinalizada.id)
+        .where(EncuestaFinalizada.alumno_id == alumno_id)
+        .where(EncuestaFinalizada.anio==ANIO_ACTUAL)
+        .where(EncuestaFinalizada.periodo==DURACION_ACTUAL)
+        .where(EncuestaFinalizada.encuesta_id == Encuesta.id)
+    )
+    stmt = (
+        select(Asignatura.nombre, Encuesta.nombre, Asignatura.id, Asignatura.encuesta_id)
+        .join(asignatura_alumno, asignatura_alumno.c.asignatura_id == Asignatura.id)
+        .join(Encuesta, Encuesta.id == Asignatura.encuesta_id)
+        .where(asignatura_alumno.c.alumno_id == alumno_id)
+        .where(asignatura_alumno.c.anio == ANIO_ACTUAL)
+        .where(asignatura_alumno.c.periodo == DURACION_ACTUAL)
+        .where(~exists(descarte))
+    )
+
+    resultados = db.execute(stmt).all()
+
+    return [{"msignatura": m, "encuesta": e, "msignatura_id": msignatura_id, "encuesta_id": encuesta_id} for m, e, msignatura_id, encuesta_id in resultados] 
+
 def listar_alumnos(db: Session, skip: int = 0, limit: int = 100) -> List[schemas.AlumnoResponse]:
     return db.scalars(select(Alumno).offset(skip).limit(limit)).all()
 
@@ -66,8 +88,6 @@ def eliminar_alumno(db: Session, alumno_id: int) -> dict:
 
 def obtener_asignaturas_alumno(db: Session, alumno_id: int) -> List[schemas.AsignaturaConDetalles]:
     alumno = leer_alumno(db, alumno_id)
-    
-    # Query para obtener asignaturas con datos de la inscripción
     stmt = (
         select(
             Asignatura.id,
@@ -88,15 +108,11 @@ def obtener_asignaturas_alumno(db: Session, alumno_id: int) -> List[schemas.Asig
     ))) for resultado in resultados]
 
 def inscribir_alumno_asignatura(db: Session, alumno_id: int, asignatura_id: int) -> dict:
-    # Inscribe alumno en una asignatura
     alumno = leer_alumno(db, alumno_id)
-    
-    # Verifica que la asignatura existe
     asignatura = db.scalar(select(Asignatura).where(Asignatura.id == asignatura_id))
     if not asignatura:
         raise exceptions.AsignaturaNoEncontrada()
-    
-    # Verifica que no esté ya inscrito
+
     stmt = select(asignatura_alumno).where(
         and_(
             asignatura_alumno.c.alumno_id == alumno_id,

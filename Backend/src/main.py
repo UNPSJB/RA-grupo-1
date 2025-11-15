@@ -33,6 +33,7 @@ from src.informe_sintetico.models import InformeSintetico
 from src.vinculaciones.models import pregunta_opcion
 from src.vinculaciones.asignatura_docente.models import AsignaturaDocente
 from src.vinculaciones.models import asignatura_alumno
+from src.vinculaciones.asignatura_departamento_sede.models import AsignaturaDepartamentoSede
 
 # Routers
 from src.personas.router import router as personas_router

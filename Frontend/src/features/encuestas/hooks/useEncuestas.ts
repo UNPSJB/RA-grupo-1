@@ -31,7 +31,7 @@ export interface Encuesta {
 }
 
 export const useEncuestas = (alumnoIdParam?: number) => {
-  const [encuestas, setEncuestas] = useState<Encuesta[]>([]);
+  const [encuestas, setEncuestas] = useState<Encuesta[]>([]); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -42,60 +42,32 @@ export const useEncuestas = (alumnoIdParam?: number) => {
       setLoading(true);
       setError(null);
 
+      console.log(`🔍 Fetching encuestas para alumno ${alumnoId}...`);
+
       const response = await fetch(
         `http://127.0.0.1:8000/encuestas/alumno/${alumnoId}/disponibles`
       );
 
       if (!response.ok) {
-        console.warn("⚠️ Backend no disponible, usando datos de ejemplo");
-        const datosEjemplo: Encuesta[] = [
-          {
-            id: 1,
-            nombre: "Encuesta Ciclo Básico 2025",
-            asignatura: "Álgebra",
-            docente: "Dr. Juan Pérez",
-            ciclo_lectivo: "2025-PRIMER CUATRIMESTRE",
-            año: 2025,
-            cursado: "PRIMER CUATRIMESTRE",
-            fecha_inicio: "2025-01-01T00:00:00Z",
-            fecha_fin: "2025-12-31T23:59:59Z",
-            carrera: "APU",
-            sede: "Trelew",
-            titulo: "Álgebra",
-            asignatura_id: 1,
-            estado: EstadoEncuesta.ABIERTA,
-            activa: true,
-          },
-          {
-            id: 2,
-            nombre: "Encuesta Ciclo Básico 2025",
-            asignatura: "Desarrollo de Software",
-            docente: "Ing. María González",
-            ciclo_lectivo: "2025-PRIMER CUATRIMESTRE",
-            año: 2025,
-            cursado: "PRIMER CUATRIMESTRE",
-            fecha_inicio: "2025-01-01T00:00:00Z",
-            fecha_fin: "2025-12-31T23:59:59Z",
-            carrera: "APU",
-            sede: "Trelew",
-            titulo: "Desarrollo de Software",
-            asignatura_id: 2,
-            estado: EstadoEncuesta.ABIERTA,
-            activa: true,
-          },
-        ];
-
-        setEncuestas(datosEjemplo);
-        return;
+        const errorData = await response.json().catch(() => ({}));
+        console.error("❌ Error del servidor:", errorData);
+        throw new Error(errorData.detail || `Error ${response.status}: ${response.statusText}`);
       }
 
       const data = await response.json();
-      console.log("📥 Encuestas recibidas del backend:", data);
+      
+      if (!Array.isArray(data)) {
+        console.error("❌ La respuesta no es un array:", data);
+        throw new Error("Formato de respuesta inválido");
+      }
 
+      console.log(`✅ ${data.length} encuestas cargadas`);
       setEncuestas(data);
+      
     } catch (err: any) {
       console.error("❌ Error cargando encuestas:", err);
-      setError("Error al cargar encuestas. Mostrando datos locales.");
+      setError(err.message || "Error al cargar encuestas");
+      setEncuestas([]); 
     } finally {
       setLoading(false);
     }

@@ -48,3 +48,4 @@ asignatura_carrera = Table(
     Column("asignatura_id", ForeignKey("asignaturas.id")),
     Column("carrera_id", ForeignKey("carreras.id"))
 )
+

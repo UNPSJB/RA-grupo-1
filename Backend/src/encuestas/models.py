@@ -55,11 +55,10 @@ class Encuesta(ModeloBase):
         back_populates="encuesta"
     )
 
-    finalizaciones = relationship("EncuestaFinalizada", back_populates="encuesta", cascade="all, delete")
+    #finalizaciones = relationship("EncuestaFinalizada", back_populates="encuesta", cascade="all, delete")
 
-    encuesta = relationship("Encuesta", back_populates="finalizaciones")
     asignatura = relationship("Asignatura", lazy="joined")
-    docente = relationship("Docente", lazy="joined")
+   
 
     # Verifica si la encuesta está activa
     @property

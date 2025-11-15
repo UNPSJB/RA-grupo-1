@@ -33,7 +33,6 @@ def informes_sinteticos_pendientes(db: Session, departamento_id: int) -> List[sc
         .where(InformeSinteticoFinalizado.anio == ANIO_ACTUAL)
         .where(InformeSinteticoFinalizado.periodo == DURACION_ACTUAL)
     )
-    print(db.scalars(descarte).all())
     stmt=(
         select(Carrera)
         .where(Carrera.departamento_id == departamento_id)

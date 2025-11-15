@@ -147,22 +147,16 @@ async def obtener_encuesta(
     db: Session = Depends(get_db)
 ):
     """
-    Obtiene el encuesta completo de una encuesta para que el alumno la complete.
+    Obtiene el encuesta de una encuesta para que el alumno la complete.
     """
     try:
-        print(f"🔍 Solicitando encuesta para encuesta ID: {encuesta_id}")
-        
         # 1. Obtener encuesta
         encuesta = db.query(Encuesta).filter(Encuesta.id == encuesta_id).first()
         if not encuesta:
-            print(f"❌ Encuesta {encuesta_id} no encontrada")
             raise HTTPException(status_code=404, detail="Encuesta no encontrada")
-        
-        print(f"✅ Encuesta encontrada: {encuesta.titulo}")
         
         # 2. Validar que la encuesta esté activa
         if not encuesta.activa or encuesta.estado != EstadoEncuesta.abierta:
-            print(f"❌ Encuesta {encuesta_id} no está disponible")
             raise HTTPException(
                 status_code=400, 
                 detail="La encuesta no está disponible en este momento"
@@ -171,10 +165,7 @@ async def obtener_encuesta(
         # 3. Obtener asignatura
         asignatura = db.query(Asignatura).filter(Asignatura.id == encuesta.asignatura_id).first()
         if not asignatura:
-            print(f"❌ Asignatura {encuesta.asignatura_id} no encontrada")
             raise HTTPException(status_code=404, detail="Asignatura no encontrada")
-        
-        print(f"✅ Asignatura encontrada: {asignatura.nombre}")
         
         # 4. Obtener docente
         docente = None
@@ -188,7 +179,6 @@ async def obtener_encuesta(
             Pregunta.encuesta_id == encuesta_id
         ).order_by(Pregunta.id).all()
         
-        print(f"✅ {len(preguntas)} preguntas encontradas")
         
         # 6. Construir respuesta para Ciclo Básico
         response_data = {
@@ -221,7 +211,7 @@ async def obtener_encuesta(
                     "texto": p.texto,
                     "tipo": "escala",
                     "categoria": getattr(p.categoria, 'nombre', 'General') if p.categoria else "General",
-                    "seccion": "A"  # Por defecto, ajustar según tu lógica
+                    "seccion": "A"  
                 }
                 for p in preguntas
             ],
@@ -305,7 +295,7 @@ def obtener_encuesta_completar(encuesta_id: int, db: Session = Depends(get_db)):
             summary="Guardar respuestas de encuesta")
 def guardar_respuestas(respuestas: schemas.RespuestaEncuesta, db: Session = Depends(get_db)):
     """
-    Guarda las respuestas de una encuesta completada por un estudiante
+    Guarda las respuestas de una encuesta finalizada por un estudiante
     """
     try:
         resultado = services.guardar_respuestas_encuesta(db, respuestas)
@@ -330,28 +320,8 @@ def guardar_respuestas(respuestas: schemas.RespuestaEncuesta, db: Session = Depe
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error al guardar respuestas: {str(e)}"
         )
-@router.get("/alumno/{alumno_id}/completadas",
-            summary="Encuestas completadas por el alumno")
-def obtener_encuestas_completadas(alumno_id: int, db: Session = Depends(get_db)):
-    """
-    Devuelve las encuestas ya completadas por un alumno
-    """
-    from src.encuesta_finalizada.models import EncuestaFinalizada
-    stmt = select(EncuestaFinalizada).where(EncuestaFinalizada.alumno_id == alumno_id)
-    encuestas_finalizadas = db.scalars(stmt).all()
-    
-    return [
-        {
-            "encuesta_id": e.encuesta_id,
-            "asignatura": e.asignatura.nombre if e.asignatura else None,
-            "fecha_finalizada": e.fecha_finalizada,
-            "anio": e.anio,
-            "duracion": e.duracion.value
-        } for e in encuestas_finalizadas
-    ]
-
-@router.get("/alumno/{alumno_id}/completadas", response_model=list[schemas.EncuestaAlumnoInfo])
-def listar_encuestas_completadas(alumno_id: int, db: Session = Depends(get_db)):
+@router.get("/alumno/{alumno_id}/finalizadas", response_model=list[schemas.EncuestaAlumnoInfo])
+def listar_encuestas_finalizadas(alumno_id: int, db: Session = Depends(get_db)):
     """
     Devuelve todas las encuestas que el alumno ya completó.
     """
@@ -382,93 +352,6 @@ def listar_encuestas_completadas(alumno_id: int, db: Session = Depends(get_db)):
             "fecha_inicio": encuesta.fecha_inicio,
             "fecha_fin": encuesta.fecha_fin,
             "estado": "cerrada",
-        })
-
-    return resultado
-
-@router.get("/alumno/{alumno_id}/completadas", response_model=list[schemas.EncuestaAlumnoInfo])
-def listar_encuestas_completadas(alumno_id: int, db: Session = Depends(get_db)):
-    """
-    Devuelve todas las encuestas que el alumno ya completó.
-    """
-    encuestas_finalizadas = (
-        db.query(EncuestaFinalizada)
-        .filter(EncuestaFinalizada.alumno_id == alumno_id)
-        .all()
-    )
-
-    if not encuestas_finalizadas:
-        return []
-
-    resultado = []
-    for finalizada in encuestas_finalizadas:
-        encuesta = db.query(Encuesta).filter(Encuesta.id == finalizada.encuesta_id).first()
-        if not encuesta:
-            continue
-
-        asignatura = db.query(Asignatura).filter(Asignatura.id == finalizada.asignatura_id).first()
-        docente = db.query(Docente).filter(Docente.id == finalizada.docente_id).first() if finalizada.docente_id else None
-
-        resultado.append({
-            "id": encuesta.id,
-            "nombre": encuesta.nombre,
-            "asignatura": asignatura.nombre if asignatura else "Desconocida",
-            "docente": f"{docente.nombre} {docente.apellido}" if docente else "No asignado",
-            "ciclo_lectivo": encuesta.ciclo_lectivo,
-            "fecha_inicio": encuesta.fecha_inicio,
-            "fecha_fin": encuesta.fecha_fin,
-            "estado": "cerrada",
-        })
-
-    return resultado
-
-@router.get("/alumno/{alumno_id}/disponibles", response_model=list[schemas.EncuestaAlumnoInfo])
-def listar_encuestas_disponibles(alumno_id: int, db: Session = Depends(get_db)):
-    """
-    Devuelve las encuestas activas para el alumno actual.
-    - Filtra por fecha de inicio y fin.
-    - Excluye las encuestas ya completadas.
-    """
-
-    hoy = datetime.now().date()
-
-    # 1️⃣ Obtener IDs de encuestas ya completadas por el alumno
-    encuestas_completadas = (
-        db.query(EncuestaFinalizada.encuesta_id)
-        .filter(EncuestaFinalizada.alumno_id == alumno_id)
-        .all()
-    )
-    encuestas_completadas_ids = [e[0] for e in encuestas_completadas]
-
-    # 2️⃣ Obtener encuestas activas
-    encuestas_activas = (
-        db.query(Encuesta)
-        .filter(
-            Encuesta.fecha_inicio <= hoy,
-            Encuesta.fecha_fin >= hoy,
-            Encuesta.id.not_in(encuestas_completadas_ids)
-        )
-        .all()
-    )
-
-    if not encuestas_activas:
-        return []
-
-    resultado = []
-    for encuesta in encuestas_activas:
-        # Buscar asignatura y docente (si existen relaciones)
-        asignatura = db.query(Asignatura).filter(Asignatura.id == encuesta.asignatura_id).first()
-        docente = db.query(Docente).filter(Docente.id == encuesta.docente_id).first() if encuesta.docente_id else None
-
-        resultado.append({
-            "id": encuesta.id,
-            "nombre": encuesta.nombre,
-            "asignatura": asignatura.nombre if asignatura else "Sin asignatura",
-            "docente": f"{docente.nombre} {docente.apellido}" if docente else "Sin docente asignado",
-            "ciclo_lectivo": encuesta.ciclo_lectivo,
-            "fecha_inicio": encuesta.fecha_inicio,
-            "fecha_fin": encuesta.fecha_fin,
-            "estado": "abierta"
         })
 
     return resultado

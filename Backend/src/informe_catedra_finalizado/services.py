@@ -38,13 +38,12 @@ def obtener_informes_pendientes(db: Session, docente_id: int,anio: int,duracion:
     
     return pendientes
 
-def obtener_informes_finalizados(db: Session, docente_id: int) -> List[models.InformeCatedraFinalizado]:
-    informes = db.scalars(
+def verificar_informe_existente(db: Session, docente_asignatura_id: int) -> bool:
+    informe = db.scalar(
         select(InformeCatedraFinalizado)
-        .join(AsignaturaDocente, InformeCatedraFinalizado.asignatura_docente_id == AsignaturaDocente.id)
-        .where(AsignaturaDocente.docente_id == docente_id)
-    ).all()
-    return informes
+        .where(InformeCatedraFinalizado.docente_asignatura_id == docente_asignatura_id)
+    )
+    return informe is not None
 
 def verificar_informe_existente(db: Session, asignatura_docente_id: int) -> bool:
     informe = db.scalar(
@@ -83,6 +82,9 @@ def crear_informe_finalizado(db: Session, informe_data: schemas.InformeCatedraFi
         duracion=informe_data.duracion,
         cantidadComisionesTeoricas=informe_data.cantidadComisionesTeoricas,
         cantidadComisionesPracticas=informe_data.cantidadComisionesPracticas,
+        JTP=informe_data.JTP,
+        aux_primera=informe_data.aux_primera,
+        aux_segunda=informe_data.aux_segunda
     )
     db.add(informe_db)
     db.commit()  
@@ -154,6 +156,9 @@ def obtener_informe_finalizado_detalle(db: Session, informe_id: int) -> dict:
         "cantidadComisionesTeoricas": informe.cantidadComisionesTeoricas,
         "cantidadComisionesPracticas": informe.cantidadComisionesPracticas,
         "respuestas_informe": informe.respuestas_informe,
+        "JTP": informe.JTP,
+        "aux_primera": informe.aux_primera,
+        "aux_segunda": informe.aux_segunda,
         
         "asignaturaId": -1, 
         "asignaturaNombre": None,

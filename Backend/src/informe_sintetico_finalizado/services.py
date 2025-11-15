@@ -431,7 +431,7 @@ def get_actividades_docentes(
 
             asignatura_docente_rel = db.scalars(
                 select(AsignaturaDocente)
-                .options(selectinload(AsignaturaDocente.docente))
+                .options(selectinload(Asignatura.docentes_asociados))
                 .where(AsignaturaDocente.id == informe_finalizado.asignatura_docente_id)
             ).first()
             docente_relacion = asignatura_docente_rel.docente if asignatura_docente_rel else None
