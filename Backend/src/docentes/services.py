@@ -6,6 +6,7 @@ from src.asignaturas.models import Asignatura
 from src.vinculaciones.asignatura_docente.models import AsignaturaDocente
 from src.vinculaciones.models import asignatura_alumno, alumno_encuesta
 from src.personas.models import Persona
+from datetime import datetime
 
 def listar_docentes(db: Session) -> List[models.Docente]:
     # Lista todos los docentes con información de persona
@@ -52,7 +53,8 @@ def asignar_asignatura(db: Session, docente_id: int, asignatura_id: int, duracio
     # Crea una nueva relación
     rel = AsignaturaDocente(
         docente_id=docente_id, 
-        asignatura_id=asignatura_id, 
+        asignatura_id=asignatura_id,
+        anio=datetime.now().year,
         duracion=duracion
     )
     db.add(rel)

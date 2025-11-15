@@ -5,8 +5,8 @@ from typing import List, Optional
 from src.resultado_informe.schemas import RespuestaConPregunta
 
 class InformeCatedraFinalizadoBase(BaseModel):
-    docente_asignatura_id: int
-    informe_catedra_base_id: int
+    asignatura_docente_id: int
+    informe_catedra_id: int
     titulo: Optional[str] = None
     contenido: Optional[str] = None
     cantidadAlumnos: Optional[int] = None

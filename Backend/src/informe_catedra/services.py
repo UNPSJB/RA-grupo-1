@@ -50,7 +50,7 @@ def get_categorias_con_preguntas_por_informe(db: Session, informe_id: int):
         .options(selectinload(Categoria.preguntas)
         .selectinload(Pregunta.opciones) 
         )
-        .where(Categoria.informe_base_id == informe_id) 
+        .where(Categoria.informe_catedra_id == informe_id) 
 
     )
     categorias_con_preguntas = db.scalars(stmt).unique().all()

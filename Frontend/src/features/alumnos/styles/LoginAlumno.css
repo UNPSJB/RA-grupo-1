@@ -1,0 +1,78 @@
+.login-alumno-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  padding: 2rem 0;
+}
+
+.login-alumno-wrapper {
+  max-width: 500px;
+}
+
+.login-alumno-card {
+  border-radius: 15px;
+}
+
+.login-alumno-icon {
+  font-size: 80px;
+  color: var(--bs-primary);
+}
+
+.login-alumno-title {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.login-alumno-subtitle {
+  color: var(--bs-secondary);
+}
+
+.login-alumno-label {
+  font-weight: 600;
+}
+
+.login-alumno-form-group {
+  margin-bottom: 1rem;
+}
+
+.login-alumno-form-group-last {
+  margin-bottom: 1.5rem;
+}
+
+.login-alumno-button-group {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.login-alumno-footer-text {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: var(--bs-secondary);
+  font-size: 0.875rem;
+}
+
+.login-alumno-info-card {
+  margin-top: 1rem;
+  border: none;
+}
+
+.login-alumno-info-title {
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.login-alumno-info-list {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0;
+}
+
+.login-alumno-info-item {
+  margin-bottom: 0.5rem;
+}
+
+.login-alumno-info-item:last-child {
+  margin-bottom: 0;
+}

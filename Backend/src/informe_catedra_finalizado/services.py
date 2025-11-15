@@ -8,6 +8,7 @@ from src.vinculaciones.asignatura_docente.models import AsignaturaDocente
 from src.vinculaciones.models import Duracion
 from src.resultado_informe import services as respuestas_services
 from src.resultado_informe.models import ResultadoInforme  
+from src.respuestas_informe.models import RespuestaInforme
 from src.preguntas.models import Pregunta
 
 def obtener_informes_pendientes(db: Session, docente_id: int,anio: int,duracion: Duracion) -> List[dict]:
@@ -26,7 +27,7 @@ def obtener_informes_pendientes(db: Session, docente_id: int,anio: int,duracion:
     for relacion in relaciones:
         existe = db.scalar(
             select(InformeCatedraFinalizado)
-            .where(InformeCatedraFinalizado.docente_docente_id == relacion.id)
+            .where(InformeCatedraFinalizado.asignatura_docente_id == relacion.id)
         )
 
         if not existe:
@@ -54,7 +55,7 @@ def verificar_informe_existente(db: Session, asignatura_docente_id: int) -> bool
     return informe is not None
 
 
-def crear_informe_finalizado(db: Session, informe_data: schemas.InformeCatedraFinalizadoConRespuestasCreate) -> models.InformeCatedraFinalizado:
+def crear_informe_finalizado(db: Session, informe_data: schemas.InformeCatedraFinalizadoCreate) -> models.InformeCatedraFinalizado:
     relacion = db.scalar(
         select(AsignaturaDocente)
         .where(AsignaturaDocente.id == informe_data.asignatura_docente_id)
@@ -67,27 +68,17 @@ def crear_informe_finalizado(db: Session, informe_data: schemas.InformeCatedraFi
     
     existe = db.scalar(
         select(InformeCatedraFinalizado)
-        .where(InformeCatedraFinalizado.docente_asignatura_id == informe_data.docente_asignatura_id)
+        .where(InformeCatedraFinalizado.asignatura_docente_id == informe_data.asignatura_docente_id)
     )
     if existe:
         raise exceptions.InformeFinzalizadoYaExiste()
     
 
-    informe_db = models.InformeCatedraFinalizado(
-        asignatura_docente_id=informe_data.asignatura_docente_id,
-        informe_catedra_id=informe_data.informe_catedra_id,
-        titulo=informe_data.titulo,
-        cantidadAlumnos=informe_data.cantidadAlumnos,
-        contenido=informe_data.contenido,
-        anio=informe_data.anio,
-        duracion=informe_data.duracion,
-        cantidadComisionesTeoricas=informe_data.cantidadComisionesTeoricas,
-        cantidadComisionesPracticas=informe_data.cantidadComisionesPracticas,
-    )
+    informe_db = InformeCatedraFinalizado(**informe_data.model_dump())
     db.add(informe_db)
     db.commit()  
     db.refresh(informe_db) 
-        
+    ''' 
     respuestas_con_id = []
     if informe_data.respuestas:
         for respuesta in informe_data.respuestas:
@@ -97,6 +88,7 @@ def crear_informe_finalizado(db: Session, informe_data: schemas.InformeCatedraFi
             )
             respuestas_con_id.append(respuesta_data)
         respuestas_services.guardar_respuestas_lote(db, respuestas_con_id)
+    '''
     return obtener_informe_finalizado(db, informe_db.id)
 
 
@@ -106,7 +98,10 @@ def obtener_informe_finalizado(db: Session, informe_id: int) -> models.InformeCa
         .where(models.InformeCatedraFinalizado.id == informe_id)
         .options(
             selectinload(models.InformeCatedraFinalizado.respuestas_informe)
-            .selectinload(ResultadoInforme.pregunta)  
+            .selectinload(RespuestaInforme.pregunta), 
+
+            selectinload(models.InformeCatedraFinalizado.resultado_informe)
+            .selectinload(ResultadoInforme.pregunta),
         )
     )
     
@@ -118,7 +113,7 @@ def obtener_informe_finalizado(db: Session, informe_id: int) -> models.InformeCa
 def obtener_informes_por_departamento(db: Session, departamento_id: int) -> List[models.InformeCatedraFinalizado]:
     informes = db.scalars(
         select(InformeCatedraFinalizado)
-        .join(AsignaturaDocente, InformeCatedraFinalizado.docente_asignatura_id == AsignaturaDocente.id)
+        .join(AsignaturaDocente, InformeCatedraFinalizado.asignatura_docente_id == AsignaturaDocente.id)
         .join(Asignatura, AsignaturaDocente.asignatura_id == Asignatura.id)
         .where(Asignatura.departamento_id == departamento_id)
     ).all()

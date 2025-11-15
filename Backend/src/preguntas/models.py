@@ -4,7 +4,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.models import ModeloBase
 from src.vinculaciones.models import pregunta_opcion
 import enum
-from typing import List
+from typing import List, Optional
 
 class TipoPreguntaEnum(str, enum.Enum):
     ABIERTA = "abierta"
@@ -17,8 +17,10 @@ class Pregunta(ModeloBase):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     texto: Mapped[str] = mapped_column(String(250), nullable=False)
-    encuesta_id: Mapped[int] = mapped_column(Integer, ForeignKey("encuestas.id"))
+    encuesta_id: Mapped[Optional[int]] = mapped_column(Integer, ForeignKey("encuestas.id"))
     categoria_id: Mapped[int] = mapped_column(Integer, ForeignKey("categorias.id"), nullable=True)
+    informe_id: Mapped[Optional[int]] = mapped_column(Integer, ForeignKey("informe_sintetico.id" or "informe_catedra.id"), nullable=True)
+    nro_pregunta: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
 
     
     tipo: Mapped[TipoPreguntaEnum] = mapped_column(

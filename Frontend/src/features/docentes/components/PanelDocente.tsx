@@ -2,9 +2,13 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { docenteService, DocenteStats } from '../services/docenteService';
 import { useEffect, useState } from 'react';
-import { getInformes, Informe } from "../services/informeService";
+import { getInformesFinalizadosPorDocente, Informe } from "../services/informeService";
+
+
 
 export const PanelDocente: React.FC = () => {
+  const docenteId = 1; // TODO: reemplazar por el ID real del docente autenticado
+
   // DATOS HARCODEADOS ACA VAN CON LA API
   const docenteData = {
     asignaturas: 3,
@@ -19,14 +23,14 @@ export const PanelDocente: React.FC = () => {
   useEffect(() => {
     const fetchInformes = async () => {
       try{
-        const data = await getInformes();
+        const data = await getInformesFinalizadosPorDocente(docenteId);
         setInformes(data);
       } catch (error) {
         console.error("Error al obtener informes:", error);
       }
     };
     fetchInformes();
-  }, []);
+  }, [docenteId]);
 
    return (
     <div className="container-fluid">
@@ -164,9 +168,18 @@ export const PanelDocente: React.FC = () => {
               {informes.length > 0 ? (
                 <ul className="list-group list-group-flush">
                   {informes.map((inf) => (
-                    <li key={inf.id} className="list-group-item border-0 px-0 py-2">
-                      <strong>{inf.codigo_actividad_curricular}</strong> —{" "}
-                      {inf.docente_responsable} ({inf.estado})
+                    <li key={inf.id} className="list-group-item border-0 px-0 py-2 d-flex justify-content-between align-items-center">
+                      <div>
+                        <strong>{inf.titulo}</strong> —{" "}
+                        {"Bruno Pazos"} ({"Pendiente"})
+                      </div>
+                      <Link
+                        to={`/informes-catedra/${inf.informe_catedra_id}`}
+                        className="btn btn-sm btn-outline-primary"
+                        title="Completar informe"
+                      >
+                        Completar
+                      </Link>
                     </li>
                   ))}
                 </ul>
