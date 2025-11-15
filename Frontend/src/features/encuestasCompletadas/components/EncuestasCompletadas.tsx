@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { Asignatura } from "../../asignaturas/types/asignaturaTypes";
+import type { Asignatura } from "../../../asignaturas/types/asignaturaTypes";
 import { Link } from "react-router-dom";
 
 type Respuesta = {

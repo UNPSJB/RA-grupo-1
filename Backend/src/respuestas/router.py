@@ -67,3 +67,13 @@ def obtener_respuesta(respuesta_id: int, db: Session = Depends(get_db)):
         return services.obtener_respuesta_por_id(db, respuesta_id)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    
+#ver que onda
+@router.get("/{idEncuesta}/{idAlumno}")
+def get_respuestas_encuesta(idEncuesta: int, idAlumno: int, db: Session = Depends(get_db)):
+    respuestas = (
+        db.query(Respuesta)
+        .filter(Respuesta.alumno_id == idAlumno, Respuesta.encuesta_id == idEncuesta)
+        .all()
+    )
+    return respuestas

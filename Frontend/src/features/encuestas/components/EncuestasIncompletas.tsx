@@ -26,7 +26,7 @@ export const EncuestasIncompletas = () => {
         return estado === EstadoEncuesta.ABIERTA ? 'danger' : 'success';
     };
 
-    const getCursadoBadgeVariant = (cursado: Cursado) => {
+    const getCursadoBadgeVariant = (cursado: String) => {
         switch (cursado) {
             case Cursado.PrimerCuatrimestre:
                 return 'primary';

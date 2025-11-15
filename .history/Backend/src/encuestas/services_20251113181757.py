@@ -226,13 +226,13 @@ def listar_encuestas_para_alumno(db: Session, alumno_id: int):
 
     stmt = (
         select(Encuesta)
-        .join(Encuesta.alumnos)
+        .join(alumno_encuesta_table, alumno_encuesta_table.c.encuesta_id == Encuesta.id)
         .where(
-            Alumno.id == alumno_id,
+            alumno_encuesta_table.c.alumno_id == alumno_id,
             Encuesta.activa == True,
             Encuesta.estado == EstadoEncuesta.abierta,
             Encuesta.fecha_inicio <= ahora,
-            Encuesta.fecha_fin >= ahora
+            Encuesta.fecha_fin >= ahora,
         )
     )
 
@@ -240,19 +240,15 @@ def listar_encuestas_para_alumno(db: Session, alumno_id: int):
 
     resultado = []
     for encuesta in encuestas:
-        docente_nombre = "No asignado"
-
-        if encuesta.asignatura and encuesta.asignatura.docentes_asociados:
-            d = encuesta.asignatura.docentes_asociados[0].docente
-            docente_nombre = f"{d.nombre} {d.apellido}"
-
-        resultado.append(schemas.EncuestaAlumnoInfo(
-            id=encuesta.id,
-            nombre=encuesta.titulo,
-            asignatura=encuesta.asignatura.nombre if encuesta.asignatura else "Sin asignatura",
-            docente=docente_nombre,
-            ciclo_lectivo=f"{encuesta.año}-{encuesta.cursado.value}"
-        ))
+        resultado.append(
+            schemas.EncuestaAlumnoInfo(
+                id=encuesta.id,
+                nombre=encuesta.titulo,
+                asignatura="No definido",
+                docente="No definido",
+                ciclo_lectivo=f"{encuesta.año}-{encuesta.cursado.value}"
+            )
+        )
 
     return resultado
 

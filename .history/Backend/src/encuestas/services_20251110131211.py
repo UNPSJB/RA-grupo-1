@@ -10,7 +10,6 @@ from src.preguntas.models import Pregunta
 from src.categorias import schemas as categoria_schemas
 from src.preguntas import schemas as pregunta_schemas
 from src.encuesta_finalizada.models import EncuestaFinalizada
-from src.alumnos.models import Alumno 
 
 def listar_encuestas(db:Session) -> List[schemas.Encuesta]:
     return db.scalars(select(Encuesta)).all()
@@ -221,40 +220,51 @@ def obtener_respuestas_por_encuesta(db: Session, encuesta_id: int):
     
     return preguntas_con_respuestas
 
-def listar_encuestas_para_alumno(db: Session, alumno_id: int):
+def listar_encuestas_para_alumno(db: Session, alumno_id: int) -> List[schemas.EncuestaAlumnoInfo]:
+    """
+    Lista las encuestas disponibles para un alumno específico
+    """
+    from src.asignaturas.models import Asignatura
+    from src.docentes.models import Docente
+    
     ahora = datetime.utcnow()
-
+    
+    # Obtener encuestas activas a las que el alumno está vinculado
     stmt = (
         select(Encuesta)
-        .join(Encuesta.alumnos)
+        .join(Encuesta.asignatura)
         .where(
-            Alumno.id == alumno_id,
             Encuesta.activa == True,
             Encuesta.estado == EstadoEncuesta.abierta,
             Encuesta.fecha_inicio <= ahora,
-            Encuesta.fecha_fin >= ahora
+            Encuesta.fecha_fin >= ahora,
+            # Aquí deberías agregar la condición para verificar que el alumno
+            # está vinculado a esta encuesta. Depende de tu modelo de vinculación.
+        )
+        .options(
+            selectinload(Encuesta.asignatura).selectinload(Asignatura.docente)
         )
     )
-
+    
     encuestas = db.scalars(stmt).all()
-
+    
     resultado = []
     for encuesta in encuestas:
+        # Obtener información del docente
         docente_nombre = "No asignado"
-
-        if encuesta.asignatura and encuesta.asignatura.docentes_asociados:
-            d = encuesta.asignatura.docentes_asociados[0].docente
-            docente_nombre = f"{d.nombre} {d.apellido}"
-
+        if encuesta.asignatura.docente:
+            docente_nombre = f"{encuesta.asignatura.docente.nombre} {encuesta.asignatura.docente.apellido}"
+        
         resultado.append(schemas.EncuestaAlumnoInfo(
             id=encuesta.id,
             nombre=encuesta.titulo,
-            asignatura=encuesta.asignatura.nombre if encuesta.asignatura else "Sin asignatura",
+            asignatura=encuesta.asignatura.nombre,
             docente=docente_nombre,
             ciclo_lectivo=f"{encuesta.año}-{encuesta.cursado.value}"
         ))
-
+    
     return resultado
+
 
 def obtener_encuesta_para_completar(db: Session, encuesta_id: int) -> schemas.EncuestaParaCompletar:
     """

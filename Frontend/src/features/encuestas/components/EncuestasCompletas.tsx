@@ -1,13 +1,16 @@
 import { Card, Button, Badge, Spinner, Alert, Row, Col, Container } from 'react-bootstrap';
 import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useEncuestas } from "../hooks/useEncuestas";
 import '../styles/Encuestas.css'; 
-import { EstadoEncuesta, Cursado } from "../types/encuestaTypes";
+import { EstadoEncuesta } from "../types/encuestaTypes";
 
 export const EncuestasCompletas = () => {
     const { encuestas, loading, error, refetch } = useEncuestas();
     
-    // Refrescar datos cuando el componente se monta
+    // ID del alumno logueado
+    const alumnoId = localStorage.getItem("alumnoId");
+
     useEffect(() => {
         refetch();
     }, []);
@@ -24,7 +27,7 @@ export const EncuestasCompletas = () => {
         });
     };
 
-    const getCursadoBadgeVariant = (cursado: Cursado) => {
+    const getCursadoBadgeVariant = (cursado: string | undefined) => {
         switch (cursado) {
             case Cursado.PrimerCuatrimestre:
                 return 'primary';
@@ -91,17 +94,11 @@ export const EncuestasCompletas = () => {
                             <Card className="encuesta-card h-100">
                                 <Card.Header className="card-header-custom">
                                     <div className="d-flex justify-content-between align-items-center">
-                                        <Badge 
-                                            bg="success"
-                                            className="estado-badge"
-                                        >
+                                        <Badge bg="success" className="estado-badge">
                                             <i className="bi bi-check-circle me-1"></i>
                                             COMPLETADA
                                         </Badge>
-                                        <Badge 
-                                            bg={getCursadoBadgeVariant(encuesta.cursado)}
-                                            className="cursado-badge"
-                                        >
+                                        <Badge bg={getCursadoBadgeVariant(encuesta.cursado)} className="cursado-badge">
                                             {encuesta.cursado}
                                         </Badge>
                                     </div>
@@ -124,14 +121,13 @@ export const EncuestasCompletas = () => {
                                 
                                 <Card.Footer className="card-footer-custom">
                                     <div className="d-grid gap-2">
-                                        <Button 
-                                            variant="outline-success"
-                                            className="action-btn"
-                                            disabled
-                                        >
-                                            <i className="bi bi-check-circle me-2"></i>
-                                            Encuesta completada
-                                        </Button>
+                                        {/*  BOTÓN PARA VER RESPUESTAS */}
+                                        <Link to={`/alumno/completada/${encuesta.id}/${alumnoId}`}>
+                                            <Button variant="outline-primary" className="action-btn">
+                                                <i className="bi bi-eye me-2"></i>
+                                                Ver mis respuestas
+                                            </Button>
+                                        </Link>
                                     </div>
                                 </Card.Footer>
                             </Card>

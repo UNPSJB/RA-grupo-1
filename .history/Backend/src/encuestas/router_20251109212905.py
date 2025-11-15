@@ -230,14 +230,15 @@ async def obtener_encuesta(
     except Exception as e:
         print(f"❌ Error interno: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error interno: {str(e)}")
-"""
+
+
 @router.get("/alumno/{alumno_id}/disponibles", 
            response_model=List[schemas.EncuestaAlumnoInfo],
            summary="Obtener encuestas disponibles para alumno")
 def obtener_encuestas_alumno(alumno_id: int, db: Session = Depends(get_db)):
-    
+    """
     Obtiene la lista de encuestas disponibles para que un alumno complete
-    
+    """
     try:
         encuestas = services.listar_encuestas_para_alumno(db, alumno_id)
         return encuestas
@@ -246,21 +247,6 @@ def obtener_encuestas_alumno(alumno_id: int, db: Session = Depends(get_db)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error al obtener encuestas: {str(e)}"
         )
-"""
-@router.get("/alumno/{alumno_id}/disponibles", response_model=List[schemas.EncuestaAlumnoInfo])
-def obtener_encuestas_alumno(alumno_id: int, db: Session = Depends(get_db)):
-    print("\n🔍 Buscando encuestas disponibles para alumno:", alumno_id)
-    try:
-        encuestas = services.listar_encuestas_para_alumno(db, alumno_id)
-        print("✅ Encuestas encontradas:", encuestas)
-        return encuestas
-    except Exception as e:
-        print("❌ ERROR EN SERVICIO:", type(e).__name__, str(e))
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"{type(e).__name__}: {str(e)}"
-        )
-
 
 @router.get("/{encuesta_id}/completar",
            response_model=schemas.EncuestaParaCompletarEstudiante,  

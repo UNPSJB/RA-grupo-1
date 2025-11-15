@@ -25,6 +25,9 @@ import DetalleEncuesta from '../features/encuestas/components/DetalleEncuesta';
 import { NuevaEncuesta } from '../features/secretaria/components/NuevaEncuesta';
 import { CompletarEncuesta } from '../features/encuestas/components/CompletarEncuesta';
 
+//Import que agregamos
+import  VerEncuestaCompleta  from '../features/encuestasCompletadas/components/VerEncuestaCompleta';
+
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
@@ -54,6 +57,9 @@ function App() {
         <Route path="completadas" element={<EncuestasCompletas />} />
         <Route path="encuestas" element={<Encuestas />} />
         <Route path="encuesta/:id" element={<DetalleEncuesta />} />
+
+        {/* NUEVA RUTA PARA VER RESPUESTAS SIN EDITAR */}
+        <Route path="/alumno/completada/:idEncuesta/:idAlumno" element={<VerEncuestaCompleta />} />
       </Route>
       
       {/* Rutas de docente */}
