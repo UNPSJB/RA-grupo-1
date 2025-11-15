@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import EncuestasHabilitadas from "./EncuestaHabilitada";
+import EncuestasDisponibles from "./EncuestasDisponibles";
 import { useContadorEncuestas } from "../hooks/useContadorEncuestas";
 
-type EncuestaHabilitadaType = {
+type EncuestaDisponibleType = {
   asignatura: string;
   encuesta: string;
   asignatura_id: number;
@@ -12,7 +12,7 @@ type EncuestaHabilitadaType = {
 
 export default function Encuesta() {
   const alumnoId = 3;
-  const [encuestas, setEncuestas] = useState<EncuestaHabilitadaType[]>([]);
+  const [encuestas, setEncuestas] = useState<EncuestaDisponibleType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const encuestasConTiempo = useContadorEncuestas(encuestas);
@@ -27,7 +27,7 @@ export default function Encuesta() {
           throw new Error(`Error ${response.status}: ${response.statusText}`);
         }
         
-        const data: EncuestaHabilitadaType[] = await response.json();
+        const data: EncuestaDisponibleTypeType[] = await response.json();
         
         const encuestasConFechas = data.map((encuesta, index) => ({
           ...encuesta,
@@ -112,7 +112,7 @@ export default function Encuesta() {
               <div className="mb-4">
                 <h5 className="text-primary mb-3">
                   <i className="bi bi-list-check me-2"></i>
-                  Encuestas habilitadas para completar:
+                  Encuestas disponibles para completar:
                 </h5>
                 <p className="text-muted">
                   Selecciona una encuesta para comenzar a completarla. 
@@ -120,7 +120,7 @@ export default function Encuesta() {
                 </p>
               </div>
               
-              <EncuestasHabilitadas
+              <EncuestasDisponibles
                 encuestas={encuestasConTiempo}
                 alumnoId={alumnoId} 
               />

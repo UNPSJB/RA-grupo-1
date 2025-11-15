@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useEncuestas } from '../hooks/useEncuestas';
 import '../styles/Encuestas.css';
-import { EstadoEncuesta, Cursado } from "../types/encuestaTypes";
 
 export const EncuestasIncompletas = () => {
     const navigate = useNavigate();
@@ -14,54 +13,32 @@ export const EncuestasIncompletas = () => {
         refetch();
     }, []);
 
-    // Filtrar solo encuestas abiertas
-    const encuestasIncompletas = encuestas.filter(
-        encuesta => encuesta.estado === EstadoEncuesta.ABIERTA
-    );
+    // Como el backend ya filtra por encuestas abiertas, usamos todas
+    const encuestasIncompletas = encuestas;
 
     // ID del alumno (temporal, debería venir de auth)
-    const alumnoId = 1;
+    const alumnoId = Number(localStorage.getItem("alumno_id") || "1");
 
-    const getBadgeVariant = (estado: EstadoEncuesta) => {
-        return estado === EstadoEncuesta.ABIERTA ? 'danger' : 'success';
-    };
-
-    const getCursadoBadgeVariant = (cursado: String) => {
-        switch (cursado) {
-            case Cursado.PrimerCuatrimestre:
-                return 'primary';
-            case Cursado.SegundoCuatrimestre:
-                return 'info';
-            case Cursado.Anual:
-                return 'warning';
-            default:
-                return 'dark';
+    const formatearCicloLectivo = (ciclo: string) => {
+        // Recibe "2025-PRIMER CUATRIMESTRE" y lo formatea
+        const partes = ciclo.split('-');
+        if (partes.length === 2) {
+            const año = partes[0];
+            const cuatrimestre = partes[1].trim();
+            
+            if (cuatrimestre.includes('PRIMER')) return `${año} - 1° Cuatrimestre`;
+            if (cuatrimestre.includes('SEGUNDO')) return `${año} - 2° Cuatrimestre`;
+            if (cuatrimestre.includes('ANUAL')) return `${año} - Anual`;
         }
+        return ciclo;
     };
 
-    const formatearCursado = (cursado: string) => {
-        const cursadoUpper = cursado.toUpperCase();
-        if (cursadoUpper.includes('PRIMER')) return '1° Cuatrimestre';
-        if (cursadoUpper.includes('SEGUNDO')) return '2° Cuatrimestre';
-        if (cursadoUpper.includes('ANUAL')) return 'Anual';
-        return cursado;
-    };
-
-    const formatearFecha = (fecha: string) => {
-        return new Date(fecha).toLocaleDateString('es-ES', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
-        });
-    };
-
-    const handleCompletarEncuesta = (encuestaId: number, titulo: string, asignaturaId: number) => {
+    const handleCompletarEncuesta = (encuestaId: number, nombreEncuesta: string) => {
         navigate(`/alumno/encuestas/${encuestaId}/completar`, {
             state: {
                 alumnoId: alumnoId,
                 encuestaId: encuestaId,
-                nombreAsignatura: titulo,
-                asignaturaId: asignaturaId
+                nombreEncuesta: nombreEncuesta
             }
         });
     };
@@ -98,98 +75,79 @@ export const EncuestasIncompletas = () => {
     }
 
     return (
-        <Container className="encuestas-container">
-            <div className="header-section">
+        <Container className="encuestas-container py-4">
+            <div className="header-section mb-4">
                 <h1 className="page-title">
                     <i className="bi bi-clipboard-data me-3"></i>
-                    Encuestas Incompletas
+                    Encuestas Pendientes
                 </h1>
-                <p className="page-subtitle">
-                    Selecciona una encuesta para completar
+                <p className="page-subtitle text-muted">
+                    Completa las encuestas de tus asignaturas
                 </p>
             </div>
 
             {encuestasIncompletas.length === 0 ? (
-                <div className="empty-state">
-                    <div className="empty-icon">
-                        <i className="bi bi-inbox"></i>
+                <div className="empty-state text-center py-5">
+                    <div className="empty-icon mb-3">
+                        <i className="bi bi-check-circle text-success" style={{ fontSize: '4rem' }}></i>
                     </div>
-                    <h3>No hay encuestas pendientes</h3>
-                    <p>Todas las encuestas están completadas o no hay encuestas abiertas en este momento.</p>
+                    <h3>¡Todo al día!</h3>
+                    <p className="text-muted">No tienes encuestas pendientes en este momento.</p>
                 </div>
             ) : (
                 <Row>
                     {encuestasIncompletas.map((encuesta) => (
                         <Col md={6} lg={4} key={encuesta.id} className="mb-4">
-                            <Card className="encuesta-card h-100 shadow-sm">
-                                <Card.Header className="card-header-custom bg-white border-bottom">
-                                    <div className="d-flex justify-content-between align-items-center mb-2">
-                                        <Badge 
-                                            bg={getBadgeVariant(encuesta.estado)}
-                                            className="estado-badge"
-                                        >
+                            <Card className="encuesta-card h-100 shadow-sm border-0">
+                                <Card.Header className="bg-primary text-white">
+                                    <div className="d-flex justify-content-between align-items-center">
+                                        <Badge bg="warning" text="dark" className="px-3 py-2">
                                             <i className="bi bi-exclamation-circle me-1"></i>
                                             PENDIENTE
-                                        </Badge>
-                                        <Badge 
-                                            bg={getCursadoBadgeVariant(encuesta.cursado)}
-                                            className="cursado-badge"
-                                        >
-                                            {formatearCursado(encuesta.cursado)}
-                                        </Badge>
-                                    </div>
-                                    <div className="d-flex align-items-center gap-2 mt-2">
-                                        <Badge bg="dark" className="px-2 py-1">
-                                            <i className="bi bi-mortarboard me-1"></i>
-                                            {encuesta.carrera}
                                         </Badge>
                                     </div>
                                 </Card.Header>
                                 
-                                <Card.Body className="card-body-custom">
-                                    <Card.Title className="asignatura-title mb-3">
-                                        <i className="bi bi-book me-2 text-primary"></i>
-                                        {encuesta.titulo}
+                                <Card.Body>
+                                    <Card.Title className="mb-3 fw-bold text-primary">
+                                        <i className="bi bi-book me-2"></i>
+                                        {encuesta.asignatura}
                                     </Card.Title>
                                     
                                     <div className="encuesta-details">
-                                        {encuesta.sede && (
-                                            <div className="detail-item mb-2">
-                                                <i className="bi bi-geo-alt-fill me-2 text-primary"></i>
-                                                <strong>Sede:</strong>
-                                                <span className="ms-2">
-                                                    {encuesta.sede}
-                                                </span>
+                                        <div className="detail-item mb-3 p-3 bg-light rounded">
+                                            <div className="mb-2">
+                                                <i className="bi bi-person-fill me-2 text-primary"></i>
+                                                <strong>Docente:</strong>
+                                                <div className="ms-4 text-muted">
+                                                    {encuesta.docente}
+                                                </div>
                                             </div>
-                                        )}
-                                        
-                                        <div className="detail-item mb-2">
-                                            <i className="bi bi-calendar-check me-2 text-success"></i>
-                                            <strong>Inicio:</strong>
-                                            <span className="ms-2">
-                                                {formatearFecha(encuesta.fecha_inicio)}
-                                            </span>
+                                            
+                                            <div>
+                                                <i className="bi bi-calendar-event me-2 text-primary"></i>
+                                                <strong>Ciclo lectivo:</strong>
+                                                <div className="ms-4 text-muted">
+                                                    {formatearCicloLectivo(encuesta.ciclo_lectivo)}
+                                                </div>
+                                            </div>
                                         </div>
                                         
-                                        <div className="detail-item">
-                                            <i className="bi bi-calendar-x me-2 text-danger"></i>
-                                            <strong>Vence:</strong>
-                                            <span className="ms-2 text-danger fw-bold">
-                                                {formatearFecha(encuesta.fecha_fin)}
-                                            </span>
+                                        <div className="alert alert-info mb-0" role="alert">
+                                            <i className="bi bi-info-circle me-2"></i>
+                                            <small><strong>{encuesta.nombre}</strong></small>
                                         </div>
                                     </div>
                                 </Card.Body>
                                 
-                                <Card.Footer className="card-footer-custom bg-light">
-                                    <div className="d-grid gap-2">
+                                <Card.Footer className="bg-white border-top">
+                                    <div className="d-grid">
                                         <Button 
                                             variant="primary"
-                                            className="action-btn"
+                                            size="lg"
                                             onClick={() => handleCompletarEncuesta(
                                                 encuesta.id, 
-                                                encuesta.titulo, 
-                                                encuesta.asignatura_id
+                                                encuesta.nombre
                                             )}
                                         >
                                             <i className="bi bi-pencil-square me-2"></i>

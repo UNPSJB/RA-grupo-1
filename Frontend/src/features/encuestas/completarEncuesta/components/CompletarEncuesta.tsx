@@ -9,7 +9,7 @@ interface Categoria {
 
 interface Pregunta {
   id: number;
-  enunciado: string;
+  oracion: string;
   categoria_id: number;
   encuesta_id: number;
   tipo: "cerrada" | "abierta"; 
@@ -44,7 +44,7 @@ export default function PreguntasCategoria({ categoria, onRespuesta, onTotalPreg
         onTotalPreguntas?.(categoria.id, data.length);
       })
       .catch((err) =>
-        console.error("Ocurrio un error al obtener preguntas de la categoría:", err)
+        console.error("Hubo un problema al obtener preguntas de la categoría:", err)
       );
   }, [categoria.id]);
 
@@ -57,7 +57,7 @@ const cargarOpciones = (preguntaId: number) => {
       const lista = data;
       setOpciones((prev) => ({ ...prev, [preguntaId]: lista }));
     })
-    .catch((err) => console.error("Hubo un problema al cargar opciones:", err));
+    .catch((err) => console.error("Hubo un problema al cargar las opciones:", err));
 };
 
   const seleccionarOpcion = (preguntaId: number, opcionId: number) => {

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, Card, Form, Button, Alert, InputGroup } from 'react-bootstrap';
-import { Eye, EyeSlash, PersonCircle } from 'react-bootstrap-icons';
+import { Container, Card, Form, Button, Alert } from 'react-bootstrap';
+import { EyeSlash, Eye, PersonCircle } from 'react-bootstrap-icons';
 import '../styles/LoginAlumno.css';
 
 export const LoginAlumno = () => {
@@ -68,134 +68,102 @@ export const LoginAlumno = () => {
     }
   };
 
-  const handleVolver = () => {
-    navigate('/');
+  const handleRegistrarse = () => {
+    navigate('/registro');
   };
 
   return (
-    <div className="login-alumno-container">
-      <Container className="login-alumno-wrapper">
-        <Card className="login-alumno-card shadow-lg border-0">
-          <Card.Body className="p-5">
-            <div className="text-center mb-4">
-              <div className="mb-3">
-                <PersonCircle className="login-alumno-icon" />
-              </div>
-              <h2 className="login-alumno-title">Acceso de Alumno</h2>
-              <p className="login-alumno-subtitle">
-                Ingresa tus credenciales para continuar
-              </p>
+    <div className="login-alumno-page">
+      {/* Header con botón Registrarse */}
+      <div className="login-alumno-header">
+        <Button 
+          variant="link" 
+          className="login-alumno-register-btn"
+          onClick={handleRegistrarse}
+        >
+          Registrarse
+        </Button>
+      </div>
+
+      {/* Título principal */}
+      <div className="login-alumno-title-section">
+        <h1 className="login-alumno-main-title">Iniciar Sesión</h1>
+        <p className="login-alumno-main-subtitle">
+          Ingresa tu nombre de usuario y contraseña para poder acceder al sitio.
+        </p>
+      </div>
+
+      {/* Contenedor del formulario */}
+      <Container className="login-alumno-form-container">
+        <Card className="login-alumno-card">
+          <Card.Body className="login-alumno-card-body">
+            <div className="login-alumno-icon-container">
+              <PersonCircle className="login-alumno-user-icon" />
             </div>
 
             {error && (
-              <Alert variant="danger" dismissible onClose={() => setError('')}>
-                <i className="bi bi-exclamation-triangle-fill me-2"></i>
+              <Alert variant="danger" dismissible onClose={() => setError('')} className="mb-3">
                 {error}
               </Alert>
             )}
 
             <Form onSubmit={handleSubmit}>
-              <Form.Group className="login-alumno-form-group mb-3">
-                <Form.Label className="login-alumno-label">
-                  <i className="bi bi-person-fill me-2"></i>
-                  Usuario
+              {/* Campo Usuario */}
+              <Form.Group className="mb-3">
+                <Form.Label className="login-alumno-form-label">
+                  Nombre de Usuario 
                 </Form.Label>
                 <Form.Control
                   type="text"
                   name="usuario"
-                  placeholder="Ingresa tu usuario"
                   value={formData.usuario}
                   onChange={handleChange}
                   disabled={loading}
-                  size="lg"
+                  className="login-alumno-input"
                 />
               </Form.Group>
 
-              <Form.Group className="login-alumno-form-group-last mb-4">
-                <Form.Label className="login-alumno-label">
-                  <i className="bi bi-lock-fill me-2"></i>
+              {/* Campo Contraseña */}
+              <Form.Group className="mb-3">
+                <Form.Label className="login-alumno-form-label">
                   Contraseña
                 </Form.Label>
-                <InputGroup size="lg">
+                <div className="login-alumno-password-container">
                   <Form.Control
                     type={showPassword ? 'text' : 'password'}
                     name="clave"
-                    placeholder="Ingresa tu contraseña"
                     value={formData.clave}
                     onChange={handleChange}
                     disabled={loading}
+                    className="login-alumno-input-password"
                   />
-                  <Button
-                    variant="outline-secondary"
+                  <button
+                    type="button"
+                    className="login-alumno-eye-btn"
                     onClick={() => setShowPassword(!showPassword)}
                     disabled={loading}
                   >
-                    {showPassword ? <EyeSlash /> : <Eye />}
-                  </Button>
-                </InputGroup>
+                    {showPassword ? <EyeSlash size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
               </Form.Group>
 
-              <div className="login-alumno-button-group">
-                <Button
-                  variant="primary"
-                  type="submit"
-                  size="lg"
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <>
-                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                      Iniciando sesión...
-                    </>
-                  ) : (
-                    <>
-                      <i className="bi bi-box-arrow-in-right me-2"></i>
-                      Iniciar Sesión
-                    </>
-                  )}
-                </Button>
+              {/* Botón Iniciar Sesión */}
+              <Button
+                type="submit"
+                className="login-alumno-submit-btn"
+                disabled={loading}
+              >
+                {loading ? 'Iniciando Sesión...' : 'Iniciar Sesión'}
+              </Button>
 
-                <Button
-                  variant="outline-secondary"
-                  size="lg"
-                  onClick={handleVolver}
-                  disabled={loading}
-                >
-                  <i className="bi bi-arrow-left me-2"></i>
-                  Volver
-                </Button>
-              </div>
-
-              <div className="login-alumno-footer-text">
-                <small>
-                  <i className="bi bi-info-circle me-1"></i>
-                  ¿Problemas para acceder? Contacta al departamento de alumnos
-                </small>
+              {/* Link Olvidaste tu contraseña */}
+              <div className="login-alumno-forgot-password">
+                <a href="#" className="login-alumno-forgot-link">
+                  ¿Olvidaste tu contraseña?
+                </a>
               </div>
             </Form>
-          </Card.Body>
-        </Card>
-
-        <Card className="login-alumno-info-card mt-4 shadow-sm">
-          <Card.Body className="p-4">
-            <h6 className="login-alumno-info-title">
-              <i className="bi bi-lightbulb-fill text-warning me-2"></i>
-              Información importante
-            </h6>
-            <ul className="login-alumno-info-list">
-              <li className="login-alumno-info-item">
-                <i className="bi bi-check-circle-fill text-success me-2"></i>
-                Usa tu usuario y contraseña institucional
-              </li>
-              <li className="login-alumno-info-item">
-                <i className="bi bi-check-circle-fill text-success me-2"></i>
-                Completa todas las encuestas pendientes
-              </li>
-              <li className="login-alumno-info-item">
-                <i className="bi bi-check-circle-fill text-success me-2"></i>
-                Tu opinión es importante para mejorar
-              </li>
-            </ul>
           </Card.Body>
         </Card>
       </Container>

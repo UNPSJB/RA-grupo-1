@@ -11,7 +11,6 @@ import { EncuestasCompletas } from '../features/encuestas/components/EncuestasCo
 import { PanelDocente } from '../features/docentes/components/PanelDocente';
 import InformeCatedraDetalle from "../features/informeCatedra/components/InformeCatedraDetalle";
 import { MisAsignaturas } from '../features/docentes/components/MisAsignaturas';
-import { DetalleAsignatura} from '../features/docentes/components/DetalleAsignatura';
 import { DepartamentoLayout } from '../features/departamentos/components/DepartamentoLayout';
 import { PanelDepartamento } from '../features/departamentos/components/PanelDepartamento'
 import { GestionPreguntas } from '../features/departamentos/components/GestionPreguntas';
@@ -21,7 +20,7 @@ import { CrearEncuesta } from '../features/secretaria/components/CrearEncuesta';
 import { PanelEncuestas } from '../features/secretaria/components/PanelEncuestas';
 import { EstadisticasEncuesta } from '../features/secretaria/components/EstadisticasEncuesta';
 import { CiclosPage } from "../features/ciclos/components/CiclosPage";
-import Encuestas from '../features/encuestas/components/Encuesta';
+
 import DetalleEncuesta from '../features/encuestas/components/DetalleEncuesta';
 import { NuevaEncuesta } from '../features/secretaria/components/NuevaEncuesta';
 import { CompletarEncuesta } from '../features/encuestas/components/CompletarEncuesta';
@@ -56,7 +55,6 @@ function App() {
         <Route path="incompletas" element={<EncuestasIncompletas />} />
         <Route path="encuestas/:encuestaId/completar" element={<CompletarEncuesta />} />
         <Route path="completadas" element={<EncuestasCompletas />} />
-        <Route path="encuestas" element={<Encuestas />} />
         <Route path="encuesta/:id" element={<DetalleEncuesta />} />
 
         {/* NUEVA RUTA PARA VER RESPUESTAS SIN EDITAR */}
@@ -68,7 +66,6 @@ function App() {
         <Route index element={<PanelDocente />} /> 
         <Route path="reportes" element={<div>Reportes de Encuestas</div>} />
         <Route path="mis-asignaturas" element={<MisAsignaturas />} />
-        <Route path="asignatura/:asignaturaId" element={<DetalleAsignatura />} />
       </Route>
 
         <Route path="/informes-catedra/:id" element={<InformeCatedraDetalle />} />

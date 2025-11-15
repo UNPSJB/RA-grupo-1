@@ -129,6 +129,19 @@ export interface PreguntaAbierta {
   seccion: string;
 }
 
+export interface EncuestaAlumnoInfo {
+  id: number;
+  nombre: string;
+  asignatura: string;
+  docente: string;
+  ciclo_lectivo: string;
+  fecha_inicio?: string;
+  fecha_fin?: string;
+  estado?: string;
+  cursado?: string;
+}
+
+
 export interface FormularioCicloBasico {
   encuesta: {
     id: number;
@@ -184,7 +197,7 @@ export const formularioMock: FormularioEncuesta = {
       id: 2,
       texto: "¿Qué aspectos te gustaron más del curso?",
       tipo: 'opcion_multiple',
-      opciones: ["Contenido", "Docente", "Materiales", "Evaluaciones"]
+      opciones: ["Contenido", "Docente", "Asignaturas", "Evaluaciones"]
     },
     {
       id: 3,

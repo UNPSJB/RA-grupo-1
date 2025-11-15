@@ -10,10 +10,6 @@ from src.preguntas.models import Pregunta
 from src.categorias import schemas as categoria_schemas
 from src.preguntas import schemas as pregunta_schemas
 from src.encuesta_finalizada.models import EncuestaFinalizada
-from src.alumnos.models import Alumno 
-
-def listar_encuestas(db:Session) -> List[schemas.Encuesta]:
-    return db.scalars(select(Encuesta)).all()
 
 def listar_encuestas_activas(db: Session) -> List[schemas.Encuesta]:
     # Obtiene solo encuestas activas
@@ -222,37 +218,80 @@ def obtener_respuestas_por_encuesta(db: Session, encuesta_id: int):
     return preguntas_con_respuestas
 
 def listar_encuestas_para_alumno(db: Session, alumno_id: int):
+    """
+    Lista las encuestas disponibles para un alumno específico
+    """
+    from src.asignaturas.models import Asignatura
+    from src.vinculaciones.models import asignatura_alumno
+    from src.encuesta_finalizada.models import EncuestaFinalizada
+
     ahora = datetime.utcnow()
 
+    # DEBUG 1: Ver asignaturas del alumno
+    asignaturas_alumno = db.scalars(
+        select(asignatura_alumno.c.asignatura_id)
+        .where(asignatura_alumno.c.alumno_id == alumno_id)
+    ).all()
+    print(f"DEBUG - Asignaturas del alumno {alumno_id}: {asignaturas_alumno}")
+
+    # DEBUG 2: Ver todas las encuestas activas
+    todas_encuestas = db.scalars(
+        select(Encuesta)
+        .where(Encuesta.activa == True)
+        .where(Encuesta.estado == EstadoEncuesta.abierta)
+        .where(Encuesta.fecha_inicio <= ahora)
+        .where(Encuesta.fecha_fin >= ahora)
+    ).all()
+    print(f"DEBUG - Total encuestas activas: {len(todas_encuestas)}")
+    for e in todas_encuestas:
+        print(f"  - Encuesta {e.id}: {e.titulo}, Asignatura ID: {e.asignatura_id}")
+
+    # DEBUG 3: Ver encuestas finalizadas por el alumno
+    finalizadas = db.scalars(
+        select(EncuestaFinalizada.encuesta_id)
+        .where(EncuestaFinalizada.alumno_id == alumno_id)
+    ).all()
+    print(f"DEBUG - Encuestas finalizadas por alumno: {finalizadas}")
+
+    # Subconsulta
+    subquery_finalizadas = (
+        select(EncuestaFinalizada.encuesta_id)
+        .where(EncuestaFinalizada.alumno_id == alumno_id)
+    )
+
+    # Consulta principal
     stmt = (
         select(Encuesta)
-        .join(Encuesta.alumnos)
-        .where(
-            Alumno.id == alumno_id,
-            Encuesta.activa == True,
-            Encuesta.estado == EstadoEncuesta.abierta,
-            Encuesta.fecha_inicio <= ahora,
-            Encuesta.fecha_fin >= ahora
-        )
+        .join(Asignatura, Encuesta.asignatura_id == Asignatura.id)
+        .join(asignatura_alumno, asignatura_alumno.c.asignatura_id == Asignatura.id)
+        .where(asignatura_alumno.c.alumno_id == alumno_id)
+        .where(Encuesta.activa == True)
+        .where(Encuesta.estado == EstadoEncuesta.abierta)
+        .where(Encuesta.fecha_inicio <= ahora)
+        .where(Encuesta.fecha_fin >= ahora)
+        .where(Encuesta.id.notin_(subquery_finalizadas))
+        .options(selectinload(Encuesta.asignatura))
+        .distinct()
     )
 
     encuestas = db.scalars(stmt).all()
+    print(f"DEBUG - Encuestas disponibles resultantes: {len(encuestas)}")
 
     resultado = []
     for encuesta in encuestas:
         docente_nombre = "No asignado"
+        if encuesta.asignatura and encuesta.asignatura.docente:
+            docente_nombre = f"{encuesta.asignatura.docente.nombre} {encuesta.asignatura.docente.apellido}"
 
-        if encuesta.asignatura and encuesta.asignatura.docentes_asociados:
-            d = encuesta.asignatura.docentes_asociados[0].docente
-            docente_nombre = f"{d.nombre} {d.apellido}"
-
-        resultado.append(schemas.EncuestaAlumnoInfo(
-            id=encuesta.id,
-            nombre=encuesta.titulo,
-            asignatura=encuesta.asignatura.nombre if encuesta.asignatura else "Sin asignatura",
-            docente=docente_nombre,
-            ciclo_lectivo=f"{encuesta.año}-{encuesta.cursado.value}"
-        ))
+        resultado.append(
+            schemas.EncuestaAlumnoInfo(
+                id=encuesta.id,
+                nombre=encuesta.titulo,
+                asignatura=encuesta.asignatura.nombre if encuesta.asignatura else "Sin asignatura",
+                docente=docente_nombre,
+                ciclo_lectivo=f"{encuesta.año}-{encuesta.cursado.value}"
+            )
+        )
 
     return resultado
 
@@ -271,7 +310,7 @@ def obtener_encuesta_para_completar(db: Session, encuesta_id: int) -> schemas.En
         select(Encuesta)
         .where(Encuesta.id == encuesta_id)
         .options(
-            selectinload(Encuesta.asignatura).selectinload(Asignatura.docente),
+            selectinload(Encuesta.asignatura).selectinload(Asignatura.docentes_asociados),
             selectinload(Encuesta.categorias).selectinload(Categoria.preguntas)
         )
     )
@@ -347,7 +386,7 @@ def obtener_encuesta_para_completar(db: Session, encuesta_id: int) -> schemas.En
 
 def guardar_respuestas_encuesta(db: Session, respuestas_data: schemas.RespuestaEncuesta):
     """
-    Guarda las respuestas de una encuesta completada por un alumno
+    Guarda las respuestas de una encuesta finalizada por un alumno
     """
     from src.encuesta_finalizada.models import EncuestaFinalizada
     from src.respuestas.models import Respuesta
@@ -372,8 +411,8 @@ def guardar_respuestas_encuesta(db: Session, respuestas_data: schemas.RespuestaE
     encuesta_finalizada = EncuestaFinalizada(
         encuesta_id=respuestas_data.encuesta_id,
         alumno_id=respuestas_data.alumno_id,
-        fecha_completada=datetime.utcnow(),
-        completada=True
+        fecha_finalizada=datetime.utcnow(),
+        finalizada=True
     )
     db.add(encuesta_finalizada)
     db.flush()  # Para obtener el ID
@@ -390,4 +429,4 @@ def guardar_respuestas_encuesta(db: Session, respuestas_data: schemas.RespuestaE
     
     db.commit()
     
-    return {"message": "Encuesta completada exitosamente"}
+    return {"message": "Encuesta finalizada exitosamente"}

@@ -21,5 +21,8 @@ class InformeSinteticoFinalizado(ModeloBase):
         "ResultadoInforme", 
         back_populates="informe_finalizado"
     )
-    carrera_id = Column(Integer, ForeignKey("carreras.id"), nullable=True)
-    carrera = relationship("Carrera", back_populates="informe_finalizado")
+    carrera_id: Mapped[int] = mapped_column(Integer, ForeignKey("carreras.id"), nullable=False)
+    carrera: Mapped["src.carreras.models.Carrera"] = relationship(
+        "src.carreras.models.Carrera",  
+        back_populates="informes_finalizados"
+    )

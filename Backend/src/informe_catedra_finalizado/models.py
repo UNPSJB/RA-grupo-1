@@ -27,6 +27,10 @@ class InformeCatedraFinalizado(ModeloBase):
    cantidadComisionesTeoricas: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
    cantidadComisionesPracticas: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
 
+   JTP: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+   aux_primera: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+   aux_segunda: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+
    asignatura_docente: Mapped["AsignaturaDocente"] = relationship("AsignaturaDocente")
    informe_catedra: Mapped["InformeCatedra"] = relationship(
       "InformeCatedra", 

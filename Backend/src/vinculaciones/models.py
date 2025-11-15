@@ -1,3 +1,4 @@
+from ast import For
 from sqlalchemy import Integer, String, ForeignKey, Table, Column, Enum
 from src.models import ModeloBase
 from enum import auto, StrEnum
@@ -15,7 +16,7 @@ asignatura_alumno = Table(
     Column("asignatura_id", ForeignKey("asignaturas.id")),
     Column("nota_cursada", Integer),
     Column("anio", Integer),
-    Column("periodo", String)
+    Column("duracion", String)
 )
 
 pregunta_opcion = Table(
@@ -39,3 +40,12 @@ informe_catedra_asignatura = Table(
     Column("informe_catedra_id", ForeignKey("informe_catedra.id")),
     Column("asignatura_id", ForeignKey("asignaturas.id"))
 )   
+
+asignatura_carrera = Table(
+    "asignatura_carrera",
+    ModeloBase.metadata,
+    Column("id", Integer, primary_key=True, index=True),
+    Column("asignatura_id", ForeignKey("asignaturas.id")),
+    Column("carrera_id", ForeignKey("carreras.id"))
+)
+

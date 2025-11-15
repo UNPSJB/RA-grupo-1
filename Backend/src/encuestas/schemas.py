@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, ConfigDict
-from typing import Optional, List
+from typing import Optional, List, Dict
 from datetime import datetime
 from src.encuestas.models import EstadoEncuesta
 from src.vinculaciones.models import Duracion
@@ -219,3 +219,26 @@ class RespuestaEncuesta(BaseModel):
     respuestas: List[RespuestaIndividual]  
     
     model_config = ConfigDict(from_attributes=True)
+
+class RespuestaCreate(BaseModel):
+    pregunta_id: int
+    opcion_seleccionada: Optional[str] = None
+    texto_respuesta: Optional[str] = None
+    subrespuestas: Optional[Dict[str, str]] = None
+
+class RespuestasAlumnoCreate(BaseModel):
+    alumno_id: int
+    asignatura_id: int
+    respuestas: List[RespuestaCreate]
+
+class EncuestaAlumnoInfo(BaseModel):
+    id: int
+    nombre: str
+    asignatura: str
+    docente: str
+    ciclo_lectivo: str
+    fecha_inicio: Optional[str] = None
+    fecha_fin: Optional[str] = None
+    estado: Optional[str] = None
+
+    model_config = {"from_attributes":True}

@@ -16,25 +16,14 @@ class RespuestaInforme(RespuestaInformeBase):
     class Config:
         from_attributes = True
 
-class RespuestaConPregunta(RespuestaInformeBase):
-    id: int
-    informe_catedra_finalizado_id: int
+class RespuestaConPregunta(RespuestaInforme):
     pregunta_texto: Optional[str] = None
-    pregunta_tipo: Optional[str] = None
-    pregunta_orden: Optional[int] = None
-    categoria_id: Optional[int] = None
-    
-    class Config:
-        from_attributes = True
 
+class RespuestaInformeSintetico(BaseModel):
+    pregunta_id: int
+    texto_respuesta: Optional[str] = None
+    asignatura_id: int
+    informe_sintetico_finalizado_id: int
 
-class RespuestaInformeSintetico(RespuestaInformeBase):
-    id: int
-    informe_sintetico_finalizado_id: int  
-    pregunta_texto: Optional[str] = None
-    pregunta_tipo: Optional[str] = None
-    pregunta_orden: Optional[int] = None
-    categoria_id: Optional[int] = None
-    
     class Config:
         from_attributes = True

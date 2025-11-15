@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, ForeignKey, Text, String
+from sqlalchemy import Integer, ForeignKey, Text, String, Column, JSON, DateTime, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.models import ModeloBase
 from typing import Optional, TYPE_CHECKING
@@ -19,9 +19,15 @@ class Respuesta(ModeloBase):
     encuesta_finalizada_id: Mapped[int] = mapped_column(ForeignKey("encuestas_finalizadas.id"))
     ciclo_id: Mapped[int] = mapped_column(ForeignKey("ciclos_encuesta.id"))
 
+
+    opcion_seleccionada = Column(String(255), nullable=True) 
+    texto_respuesta = Column(Text, nullable=True)             
+    subrespuestas = Column(JSON, nullable=True)               
+
+    fecha_respuesta = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     
     # RELACIONES 
-    pregunta: Mapped["Pregunta"] = relationship("Pregunta", back_populates="respuestas")  
+    pregunta = relationship("Pregunta", back_populates="respuestas") 
     alumno = relationship("Alumno", back_populates="respuestas", lazy="select")
     opcion: Mapped["Opcion"] = relationship("Opcion")
     encuesta_finalizada: Mapped["EncuestaFinalizada"] = relationship("EncuestaFinalizada", back_populates="respuestas")

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Container, Card, Button, Form, Alert, Badge, Row, Col, ProgressBar as BSProgressBar } from 'react-bootstrap';
 import { ArrowLeft, ArrowRight, CheckCircle } from 'react-bootstrap-icons';
+import { enviarRespuestasEncuesta } from "../services/encuestasService";
 
 interface Categoria {
   id: number;
@@ -423,39 +424,23 @@ export function CompletarEncuesta() {
   };
 
   const handleEnviar = async () => {
-    try {
-      const respuestasArray = Array.from(respuestas.values()).map(r => ({
-        preguntaId: r.preguntaId,
-        opcionSeleccionada: r.opcionSeleccionada,
-        textoRespuesta: r.textoRespuesta,
-        subrespuestas: r.subrespuestas ? Object.fromEntries(r.subrespuestas) : undefined
-      }));
-      
-      console.log('Enviando respuestas:', {
-        alumnoId,
-        encuestaId,
-        asignaturaId,
-        respuestas: respuestasArray
-      });
+  try {
+    const respuestasArray = Array.from(respuestas.values()).map(r => ({
+      pregunta_id: r.preguntaId,
+      opcion_seleccionada: r.opcionSeleccionada,
+      texto_respuesta: r.textoRespuesta,
+      subrespuestas: r.subrespuestas ? Object.fromEntries(r.subrespuestas) : undefined
+    }));
 
-      // LLAMADA A LA API
-      // await fetch(`http://127.0.0.1:8000/encuestas/${encuestaId}/respuestas`, {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ 
-      //     alumno_id: alumnoId,
-      //     asignatura_id: asignaturaId,
-      //     respuestas: respuestasArray 
-      //   })
-      // });
+    await enviarRespuestasEncuesta(alumnoId, parseInt(encuestaId!), asignaturaId, respuestasArray);
 
-      alert('¡Encuesta completada exitosamente!');
-      navigate('/alumno/completadas');
-    } catch (error) {
-      console.error('Error enviando encuesta:', error);
-      alert('Error al enviar la encuesta');
-    }
-  };
+    alert("✅ ¡Encuesta completada exitosamente!");
+    navigate("/alumno/completadas");
+  } catch (error) {
+    console.error("❌ Error enviando encuesta:", error);
+    alert("Error al enviar la encuesta. Intenta nuevamente.");
+  }
+};
 
   const handleVolver = () => {
     if (window.confirm('¿Estás seguro de que quieres salir? Se perderán las respuestas no guardadas.')) {
@@ -507,7 +492,7 @@ export function CompletarEncuesta() {
                 <i className="bi bi-mortarboard-fill me-2"></i>
                 Encuesta de Evaluación Docente
               </h4>
-              <p className="mb-0 small" style={{ color: 'rgba(255,255,255,0.8)' }}>
+              <p className="mb-0 small" style={{ color: '#ffffffcc' }}>
                 {nombreAsignatura || 'Desarrollo de Software'}
               </p>
             </div>
@@ -524,7 +509,7 @@ export function CompletarEncuesta() {
             </div>
             <BSProgressBar 
               now={progreso} 
-              style={{ height: '8px', backgroundColor: 'rgba(255,255,255,0.3)' }}
+              style={{ height: '8px', backgroundColor: '#ffffff4d' }}
               className="rounded"
             />
           </div>
@@ -545,7 +530,7 @@ export function CompletarEncuesta() {
               <span className="me-3 fs-4">{getCategoriaIcon(categoriaActiva.codigo)}</span>
               <div>
                 <h5 className="mb-0 text-white">{categoriaActiva.nombre}</h5>
-                <small style={{ color: 'rgba(255,255,255,0.8)' }}>
+                <small style={{ color: '#ffffffcc' }}>
                   Responde Sí, No o NPO (No puedo opinar) según corresponda
                 </small>
               </div>
@@ -604,7 +589,7 @@ export function CompletarEncuesta() {
                                         name={`pregunta-${pregunta.id}-${sub.id}`}
                                         label={opcion}
                                         checked={isSelected}
-                                        onChange={() => handleRespuesta(pregunta.id, opcion, sub.id)}
+                                        onChange={() => handleRespuesta(pregunta.id, opcion)}
                                         style={{ cursor: 'pointer' }}
                                       />
                                     </div>

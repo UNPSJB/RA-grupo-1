@@ -1,4 +1,3 @@
-// features/alumnos/components/AlumnoLayout.tsx
 import { Outlet, useNavigate } from "react-router-dom";
 import { Container } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -35,8 +34,6 @@ export const AlumnoLayout = ({ children }: AlumnoLayoutProps) => {
     localStorage.removeItem('alumno_nombre');
     localStorage.removeItem('alumno_apellido');
     localStorage.removeItem('alumno_email');
-    
-    // Redirigir al inicio
     navigate('/');
   };
 

@@ -91,3 +91,58 @@ export const eliminarPregunta = async (preguntaId: number) => {
     throw error;
   }
 };
+
+// =============================
+// 🔹 Encuestas del alumno
+// =============================
+export const obtenerEncuestasAlumno = async (alumnoId: number) => {
+  try {
+    const response = await fetch(`${API_URL}/encuestas/alumno/${alumnoId}/disponibles`);
+    if (!response.ok) throw new Error("Error al obtener encuestas del alumno");
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Error al obtener encuestas:", error);
+    throw error;
+  }
+};
+
+export const obtenerEncuestasCompletas = async (alumnoId: number) => {
+  try {
+    const response = await fetch(`${API_URL}/encuestas/alumno/${alumnoId}/completadas`);
+    if (!response.ok) throw new Error("Error al obtener encuestas completas");
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Error al obtener encuestas completas:", error);
+    throw error;
+  }
+};
+
+export const enviarRespuestasEncuesta = async (
+  alumnoId: number,
+  encuestaId: number,
+  asignaturaId: number,
+  respuestas: any[]
+) => {
+  try {
+    const response = await fetch(`${API_URL}/encuestas/${encuestaId}/respuestas`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        alumno_id: alumnoId,
+        asignatura_id: asignaturaId,
+        respuestas,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("❌ Error enviando respuestas:", errorText);
+      throw new Error("Error al enviar respuestas");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Error al enviar encuesta:", error);
+    throw error;
+  }
+};

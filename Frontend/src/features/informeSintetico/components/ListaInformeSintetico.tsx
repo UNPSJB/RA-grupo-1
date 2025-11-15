@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { fetchInformes } from "../services/informeSinteticoServices";
+import ROUTES from "../../paths";
 
 interface InformeSintetico {
   id: number;

@@ -4,8 +4,6 @@ import React, { useState, useEffect } from 'react';
 function SeleccionarAsignatura(){
     const [asignaturas, setAsignaturas] = useState<any[]>([]);
     const [mensaje, setMensaje] = useState('');
-
-    //materias de ejemplo
     const asignaturasEjemplo =
     [
         { id: "IF001", nombre: "Elementos de Informática" },
@@ -35,13 +33,13 @@ function SeleccionarAsignatura(){
         cargarAsignaturas();
     }, []);
 
-    const handleResponder = (materiaId: string, materiaNombre: string) => { 
+    const handleResponder = (asignaturaId: string, asignaturaNombre: string) => { 
         setMensaje(`Accediendo a encuesta`);
     };
 
     return (
         <div className="bg-black text-white min-vh-100 p-4" style={{ width: '100%' }}>
-            <h2 className="text-center mb-4">Materias cursadas</h2>
+            <h2 className="text-center mb-4">Asignaturas cursadas</h2>
             
             {asignaturas.map(asignatura => (
                 <div key={asignatura.id} className="card bg-dark text-white mb-3 mx-auto" style={{ maxWidth: '500px' }}>

@@ -32,7 +32,7 @@
 .filtros-card {
   border: none;
   border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 12px #00000014;
   background: #ffffff;
 }
 
@@ -47,7 +47,7 @@
 .filtros-card .form-control:focus,
 .filtros-card .form-select:focus {
   border-color: #0d6efd;
-  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+  box-shadow: 0 0 0 0.2rem #0d6efd26;
 }
 
 /* Alert de anonimato */
@@ -58,11 +58,11 @@
   border-left: 4px solid #0d6efd;
 }
 
-/* Tarjetas de respuestas */
+
 .respuesta-card {
   border: none;
   border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 12px #00000014;
   transition: all 0.3s ease;
   background: #ffffff;
   overflow: hidden;
@@ -70,7 +70,7 @@
 
 .respuesta-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 6px 20px #0000001f;
 }
 
 .respuesta-header {
@@ -143,13 +143,12 @@
   border-top: 1px solid #f8f9fa;
 }
 
-/* Empty state */
 .empty-state {
   text-align: center;
   padding: 4rem 2rem;
   background: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 12px #00000014;
 }
 
 .empty-icon {

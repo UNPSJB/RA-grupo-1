@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { verPeriodo } from "./DetalleInformeCatedraTerminado";
+import { verDuracion } from "./DetalleInformeCatedraTerminado";
 import type { Departamento } from "../../departamentos/types/departamentoTypes";
 
 interface InformeCatedraTerminado {
   id: number;
   titulo: string;
   anio: number;
-  periodo: string;
+  duracion: string;
 }
 
 export default function InformeCatedraList() {
@@ -47,7 +47,7 @@ export default function InformeCatedraList() {
                       <div>
                         <span className="text-muted me-3">{i + 1}.</span>
                         <span className="fw-bold">
-                          {inf.titulo} – {inf.anio} ({verPeriodo(inf.periodo)})
+                          {inf.titulo} – {inf.anio} ({verDuracion(inf.duracion)})
                         </span>
                       </div>
                       <Link
