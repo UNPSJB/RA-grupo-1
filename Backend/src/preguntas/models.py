@@ -20,7 +20,12 @@ class Pregunta(ModeloBase):
     encuesta_id: Mapped[int] = mapped_column(Integer, ForeignKey("encuestas.id"))
     categoria_id: Mapped[int] = mapped_column(Integer, ForeignKey("categorias.id"), nullable=True)
 
+<<<<<<< HEAD
     
+=======
+    respuestas: Mapped[List["Respuesta"]] = relationship("Respuesta", back_populates="pregunta")
+
+>>>>>>> 17f9bfd0057ca1f072f560b53f86d560fa9ce7e8
     tipo: Mapped[TipoPreguntaEnum] = mapped_column(
         String(50), 
         nullable=False, 
