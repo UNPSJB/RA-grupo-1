@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Card, Button, Spinner, Alert, Row, Col, Container } from 'react-bootstrap';
 import { useInformes, EstadoInforme } from '../hooks/useInformes';
 import SeleccionCarrera from './SeleccionCarrera';
+import { useNavigate } from "react-router-dom";
 
 export const PanelDepartamento: React.FC = () => {
   const [carreraSeleccionada, setCarreraSeleccionada] = useState<{ id: number; nombre: string } | null>(null);
 
-  // 🔁 Detecta cambios de carrera en localStorage
+  const navigate = useNavigate(); // <--- 🔥 IMPORTANTE
+
   useEffect(() => {
     const stored = localStorage.getItem("carreraSeleccionada");
     if (stored) setCarreraSeleccionada(JSON.parse(stored));
@@ -67,7 +69,14 @@ export const PanelDepartamento: React.FC = () => {
                 <strong>{inf.titulo}</strong> <br />
                 {inf.fecha && <small>{inf.fecha}</small>}
               </div>
-              <Button variant="primary">Completar</Button>
+
+              {/* 🔥 AHORA SÍ NAVEGA */}
+              <Button 
+                variant="primary"
+                onClick={() => navigate("/departamento/informe-sintetico/cabecera")}
+              >
+                Completar
+              </Button>
             </li>
           ))}
         </ul>

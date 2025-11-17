@@ -12,9 +12,12 @@ import { EncuestasCompletas } from '../features/encuestas/components/EncuestasCo
 import { PanelDocente } from '../features/docentes/components/PanelDocente';
 import { MisAsignaturas } from '../features/docentes/components/MisAsignaturas';
 import { DepartamentoLayout } from '../features/departamentos/components/DepartamentoLayout';
-import { PanelDepartamento } from '../features/departamentos/components/PanelDepartamento'
-import { GestionPreguntas } from '../features/secretaria/components/GestionPreguntas';
-import { GestionEncuestas } from '../features/secretaria/components/GestionEncuestas';
+import { PanelDepartamento } from '../features/departamentos/components/PanelDepartamento';
+import { GestionPreguntas } from '../features/departamentos/components/GestionPreguntas';
+import { GestionEncuestas } from '../features/departamentos/components/GestionEncuestas';
+
+import InformeSinteticoCabeceraPage from '../features/departamentos/pages/InformeSinteticoCabeceraPage';
+
 import { SecretariaLayout } from '../features/secretaria/components/SecretariaLayout';
 import { CrearEncuesta } from '../features/secretaria/components/CrearEncuesta';
 import { PanelEncuestas } from '../features/secretaria/components/PanelEncuestas';
@@ -34,8 +37,8 @@ function App() {
     <Routes>
       {/* Ruta principal */}
       <Route index element={<RoleSelection />} />
-      
-      {/* Ruta de login de alumno (NO protegida) */}
+
+      {/* Login alumno */}
       <Route path="/alumno/login" element={<LoginAlumno />} />
       
       {/* Rutas de alumno (PROTEGIDAS) */}
@@ -58,17 +61,29 @@ function App() {
       
       {/* Rutas de docente */}
       <Route path="/docente" element={<DocenteLayout />}>
-        <Route index element={<PanelDocente />} /> 
+        <Route index element={<PanelDocente />} />
         <Route path="reportes" element={<div>Reportes de Encuestas</div>} />
         <Route path="mis-asignaturas" element={<MisAsignaturas />} />
       </Route>
 
-      {/* Rutas de departamento */}
+      {/* Rutas departamento */}
       <Route path="/departamento" element={<DepartamentoLayout />}>
         <Route index element={<PanelDepartamento />} />
+        <Route path="gestion-preguntas" element={<GestionPreguntas />} />
+        <Route path="gestion-encuestas" element={<GestionEncuestas />} />
+
+        {/*NUEVAS RUTAS DEL INFORME SINTETICO*/}
+        <Route 
+          path="informe-sintetico/cabecera" 
+          element={<InformeSinteticoCabeceraPage />} 
+        />
+        <Route 
+          path="informe-sintetico/preguntas" 
+          element={<div>Preguntas del informe (en desarrollo)</div>} 
+        />
       </Route>
 
-      {/* Rutas de secretaría */}
+      {/* Rutas secretaría */}
       <Route path="/secretaria" element={<SecretariaLayout />}>
         <Route path="gestion-preguntas" element={<GestionPreguntas />} />
         <Route path="gestion-encuestas" element={<GestionEncuestas />} />
