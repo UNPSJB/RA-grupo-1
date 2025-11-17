@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap';
-import { EyeSlash, Eye, PersonCircle } from 'react-bootstrap-icons';
+import { EyeSlash, Eye } from 'react-bootstrap-icons';
 import '../styles/LoginAlumno.css';
 
 export const LoginAlumno = () => {
@@ -74,7 +74,7 @@ export const LoginAlumno = () => {
 
   return (
     <div className="login-alumno-page">
-      {/* Header con botón Registrarse */}
+
       <div className="login-alumno-header">
         <Button 
           variant="link" 
@@ -85,7 +85,6 @@ export const LoginAlumno = () => {
         </Button>
       </div>
 
-      {/* Título principal */}
       <div className="login-alumno-title-section">
         <h1 className="login-alumno-main-title">Iniciar Sesión</h1>
         <p className="login-alumno-main-subtitle">
@@ -93,12 +92,17 @@ export const LoginAlumno = () => {
         </p>
       </div>
 
-      {/* Contenedor del formulario */}
       <Container className="login-alumno-form-container">
         <Card className="login-alumno-card">
           <Card.Body className="login-alumno-card-body">
+
+            {/* 🔵 Imagen del logo en lugar del ícono */}
             <div className="login-alumno-icon-container">
-              <PersonCircle className="login-alumno-user-icon" />
+              <img 
+                src="/src/assets/logo_unpsjb.png"
+                alt="UNPSJB Logo"
+                className="login-alumno-logo"
+              />
             </div>
 
             {error && (
@@ -108,7 +112,6 @@ export const LoginAlumno = () => {
             )}
 
             <Form onSubmit={handleSubmit}>
-              {/* Campo Usuario */}
               <Form.Group className="mb-3">
                 <Form.Label className="login-alumno-form-label">
                   Nombre de Usuario 
@@ -123,11 +126,11 @@ export const LoginAlumno = () => {
                 />
               </Form.Group>
 
-              {/* Campo Contraseña */}
               <Form.Group className="mb-3">
                 <Form.Label className="login-alumno-form-label">
                   Contraseña
                 </Form.Label>
+
                 <div className="login-alumno-password-container">
                   <Form.Control
                     type={showPassword ? 'text' : 'password'}
@@ -148,7 +151,6 @@ export const LoginAlumno = () => {
                 </div>
               </Form.Group>
 
-              {/* Botón Iniciar Sesión */}
               <Button
                 type="submit"
                 className="login-alumno-submit-btn"
@@ -157,7 +159,6 @@ export const LoginAlumno = () => {
                 {loading ? 'Iniciando Sesión...' : 'Iniciar Sesión'}
               </Button>
 
-              {/* Link Olvidaste tu contraseña */}
               <div className="login-alumno-forgot-password">
                 <a href="#" className="login-alumno-forgot-link">
                   ¿Olvidaste tu contraseña?

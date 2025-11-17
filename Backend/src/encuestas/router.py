@@ -28,7 +28,7 @@ router = APIRouter(prefix="/encuestas", tags=["encuestas"])
             summary="Listar todas las encuestas",
             description="Retorna una lista de todas las encuestas")
 def read_encuestas(db: Session = Depends(get_db)):
-    return services.listar_encuestas(db)
+    return services.listar_encuestas_activas(db)
 
 @router.get("/{encuesta_id}", response_model=schemas.Encuesta)
 def read_encuesta(encuesta_id: int, db: Session = Depends(get_db)):
@@ -147,7 +147,7 @@ async def obtener_encuesta(
     db: Session = Depends(get_db)
 ):
     """
-    Obtiene el encuesta de una encuesta para que el alumno la complete.
+    Obtiene la encuesta para que el alumno la complete.
     """
     try:
         # 1. Obtener encuesta
@@ -236,15 +236,11 @@ async def obtener_encuesta(
                 }
             ]
         }
-        
-        print("✅ encuesta construido exitosamente")
         return response_data
         
     except HTTPException as he:
-        print(f"❌ HTTPException: {he.detail}")
         raise he
     except Exception as e:
-        print(f"❌ Error interno: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error interno: {str(e)}")
 
 
@@ -265,11 +261,11 @@ def obtener_encuestas_alumno(alumno_id: int, db: Session = Depends(get_db)):
         )
 
 @router.get("/{encuesta_id}/completar",
-           response_model=schemas.EncuestaParaCompletarEstudiante,  
+           response_model=schemas.EncuestaParaCompletar,  
            summary="Obtener encuesta para completar")
 def obtener_encuesta_completar(encuesta_id: int, db: Session = Depends(get_db)):
     """
-    Obtiene toda la información de una encuesta específica para que el estudiante la complete
+    Obtiene toda la información de una encuesta específica para que el alumno la complete
     """
     try:
         encuesta = services.obtener_encuesta_para_completar(db, encuesta_id)  
@@ -295,7 +291,7 @@ def obtener_encuesta_completar(encuesta_id: int, db: Session = Depends(get_db)):
             summary="Guardar respuestas de encuesta")
 def guardar_respuestas(respuestas: schemas.RespuestaEncuesta, db: Session = Depends(get_db)):
     """
-    Guarda las respuestas de una encuesta finalizada por un estudiante
+    Guarda las respuestas de una encuesta finalizada por un alumno
     """
     try:
         resultado = services.guardar_respuestas_encuesta(db, respuestas)

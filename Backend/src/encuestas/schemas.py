@@ -41,16 +41,7 @@ class CategoriaConPreguntas(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class EncuestaParaCompletarEstudiante(BaseModel):
-    id: int
-    titulo: str
-    asignatura: str
-    docente: str
-    ciclo_lectivo: str
-    categorias: List[CategoriaConPreguntas]
-    preguntas_abiertas: List[PreguntaAbiertaEstudiante] = []
-    
-    model_config = ConfigDict(from_attributes=True)
+
 
 class EncuestaBase(BaseModel):
     año: int = Field(ge=2000, le=2100, description="Año académico")
@@ -147,14 +138,16 @@ class EncuestaResumen(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 class EncuestaAlumnoInfo(BaseModel):
-    """Schema para información básica de encuesta para alumno"""
     id: int
     nombre: str
     asignatura: str
     docente: str
     ciclo_lectivo: str
-    
-    model_config = ConfigDict(from_attributes=True)
+    fecha_inicio: Optional[str] = None
+    fecha_fin: Optional[str] = None
+    estado: Optional[str] = None
+
+    model_config = {"from_attributes":True}
 
 class EncuestaParaCompletar(BaseModel):
     """Schema completo de encuesta para que el alumno complete"""
@@ -231,14 +224,4 @@ class RespuestasAlumnoCreate(BaseModel):
     asignatura_id: int
     respuestas: List[RespuestaCreate]
 
-class EncuestaAlumnoInfo(BaseModel):
-    id: int
-    nombre: str
-    asignatura: str
-    docente: str
-    ciclo_lectivo: str
-    fecha_inicio: Optional[str] = None
-    fecha_fin: Optional[str] = None
-    estado: Optional[str] = None
 
-    model_config = {"from_attributes":True}

@@ -274,6 +274,12 @@ def listar_encuestas_para_alumno(db: Session, alumno_id: int):
         .distinct()
     )
 
+    # ⬇️ AGREGA ESTAS LÍNEAS AQUÍ
+    print(f"\nDEBUG - SQL generado:")
+    print(stmt.compile(compile_kwargs={"literal_binds": True}))
+    print()
+    # ⬆️ FIN DE LÍNEAS NUEVAS
+
     encuestas = db.scalars(stmt).all()
     print(f"DEBUG - Encuestas disponibles resultantes: {len(encuestas)}")
 
@@ -292,7 +298,6 @@ def listar_encuestas_para_alumno(db: Session, alumno_id: int):
                 ciclo_lectivo=f"{encuesta.año}-{encuesta.cursado.value}"
             )
         )
-
     return resultado
 
 def obtener_encuesta_para_completar(db: Session, encuesta_id: int) -> schemas.EncuestaParaCompletar:
