@@ -14,7 +14,7 @@ class PreguntaInformeSintetico(ModeloBase):
     codigo = Column(String, index=True)
     oracion = Column(Text, nullable=False) 
     orden = Column(Integer, nullable=False) 
-    informe_base_id = Column(Integer, ForeignKey("informe_sintetico.id"), nullable=False)
+    informe_base_id = Column(Integer, ForeignKey("informes_sinteticos.id"), nullable=False)
 
     informe_base: Mapped["InformeSintetico"] = relationship(
         "InformeSintetico",

@@ -19,14 +19,15 @@ export function useInformes(carreraId?: number | null) {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const API_URL = "http://localhost:8000/informes";
+  // 🔥 ENDPOINT CORRECTO
+  const API_URL = "http://localhost:8000/informes_sinteticos";
 
   const fetchInformes = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      // Si no hay carrera, no buscamos nada
+      // Si no hay carrera seleccionada, vacía la lista
       if (!carreraId) {
         setInformes([]);
         return;
@@ -50,7 +51,6 @@ export function useInformes(carreraId?: number | null) {
     }
   };
 
-  // 🔁 Cada vez que cambia la carrera, se vuelve a ejecutar
   useEffect(() => {
     fetchInformes();
   }, [carreraId]);
