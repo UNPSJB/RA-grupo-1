@@ -22,12 +22,13 @@ class OpcionParaEstudiante(BaseModel):
     
     model_config = ConfigDict(from_attributes=True)
 
+
 class PreguntaParaEstudiante(BaseModel):
     """Pregunta formateada para el estudiante"""
     id: int
     texto: str
     tipo: str
-    opciones: List[OpcionParaEstudiante] = []
+    opciones: List[OpcionParaEstudiante] = []  
     
     model_config = ConfigDict(from_attributes=True)
 
@@ -36,11 +37,9 @@ class CategoriaConPreguntas(BaseModel):
     id: int
     nombre: str
     codigo: str
-    preguntas: List[PreguntaParaEstudiante]
+    preguntas: List[PreguntaParaEstudiante]  
     
     model_config = ConfigDict(from_attributes=True)
-
-
 
 
 class EncuestaBase(BaseModel):
@@ -80,7 +79,6 @@ class Encuesta(EncuestaBase):
     estado: EstadoEncuesta
     activa: bool
     created_at: datetime
-
 
 class RespuestaBase(BaseModel):
     id: int
@@ -147,7 +145,7 @@ class EncuestaAlumnoInfo(BaseModel):
     fecha_fin: Optional[str] = None
     estado: Optional[str] = None
 
-    model_config = {"from_attributes":True}
+    model_config = {"from_attributes": True}
 
 class EncuestaParaCompletar(BaseModel):
     """Schema completo de encuesta para que el alumno complete"""
@@ -158,41 +156,6 @@ class EncuestaParaCompletar(BaseModel):
     ciclo_lectivo: str
     categorias: List[categoria_schemas.Categoria]
     preguntas_abiertas: List[PreguntaAbiertaEstudiante] = []
-    
-    model_config = ConfigDict(from_attributes=True)
-
-class CategoriaConPreguntas(BaseModel):
-    """Categoría con sus preguntas para el estudiante"""
-    id: int
-    nombre: str
-    codigo: str
-    preguntas: List[PreguntaParaEstudiante]
-    
-    model_config = ConfigDict(from_attributes=True)
-
-class PreguntaParaEstudiante(BaseModel):
-    """Pregunta formateada para el estudiante"""
-    id: int
-    texto: str
-    tipo: str
-    opciones: List[OpcionParaEstudiante] = []
-    
-    model_config = ConfigDict(from_attributes=True)
-
-class PreguntaAbiertaEstudiante(BaseModel):
-    """Preguntas abiertas predefinidas"""
-    id: str
-    texto: str
-    tipo: str = "abierta"
-    seccion: str
-    
-    model_config = ConfigDict(from_attributes=True)
-
-class OpcionParaEstudiante(BaseModel):
-    """Opciones de respuesta para el estudiante"""
-    id: int
-    texto: str
-    valor: str
     
     model_config = ConfigDict(from_attributes=True)
 
@@ -223,5 +186,3 @@ class RespuestasAlumnoCreate(BaseModel):
     alumno_id: int
     asignatura_id: int
     respuestas: List[RespuestaCreate]
-
-
