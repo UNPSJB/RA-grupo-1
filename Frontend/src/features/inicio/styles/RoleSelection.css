@@ -1,0 +1,36 @@
+/* src/features/inicio/styles/RoleSelection.css */
+.role-selection-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.role-selection-container {
+  flex: 1;
+  background: #00000033
+}
+
+.role-card {
+  border-radius: 15px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: white;
+}
+
+.role-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 35px #00000033 !important;
+}
+
+.role-icon {
+  transition: transform 0.3s ease;
+}
+
+.role-card:hover .role-icon {
+  transform: scale(1.2);
+}
+
+.role-selection-container h1,
+.role-selection-container .lead {
+  color: white !important;
+  text-shadow: 0 2px 4px #0000004d;
+}

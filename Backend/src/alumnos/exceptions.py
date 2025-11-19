@@ -8,3 +8,18 @@ class AlumnoNoEncontrado(NotFound):
 class NombreDuplicado(BadRequest):
     DETAIL = ErrorCode.NOMBRE_DUPLICADO
 
+class AlumnoNoEncontrado(Exception):
+    pass
+
+class PersonaNoEncontrada(Exception):
+    pass
+
+class CUILDuplicado(Exception):
+    pass
+
+class AsignaturaNoEncontrada(Exception):
+    pass
+
+class AlumnoYaInscrito(Exception):
+    pass
+

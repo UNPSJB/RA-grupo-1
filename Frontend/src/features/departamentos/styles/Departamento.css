@@ -1,0 +1,101 @@
+.departamento-container {
+  padding: 20px 0;
+}
+
+.header-section {
+  margin-bottom: 30px;
+}
+
+.page-title {
+  color: #2c3e50;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.page-subtitle {
+  color: #7f8c8d;
+  font-size: 1.1rem;
+}
+
+/* Estilos para la tabla de preguntas */
+.texto-pregunta {
+  max-width: 300px;
+  word-wrap: break-word;
+}
+
+/* Estilos para las cards de encuestas */
+.encuesta-card {
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.encuesta-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+.encuesta-info {
+  margin-top: 15px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.info-item strong {
+  min-width: 80px;
+  margin-right: 5px;
+}
+
+.encuesta-actions {
+  display: flex;
+  gap: 5px;
+}
+
+/* Estados y badges */
+.loading-text {
+  color: #3498db;
+  font-weight: 500;
+}
+
+.error-alert {
+  border-radius: 15px;
+  border: none;
+  box-shadow: 0 4px 6px #0000001a;
+}
+
+.departamento-layout .user-dropdown-toggle,
+.departamento-layout .user-profile,
+.departamento-layout .user-avatar,
+.departamento-layout .user-name-display,
+.departamento-layout .bi-chevron-down {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+.departamento-layout .dropdown {
+  display: none !important;
+}
+
+
+.departamento-layout .logout-link {
+  display: flex !important;
+  align-items: center;
+  color: #dc3545 !important;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+.departamento-layout .logout-link:hover {
+  color: #c82333 !important;
+  background-color: #dc35451a;
+  text-decoration: none;
+}
+

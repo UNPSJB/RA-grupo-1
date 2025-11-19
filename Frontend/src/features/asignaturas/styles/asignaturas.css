@@ -1,0 +1,35 @@
+.asignatura-card {
+  transition: all 0.3s ease;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+}
+
+.asignatura-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px #0000001a;
+  border-color: #007bff;
+}
+
+.asignatura-number {
+  background-color: #007bff;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-right: 12px;
+}
+
+.asignatura-name {
+  color: #2c3e50;
+  font-size: 1.1rem;
+}
+
+.asignatura-matricula {
+  color: #6c757d;
+  font-size: 0.95rem;
+}
+
