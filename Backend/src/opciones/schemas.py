@@ -1,5 +1,6 @@
 from pydantic import BaseModel, field_validator
 from src.opciones import exceptions
+from typing import Optional
 
 class OpcionBase(BaseModel):
     texto: str
@@ -15,8 +16,9 @@ class OpcionBase(BaseModel):
 
 
 class OpcionCreate(OpcionBase):
-    contenido: str
+    texto: str
     pregunta_id: int
+    pregunta_id: Optional[int] = None
 
 
 class OpcionUpdate(OpcionBase):

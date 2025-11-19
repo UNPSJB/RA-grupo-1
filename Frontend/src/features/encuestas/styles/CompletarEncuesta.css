@@ -1,37 +1,17 @@
-.opcion-respuesta {
-  border: 2px solid #6c757d;
-  border-radius: 6px;
-  padding: 12px;
-  text-align: center;
-  cursor: pointer;
-  transition: 0.2s;
-  background-color: white;
+.encuesta-header {
+  background-color: #eef5ff;
+  border: 1px solid #dde7ff;
+  border-radius: 12px;
 }
 
-/* Cuando pasa el mouse */
-.opcion-respuesta:hover {
-  transform: translateY(-2px);
-  border-color: #4c51bf;
+.encuesta-header h2 {
+  color: #1a2b6d;
 }
 
-/* Estilos cuando está seleccionada */
-.opcion-respuesta.seleccionada {
-  color: white;
-  font-weight: bold;
+.encuesta-header .badge.bg-primary {
+  background-color: #0056d2 !important;
 }
 
-/* Colores por respuesta */
-.opcion-si.seleccionada {
-  background-color: #34c759; /* Verde */
-  border-color: #34c759;
-}
-
-.opcion-no.seleccionada {
-  background-color: #ff3b30; /* Rojo */
-  border-color: #ff3b30;
-}
-
-.opcion-npo.seleccionada {
-  background-color: #ffcc00; /* Amarillo */
-  border-color: #ffcc00;
+.encuesta-header .badge.bg-secondary {
+  background-color: #6c757d !important;
 }

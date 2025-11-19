@@ -20,7 +20,6 @@ export const EncuestasIncompletas = () => {
     const alumnoId = Number(localStorage.getItem("alumno_id") || "1");
 
     const formatearCicloLectivo = (ciclo: string) => {
-        // Recibe "2025-PRIMER CUATRIMESTRE" y lo formatea
         const partes = ciclo.split('-');
         if (partes.length === 2) {
             const año = partes[0];
@@ -101,7 +100,7 @@ export const EncuestasIncompletas = () => {
                             <Card className="encuesta-card h-100 shadow-sm border-0">
                                 <Card.Header className="bg-primary text-white">
                                     <div className="d-flex justify-content-between align-items-center">
-                                        <Badge bg="warning" text="dark" className="px-3 py-2">
+                                        <Badge bg="danger" text="white" className="px-3 py-2">
                                             <i className="bi bi-exclamation-circle me-1"></i>
                                             PENDIENTE
                                         </Badge>
@@ -109,7 +108,7 @@ export const EncuestasIncompletas = () => {
                                 </Card.Header>
                                 
                                 <Card.Body>
-                                    <Card.Title className="mb-3 fw-bold text-primary">
+                                    <Card.Title className="mb-3 fw-bold">
                                         <i className="bi bi-book me-2"></i>
                                         {encuesta.asignatura}
                                     </Card.Title>
@@ -131,11 +130,6 @@ export const EncuestasIncompletas = () => {
                                                     {formatearCicloLectivo(encuesta.ciclo_lectivo)}
                                                 </div>
                                             </div>
-                                        </div>
-                                        
-                                        <div className="alert alert-info mb-0" role="alert">
-                                            <i className="bi bi-info-circle me-2"></i>
-                                            <small><strong>{encuesta.nombre}</strong></small>
                                         </div>
                                     </div>
                                 </Card.Body>

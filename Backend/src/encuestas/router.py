@@ -20,6 +20,14 @@ from src.encuestas.exceptions import (
     EncuestaYaRespondida
 )
 
+from src.encuestas.schemas import (
+    EncuestaParaCompletar,
+    EncuestaAlumnoInfo,
+    PreguntaParaEstudiante,
+    CategoriaConPreguntas,
+    PreguntaAbiertaEstudiante
+)
+
 
 router = APIRouter(prefix="/encuestas", tags=["encuestas"])
 
@@ -140,109 +148,6 @@ def obtener_respuestas_alumno(encuesta_id: int, alumno_id: int, db: Session = De
     ]
 
     return {"encuesta_id": encuesta_id, "respuestas": data}
-
-@router.get("/{encuesta_id}/encuesta")
-async def obtener_encuesta(
-    encuesta_id: int,
-    db: Session = Depends(get_db)
-):
-    """
-    Obtiene la encuesta para que el alumno la complete.
-    """
-    try:
-        # 1. Obtener encuesta
-        encuesta = db.query(Encuesta).filter(Encuesta.id == encuesta_id).first()
-        if not encuesta:
-            raise HTTPException(status_code=404, detail="Encuesta no encontrada")
-        
-        # 2. Validar que la encuesta esté activa
-        if not encuesta.activa or encuesta.estado != EstadoEncuesta.abierta:
-            raise HTTPException(
-                status_code=400, 
-                detail="La encuesta no está disponible en este momento"
-            )
-        
-        # 3. Obtener asignatura
-        asignatura = db.query(Asignatura).filter(Asignatura.id == encuesta.asignatura_id).first()
-        if not asignatura:
-            raise HTTPException(status_code=404, detail="Asignatura no encontrada")
-        
-        # 4. Obtener docente
-        docente = None
-        if asignatura.docente_id:
-            docente = db.query(Docente).filter(Docente.id == asignatura.docente_id).first()
-            if docente:
-                print(f"✅ Docente encontrado: {docente.nombre} {docente.apellido}")
-        
-        # 5. Obtener preguntas asociadas a la encuesta
-        preguntas = db.query(Pregunta).filter(
-            Pregunta.encuesta_id == encuesta_id
-        ).order_by(Pregunta.id).all()
-        
-        
-        # 6. Construir respuesta para Ciclo Básico
-        response_data = {
-            "encuesta": {
-                "id": encuesta.id,
-                "titulo": encuesta.titulo,
-                "tipo": "ciclo_basico",
-                "escala": {
-                    "tipo": "sino_npo",
-                    "valores": [
-                        {"valor": "si", "etiqueta": "Sí"},
-                        {"valor": "no", "etiqueta": "No"},
-                        {"valor": "npo", "etiqueta": "No puedo opinar"}
-                    ]
-                }
-            },
-            "asignatura": {
-                "id": asignatura.id,
-                "nombre": asignatura.nombre,
-                "codigo": getattr(asignatura, 'codigo', None)
-            },
-            "docente": {
-                "id": docente.id if docente else None,
-                "nombre": docente.nombre if docente else "No asignado",
-                "apellido": docente.apellido if docente else ""
-            } if docente else None,
-            "preguntas": [
-                {
-                    "id": p.id,
-                    "texto": p.texto,
-                    "tipo": "escala",
-                    "categoria": getattr(p.categoria, 'nombre', 'General') if p.categoria else "General",
-                    "seccion": "A"  
-                }
-                for p in preguntas
-            ],
-            "preguntas_abiertas": [
-                {
-                    "id": "comentarios_positivos",
-                    "texto": "¿Qué aspectos valoras como positivos del cursado de la asignatura? Menciona los que consideres más importantes.",
-                    "tipo": "abierta",
-                    "seccion": "G"
-                },
-                {
-                    "id": "comentarios_mejora", 
-                    "texto": "¿Qué aspectos consideras que se pueden mejorar? Menciona los que consideres más importantes.",
-                    "tipo": "abierta",
-                    "seccion": "G"
-                },
-                {
-                    "id": "recomendaciones",
-                    "texto": "¿Qué recomendaciones le harías a un compañero que cursará el año que viene la asignatura?",
-                    "tipo": "abierta", 
-                    "seccion": "G"
-                }
-            ]
-        }
-        return response_data
-        
-    except HTTPException as he:
-        raise he
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error interno: {str(e)}")
-
 
 @router.get("/alumno/{alumno_id}/disponibles", 
            response_model=List[schemas.EncuestaAlumnoInfo],

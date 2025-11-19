@@ -10,6 +10,7 @@ from src.preguntas.models import Pregunta
 from src.categorias import schemas as categoria_schemas
 from src.preguntas import schemas as pregunta_schemas
 from src.encuesta_finalizada.models import EncuestaFinalizada
+from src.encuestas.schemas import EncuestaParaCompletar
 
 def listar_encuestas_activas(db: Session) -> List[schemas.Encuesta]:
     # Obtiene solo encuestas activas
@@ -305,75 +306,84 @@ def obtener_encuesta_para_completar(db: Session, encuesta_id: int) -> schemas.En
     from src.preguntas.models import Pregunta
     from src.opciones.models import Opcion
     
-    # Obtener encuesta con todas las relaciones necesarias
+    # Obtener encuesta
     stmt = (
         select(Encuesta)
         .where(Encuesta.id == encuesta_id)
         .options(
             selectinload(Encuesta.asignatura).selectinload(Asignatura.docentes_asociados),
-            selectinload(Encuesta.categorias).selectinload(Categoria.preguntas)
+            selectinload(Encuesta.categorias).selectinload(Categoria.preguntas).selectinload(Pregunta.opciones)
         )
     )
-    
+
     encuesta = db.scalar(stmt)
     if not encuesta:
         raise exceptions.EncuestaNoEncontrada()
-    
-    # Verificar que la encuesta esté activa y disponible
+
+    # Validar
     ahora = datetime.utcnow()
-    if not (encuesta.activa and 
-            encuesta.estado == EstadoEncuesta.abierta and
-            encuesta.fecha_inicio <= ahora <= encuesta.fecha_fin):
+    if not (
+        encuesta.activa
+        and encuesta.estado == EstadoEncuesta.abierta
+        and encuesta.fecha_inicio <= ahora <= encuesta.fecha_fin
+    ):
         raise exceptions.EncuestaNoDisponible()
-    
-    # Obtener información del docente
-    docente_nombre = "No asignado"
-    if encuesta.asignatura.docente:
-        docente_nombre = f"{encuesta.asignatura.docente.nombre} {encuesta.asignatura.docente.apellido}"
-    
+
+    # Docentes
+    docentes = encuesta.asignatura.docentes_asociados if encuesta.asignatura else []
+    docente_nombre = (
+        ", ".join([f"{d.nombre} {d.apellido}" for d in docentes])
+        if docentes else "No asignado"
+    )
+
+    # Categorías + preguntas cerradas
     categorias_data = []
     for categoria in encuesta.categorias:
         preguntas_data = []
         for pregunta in categoria.preguntas:
-            opciones_data = []
-            for opcion in pregunta.opciones:
-                opciones_data.append(schemas.OpcionParaEstudiante(
-                    id=opcion.id,
-                    texto=opcion.texto,
-                    valor=opcion.valor
-                ))
-            preguntas_data.append(schemas.PreguntaParaEstudiante(
-                id=pregunta.id,
-                texto=pregunta.texto,
-                tipo=pregunta.tipo,
-                opciones=opciones_data
-            ))
+            opciones_data = [
+                schemas.OpcionParaEstudiante(id=o.id, texto=o.texto, valor=o.valor)
+                for o in pregunta.opciones
+            ]
 
-            categorias_data.append(schemas.CategoriaConPreguntas(
-            id=categoria.id,
-            nombre=categoria.nombre,
-            codigo=categoria.codigo,
-            preguntas=preguntas_data
-        ))
-            
+            preguntas_data.append(
+                schemas.PreguntaParaEstudiante(
+                    id=pregunta.id,
+                    texto=pregunta.texto,
+                    tipo=pregunta.tipo,
+                    opciones=opciones_data
+                )
+            )
+
+        categorias_data.append(
+            schemas.CategoriaConPreguntas(
+                id=categoria.id,
+                nombre=categoria.nombre,
+                codigo=categoria.codigo,
+                preguntas=preguntas_data
+            )
+        )
+
+    # PREGUNTAS ABIERTAS DESDE LA BASE
+    preguntas_abiertas_db = (
+        db.query(Pregunta)
+        .filter(
+            Pregunta.encuesta_id == encuesta_id,
+            Pregunta.tipo == "abierta"
+        )
+        .order_by(Pregunta.id)
+        .all()
+    )
+
     preguntas_abiertas = [
         schemas.PreguntaAbiertaEstudiante(
-            id="comentarios_positivos",
-            texto="¿Qué aspectos valoras como positivos del cursado de la asignatura? Menciona los que consideres más importantes.",
-            seccion="G"
-        ),
-        schemas.PreguntaAbiertaEstudiante(
-            id="comentarios_mejora", 
-            texto="¿Qué aspectos consideras que se pueden mejorar? Menciona los que consideres más importantes.",
-            seccion="G"
-        ),
-        schemas.PreguntaAbiertaEstudiante(
-            id="recomendaciones",
-            texto="¿Qué recomendaciones le harías a un compañero que cursará el año que viene la asignatura?",
-            seccion="G"
+            id=str(p.id),
+            texto=p.texto,
+            seccion=p.categoria.codigo if p.categoria else "G"
         )
+        for p in preguntas_abiertas_db
     ]
-    
+
     return schemas.EncuestaParaCompletar(
         id=encuesta.id,
         titulo=encuesta.titulo,
@@ -384,6 +394,7 @@ def obtener_encuesta_para_completar(db: Session, encuesta_id: int) -> schemas.En
         preguntas_abiertas=preguntas_abiertas
     )
 
+
 def guardar_respuestas_encuesta(db: Session, respuestas_data: schemas.RespuestaEncuesta):
     """
     Guarda las respuestas de una encuesta finalizada por un alumno
@@ -393,7 +404,8 @@ def guardar_respuestas_encuesta(db: Session, respuestas_data: schemas.RespuestaE
     
     # Verificar que la encuesta existe y está activa
     encuesta = leer_encuesta(db, respuestas_data.encuesta_id)
-    if not encuesta.esta_activa:
+    if not (encuesta.activa and encuesta.estado == EstadoEncuesta.abierta
+        and encuesta.fecha_inicio <= datetime.utcnow() <= encuesta.fecha_fin):
         raise exceptions.EncuestaNoDisponible()
     
     # Verificar que el alumno no haya ya completado esta encuesta
