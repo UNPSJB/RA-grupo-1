@@ -6,6 +6,7 @@ from src.database import engine
 from src.models import ModeloBase
 from src.alumnos.router import router as alumnos_router
 from src.encuestas.router import router as encuestas_router
+from src.docentes.router import router as docentes_router
 from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
@@ -22,7 +23,8 @@ async def db_creation_lifespan(app: FastAPI):
 app = FastAPI(title="API de encuestas", version="1.0.0")
 
 origins = [
-    "http://localhost:5173", 
+    "http://localhost:5173",
+    "http://127.0.0.1:5173" 
 ]
 
 
@@ -39,9 +41,9 @@ app.add_middleware(
 )
 
 # asociamos los routers a nuestra app
-#app.include_router(comerciantes_router)
 app.include_router(alumnos_router)
 app.include_router(encuestas_router)
+app.include_router(docentes_router)
 
 @app.get("/")
 def read_root():
