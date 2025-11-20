@@ -1,42 +1,146 @@
 from typing import List
-from sqlalchemy import delete, select, update
+from sqlalchemy import delete, select, update, and_, exists, not_, insert
 from sqlalchemy.orm import Session
 from src.alumnos.models import Alumno
+from src.vinculaciones.models import asignatura_alumno
+from src.encuestas.models import Encuesta
+from src.asignaturas.models import Asignatura
 from src.alumnos import schemas, exceptions
+from src.asignaturas import schemas as asignatura_schemas
+from datetime import date, timedelta
+from src.vinculaciones.models import Duracion
+from src.constants import ANIO_ACTUAL, DURACION_ACTUAL
+from src.personas.models import Persona  
+from src.encuesta_finalizada.models import EncuestaFinalizada
 
-# operaciones CRUD para alumnos
-
-def crear_alumno(db: Session, alumno: schemas.AlumnoCreate) -> schemas.Alumno:
+def crear_alumno(db: Session, alumno: schemas.AlumnoCreate) -> schemas.AlumnoResponse:
+    # Verifica que la persona existe
+    persona = db.scalar(select(Persona).where(Persona.id == alumno.persona_id))
+    if not persona:
+        raise exceptions.PersonaNoEncontrada()
+    
+    # Verifica que el CUIL no esté duplicado
+    alumno_existente = db.scalar(select(Alumno).where(Alumno.CUIL == alumno.CUIL))
+    if alumno_existente:
+        raise exceptions.CUILDuplicado()
+    
     _alumno = Alumno(**alumno.model_dump())
     db.add(_alumno)
     db.commit()
     db.refresh(_alumno)
     return _alumno
 
+def listar_encuestas_disponibles(db: Session, alumno_id: int):
+    descarte = (
+        select(EncuestaFinalizada.id)
+        .where(EncuestaFinalizada.alumno_id == alumno_id)
+        .where(EncuestaFinalizada.anio==ANIO_ACTUAL)
+        .where(EncuestaFinalizada.periodo==DURACION_ACTUAL)
+        .where(EncuestaFinalizada.encuesta_id == Encuesta.id)
+    )
+    stmt = (
+        select(Asignatura.nombre, Encuesta.nombre, Asignatura.id, Asignatura.encuesta_id)
+        .join(asignatura_alumno, asignatura_alumno.c.asignatura_id == Asignatura.id)
+        .join(Encuesta, Encuesta.id == Asignatura.encuesta_id)
+        .where(asignatura_alumno.c.alumno_id == alumno_id)
+        .where(asignatura_alumno.c.anio == ANIO_ACTUAL)
+        .where(asignatura_alumno.c.periodo == DURACION_ACTUAL)
+        .where(~exists(descarte))
+    )
 
-def listar_alumnos(db: Session) -> List[schemas.Alumno]:
-    return db.scalars(select(Alumno)).all()
+    resultados = db.execute(stmt).all()
 
+    return [{"msignatura": m, "encuesta": e, "msignatura_id": msignatura_id, "encuesta_id": encuesta_id} for m, e, msignatura_id, encuesta_id in resultados] 
 
-def leer_alumno(db: Session, alumno_id: int) -> schemas.Alumno:
+def listar_alumnos(db: Session, skip: int = 0, limit: int = 100) -> List[schemas.AlumnoResponse]:
+    return db.scalars(select(Alumno).offset(skip).limit(limit)).all()
+
+def leer_alumno(db: Session, alumno_id: int) -> schemas.AlumnoResponse:
     db_alumno = db.scalar(select(Alumno).where(Alumno.id == alumno_id))
     if db_alumno is None:
-        raise exceptions.AlumnoNoEncontrada()
+        raise exceptions.AlumnoNoEncontrado() 
     return db_alumno
 
-
 def modificar_alumno(
-    db: Session, alumno_id: int, alumno: schemas.AlumnoUpdate) -> Alumno:
+    db: Session, alumno_id: int, alumno: schemas.AlumnoUpdate
+) -> schemas.AlumnoResponse:
     db_alumno = leer_alumno(db, alumno_id)
-    db.execute(update(Alumno).where(Alumno.id == alumno_id).values(**alumno.model_dump()))
+    
+    # Filtrar campos None para actualización parcial
+    update_data = alumno.model_dump(exclude_unset=True)
+    if not update_data:
+        return db_alumno
+    
+    db.execute(
+        update(Alumno)
+        .where(Alumno.id == alumno_id)
+        .values(**update_data)
+    )
     db.commit()
     db.refresh(db_alumno)
     return db_alumno
 
-
 def eliminar_alumno(db: Session, alumno_id: int) -> dict:
     db_alumno = leer_alumno(db, alumno_id)
-    nombre_alumno = db_alumno.nombre
     db.delete(db_alumno)
     db.commit()
-    return {"message": f"alumno {nombre_alumno} eliminado"}
+    return {"message": f"Alumno con ID {alumno_id} eliminado correctamente"}
+
+def obtener_asignaturas_alumno(db: Session, alumno_id: int) -> List[schemas.AsignaturaConDetalles]:
+    alumno = leer_alumno(db, alumno_id)
+    stmt = (
+        select(
+            Asignatura.id,
+            Asignatura.nombre,
+            Asignatura.matricula,
+            asignatura_alumno.c.nota_cursada,
+            asignatura_alumno.c.anio,
+            asignatura_alumno.c.duracion
+        )
+        .join(asignatura_alumno, Asignatura.id == asignatura_alumno.c.asignatura_id)
+        .where(asignatura_alumno.c.alumno_id == alumno_id)
+    )
+    
+    resultados = db.execute(stmt).all()
+    return [schemas.AsignaturaConDetalles(**dict(zip(
+        ['id', 'nombre', 'matricula', 'nota_cursada', 'anio', 'duracion'],
+        resultado
+    ))) for resultado in resultados]
+
+def inscribir_alumno_asignatura(db: Session, alumno_id: int, asignatura_id: int) -> dict:
+    alumno = leer_alumno(db, alumno_id)
+    asignatura = db.scalar(select(Asignatura).where(Asignatura.id == asignatura_id))
+    if not asignatura:
+        raise exceptions.AsignaturaNoEncontrada()
+
+    stmt = select(asignatura_alumno).where(
+        and_(
+            asignatura_alumno.c.alumno_id == alumno_id,
+            asignatura_alumno.c.asignatura_id == asignatura_id
+        )
+    )
+    existe_inscripcion = db.scalar(stmt)
+    if existe_inscripcion:
+        raise exceptions.AlumnoYaInscrito()
+    
+    # Realiza la inscripción
+    db.execute(
+        asignatura_alumno.insert().values(
+            alumno_id=alumno_id,
+            asignatura_id=asignatura_id
+        )
+    )
+    db.commit()
+    
+    return {"message": "Alumno inscrito correctamente en la asignatura"}
+
+def obtener_alumnos_por_asignatura_y_duracion(db: Session, asignatura_id: int, anio: int, duracion: Duracion) -> List[Alumno]:
+    stmt = (
+        select(Alumno)
+        .join(asignatura_alumno, asignatura_alumno.c.alumno_id == Alumno.id)
+        .where(asignatura_alumno.c.asignatura_id == asignatura_id)
+        .where(asignatura_alumno.c.anio == anio)
+        .where(asignatura_alumno.c.duracion == duracion)
+        .distinct()
+    )
+    return db.scalars(stmt).all()

@@ -1,0 +1,43 @@
+.docente-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; 
+}
+
+.main-content {
+  flex-grow: 1; 
+  padding: 20px 0; 
+  background-color: #f8f9fa; 
+}
+
+.content-container {
+  padding: 20px;
+  background-color: #ffffff; 
+  border-radius: 8px; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-docente {
+  background-color: #007bff; 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-docente .nav-link {
+  color: #ffffff;
+  font-weight: 500;
+  margin-right: 20px;
+  transition: color 0.3s ease;
+}
+
+.navbar-docente .nav-link:hover {
+  color: #e2e6ea; 
+  text-decoration: none;
+}
+
+
+.footer-docente {
+  background-color: #343a40; 
+  color: #ffffff;
+  padding: 20px 0;
+  text-align: center;
+}
