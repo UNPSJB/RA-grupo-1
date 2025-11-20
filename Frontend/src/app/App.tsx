@@ -23,7 +23,7 @@ import { CiclosPage } from "../features/ciclos/components/CiclosPage";
 
 import DetalleEncuesta from '../features/encuestas/components/DetalleEncuesta';
 import { NuevaEncuesta } from '../features/secretaria/components/NuevaEncuesta';
-import { CompletarEncuesta } from '../features/encuestas/components/CompletarEncuesta';
+import CompletarEncuesta from "../features/encuestas/components/CompletarEncuesta";
 
 //Import que agregamos
 import  VerEncuestaCompleta  from '../features/encuestasCompletadas/components/VerEncuestaCompleta';

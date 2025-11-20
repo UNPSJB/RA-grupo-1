@@ -16,6 +16,7 @@ def create_informe_finalizado(
         return services.create_informe_finalizado(db, informe)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al crear informe finalizado: {str(e)}")
+    
 @router.get("/finalizados/")
 def get_informes_finalizados(db: Session = Depends(get_db)):
     try:

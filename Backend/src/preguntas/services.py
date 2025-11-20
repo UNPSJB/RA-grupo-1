@@ -1,21 +1,18 @@
 from typing import List
 from sqlalchemy.orm import Session
 from sqlalchemy import select
-from sqlalchemy.exc import IntegrityError
 from src.preguntas.models import Pregunta
 from src.preguntas import schemas, exceptions
 from src.opciones.models import Opcion
-
 def crear_abierta(db: Session, pregunta: schemas.PreguntaAbiertaCreate) -> Pregunta:
-    _nueva_pregunta = Pregunta(**pregunta.model_dump())
+    _nueva_pregunta = Pregunta(
+        texto=pregunta.texto, 
+        tipo=pregunta.tipo or "abierta",
+        encuesta_id=pregunta.encuesta_id
+    )
 
     db.add(_nueva_pregunta)
-
-    try:
-        db.commit()
-    except IntegrityError as e:
-        db.rollback()
-        raise exceptions.OperacionNoPermitida("Ya existe una pregunta con ese numero asociado")
+    db.commit()
     db.refresh(_nueva_pregunta)
     return _nueva_pregunta
 
@@ -33,21 +30,15 @@ def crear_cerrada(db: Session, pregunta: schemas.PreguntaCerradaCreate) -> Pregu
         )
 
     nueva_pregunta = Pregunta(
-        texto=pregunta.texto,
+        texto=pregunta.texto, 
         tipo=pregunta.tipo or "cerrada",
         encuesta_id=pregunta.encuesta_id,
-        categoria_id=pregunta.categoria_id,
-        informe_id=pregunta.informe_id,
-        nro_pregunta=pregunta.nro_pregunta,
+        categoria_id=pregunta.categoria_id
     )
     nueva_pregunta.opciones = opciones_validas
 
     db.add(nueva_pregunta)
-    try:
-        db.commit()
-    except IntegrityError:
-        db.rollback()
-        raise exceptions.OperacionNoPermitida("Ya existe una pregunta con ese numero asociado")
+    db.commit()
     db.refresh(nueva_pregunta)
     return nueva_pregunta
 
@@ -70,16 +61,9 @@ def cambiar_pregunta(db: Session, pregunta_id: int, pregunta: schemas.PreguntaUp
     for field, value in pregunta.model_dump(exclude_unset=True).items():
         setattr(db_pregunta, field, value)
     
-    try:
-        db.commit()
-    except IntegrityError:
-        db.rollback()
-        raise exceptions.OperacionNoPermitida(
-            "Ya existe una pregunta con ese numero asociado"
-        )
+    db.commit()
     db.refresh(db_pregunta)
     return db_pregunta
-
 
 def actualizar_opciones_pregunta(db: Session, pregunta_id: int, opciones_ids: List[int]) -> Pregunta:
     db_pregunta = recibir_pregunta(db, pregunta_id)

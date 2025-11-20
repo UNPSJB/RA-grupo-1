@@ -20,6 +20,14 @@ from src.encuestas.exceptions import (
     EncuestaYaRespondida
 )
 
+from src.encuestas.schemas import (
+    EncuestaParaCompletar,
+    EncuestaAlumnoInfo,
+    PreguntaParaEstudiante,
+    CategoriaConPreguntas,
+    PreguntaAbiertaEstudiante
+)
+
 
 router = APIRouter(prefix="/encuestas", tags=["encuestas"])
 
@@ -28,7 +36,7 @@ router = APIRouter(prefix="/encuestas", tags=["encuestas"])
             summary="Listar todas las encuestas",
             description="Retorna una lista de todas las encuestas")
 def read_encuestas(db: Session = Depends(get_db)):
-    return services.listar_encuestas(db)
+    return services.listar_encuestas_activas(db)
 
 @router.get("/{encuesta_id}", response_model=schemas.Encuesta)
 def read_encuesta(encuesta_id: int, db: Session = Depends(get_db)):
@@ -141,119 +149,13 @@ def obtener_respuestas_alumno(encuesta_id: int, alumno_id: int, db: Session = De
 
     return {"encuesta_id": encuesta_id, "respuestas": data}
 
-@router.get("/{encuesta_id}/encuesta")
-async def obtener_encuesta(
-    encuesta_id: int,
-    db: Session = Depends(get_db)
-):
-    """
-    Obtiene el encuesta de una encuesta para que el alumno la complete.
-    """
-    try:
-        # 1. Obtener encuesta
-        encuesta = db.query(Encuesta).filter(Encuesta.id == encuesta_id).first()
-        if not encuesta:
-            raise HTTPException(status_code=404, detail="Encuesta no encontrada")
-        
-        # 2. Validar que la encuesta esté activa
-        if not encuesta.activa or encuesta.estado != EstadoEncuesta.abierta:
-            raise HTTPException(
-                status_code=400, 
-                detail="La encuesta no está disponible en este momento"
-            )
-        
-        # 3. Obtener asignatura
-        asignatura = db.query(Asignatura).filter(Asignatura.id == encuesta.asignatura_id).first()
-        if not asignatura:
-            raise HTTPException(status_code=404, detail="Asignatura no encontrada")
-        
-        # 4. Obtener docente
-        docente = None
-        if asignatura.docente_id:
-            docente = db.query(Docente).filter(Docente.id == asignatura.docente_id).first()
-            if docente:
-                print(f"✅ Docente encontrado: {docente.nombre} {docente.apellido}")
-        
-        # 5. Obtener preguntas asociadas a la encuesta
-        preguntas = db.query(Pregunta).filter(
-            Pregunta.encuesta_id == encuesta_id
-        ).order_by(Pregunta.id).all()
-        
-        
-        # 6. Construir respuesta para Ciclo Básico
-        response_data = {
-            "encuesta": {
-                "id": encuesta.id,
-                "titulo": encuesta.titulo,
-                "tipo": "ciclo_basico",
-                "escala": {
-                    "tipo": "sino_npo",
-                    "valores": [
-                        {"valor": "si", "etiqueta": "Sí"},
-                        {"valor": "no", "etiqueta": "No"},
-                        {"valor": "npo", "etiqueta": "No puedo opinar"}
-                    ]
-                }
-            },
-            "asignatura": {
-                "id": asignatura.id,
-                "nombre": asignatura.nombre,
-                "codigo": getattr(asignatura, 'codigo', None)
-            },
-            "docente": {
-                "id": docente.id if docente else None,
-                "nombre": docente.nombre if docente else "No asignado",
-                "apellido": docente.apellido if docente else ""
-            } if docente else None,
-            "preguntas": [
-                {
-                    "id": p.id,
-                    "texto": p.texto,
-                    "tipo": "escala",
-                    "categoria": getattr(p.categoria, 'nombre', 'General') if p.categoria else "General",
-                    "seccion": "A"  
-                }
-                for p in preguntas
-            ],
-            "preguntas_abiertas": [
-                {
-                    "id": "comentarios_positivos",
-                    "texto": "¿Qué aspectos valoras como positivos del cursado de la asignatura? Menciona los que consideres más importantes.",
-                    "tipo": "abierta",
-                    "seccion": "G"
-                },
-                {
-                    "id": "comentarios_mejora", 
-                    "texto": "¿Qué aspectos consideras que se pueden mejorar? Menciona los que consideres más importantes.",
-                    "tipo": "abierta",
-                    "seccion": "G"
-                },
-                {
-                    "id": "recomendaciones",
-                    "texto": "¿Qué recomendaciones le harías a un compañero que cursará el año que viene la asignatura?",
-                    "tipo": "abierta", 
-                    "seccion": "G"
-                }
-            ]
-        }
-        
-        print("✅ encuesta construido exitosamente")
-        return response_data
-        
-    except HTTPException as he:
-        print(f"❌ HTTPException: {he.detail}")
-        raise he
-    except Exception as e:
-        print(f"❌ Error interno: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error interno: {str(e)}")
-"""
 @router.get("/alumno/{alumno_id}/disponibles", 
            response_model=List[schemas.EncuestaAlumnoInfo],
            summary="Obtener encuestas disponibles para alumno")
 def obtener_encuestas_alumno(alumno_id: int, db: Session = Depends(get_db)):
-    
+    """
     Obtiene la lista de encuestas disponibles para que un alumno complete
-    
+    """
     try:
         encuestas = services.listar_encuestas_para_alumno(db, alumno_id)
         return encuestas
@@ -262,28 +164,13 @@ def obtener_encuestas_alumno(alumno_id: int, db: Session = Depends(get_db)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error al obtener encuestas: {str(e)}"
         )
-"""
-@router.get("/alumno/{alumno_id}/disponibles", response_model=List[schemas.EncuestaAlumnoInfo])
-def obtener_encuestas_alumno(alumno_id: int, db: Session = Depends(get_db)):
-    print("\n🔍 Buscando encuestas disponibles para alumno:", alumno_id)
-    try:
-        encuestas = services.listar_encuestas_para_alumno(db, alumno_id)
-        print("✅ Encuestas encontradas:", encuestas)
-        return encuestas
-    except Exception as e:
-        print("❌ ERROR EN SERVICIO:", type(e).__name__, str(e))
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"{type(e).__name__}: {str(e)}"
-        )
-
 
 @router.get("/{encuesta_id}/completar",
-           response_model=schemas.EncuestaParaCompletarEstudiante,  
+           response_model=schemas.EncuestaParaCompletar,  
            summary="Obtener encuesta para completar")
 def obtener_encuesta_completar(encuesta_id: int, db: Session = Depends(get_db)):
     """
-    Obtiene toda la información de una encuesta específica para que el estudiante la complete
+    Obtiene toda la información de una encuesta específica para que el alumno la complete
     """
     try:
         encuesta = services.obtener_encuesta_para_completar(db, encuesta_id)  
@@ -309,7 +196,7 @@ def obtener_encuesta_completar(encuesta_id: int, db: Session = Depends(get_db)):
             summary="Guardar respuestas de encuesta")
 def guardar_respuestas(respuestas: schemas.RespuestaEncuesta, db: Session = Depends(get_db)):
     """
-    Guarda las respuestas de una encuesta finalizada por un estudiante
+    Guarda las respuestas de una encuesta finalizada por un alumno
     """
     try:
         resultado = services.guardar_respuestas_encuesta(db, respuestas)

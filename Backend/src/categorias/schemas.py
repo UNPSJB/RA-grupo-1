@@ -24,4 +24,3 @@ class CategoriaInformeBaseCreate(CategoriaBase):
 
 class CategoriaCreate(CategoriaBase):
     encuesta_id: Optional[int] = None
-    informe_catedra_id: Optional[int] = None

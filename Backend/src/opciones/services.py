@@ -5,11 +5,7 @@ from src.opciones.models import Opcion
 from src.opciones import schemas, exceptions
 from src.preguntas.models import Pregunta
 
-def crear_opcion(db: Session, opcion: schemas.OpcionCreate) -> schemas.Opcion:
-    pregunta = db.scalar(select(Pregunta).where(Pregunta.id == opcion.pregunta_id))
-    if not pregunta:
-        raise exceptions.PreguntaNoEncontradaError(f"No existe una pregunta con id {opcion.pregunta_id}")
-    
+def crear_opcion(db: Session, opcion: schemas.OpcionCreate) -> schemas.Opcion: 
     opcion_nueva = Opcion(**opcion.model_dump())
     db.add(opcion_nueva)
     db.commit()
