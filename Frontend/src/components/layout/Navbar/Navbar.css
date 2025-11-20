@@ -1,0 +1,129 @@
+.navbar-custom {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+.navbar-custom .navbar-brand a {
+  color: white !important;
+}
+
+.brand-text {
+  color: #308df0 !important;
+  font-weight: 600;
+  text-shadow: 0 1px 2px #00000033;
+}
+
+/* Estilos generales para los links */
+.navbar-custom .nav-link-custom {
+  color: #314e6d !important;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.navbar-custom .nav-link-custom:hover {
+  color: #0a6ad1 !important;
+  background-color: #ffffff1a;
+  border-radius: 5px;
+}
+
+/* Estilos específicos para docente - color azul */
+.navbar-custom .docente-nav-link {
+  color: #314e6d !important; 
+  font-weight: 600;
+}
+
+.navbar-custom .docente-nav-link:hover {
+  color: #0000FF !important; 
+  background-color: #1e90ff1a;
+}
+
+.navbar-logo {
+  height: 40px;
+  width: auto;
+}
+
+/* Estilos para el área de usuario */
+.user-profile {
+  color: #1a17d8;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.user-avatar-img {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+/* Estilos para el dropdown */
+.user-dropdown-toggle {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.user-dropdown-toggle::after {
+  display: none !important;
+}
+
+.user-dropdown-menu {
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px #1323b9ef;
+  margin-top: 10px;
+  min-width: 200px;
+}
+
+.user-dropdown-header {
+  background: linear-gradient(135deg, #ecdfdffa 0%, #e5e8faf5 100%);
+}
+
+.dropdown-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 3px solid white;
+}
+
+.dropdown-item-custom {
+  padding: 10px 15px;
+  color: #196fc5;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.dropdown-item-custom:hover {
+  background-color: #f8f9fa;
+  color: #007bff;
+}
+
+.dropdown-item-custom:active {
+  background-color: #e9ecef;
+}
+
+/* En tu Navbar.css agrega estos estilos */
+.depto-alumnos-nav-link {
+  color: #314e6d !important;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.depto-alumnos-nav-link:hover {
+  color: #0a6ad1 !important;
+  background-color: #ffffff1a;
+  border-radius: 5px;
+}
+
+/* Estilo específico para el botón de Cerrar Sesión */
+.navbar-custom .nav-link-custom[onclick] {
+  color: #e74c3c !important;
+  font-weight: 600;
+}
+
+.navbar-custom .nav-link-custom[onclick]:hover {
+  color: #c0392b !important;
+  background-color: #e74c3c1a;
+}

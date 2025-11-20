@@ -1,0 +1,17 @@
+.encuesta-header {
+  background-color: #eef5ff;
+  border: 1px solid #dde7ff;
+  border-radius: 12px;
+}
+
+.encuesta-header h2 {
+  color: #1a2b6d;
+}
+
+.encuesta-header .badge.bg-primary {
+  background-color: #0056d2 !important;
+}
+
+.encuesta-header .badge.bg-secondary {
+  background-color: #6c757d !important;
+}

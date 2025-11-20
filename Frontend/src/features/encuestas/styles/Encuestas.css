@@ -1,0 +1,63 @@
+/* ======== ENCABEZADO ======== */
+.header-section {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+/* ======== CARD ======== */
+.encuesta-card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 1px 4px #00000015;
+    background-color: #f8f9fa;
+    
+    /* Cards más compactas */
+    padding: 0.5rem !important;
+}
+
+
+/* ======== TAMAÑO MÁS CHICO ======== */
+.encuesta-card .card-body {
+    padding: 0.75rem 1rem !important;
+}
+
+.encuesta-card .card-header {
+    padding: 0.5rem 1rem !important;
+}
+
+.encuesta-card .card-footer {
+    padding: 0.6rem 1rem !important;
+}
+
+/* ======== TEXTOS MÁS COMPACTOS ======== */
+.encuesta-card .card-title {
+    font-size: 1.05rem;
+    margin-bottom: 0.5rem !important;
+}
+
+.encuesta-details .detail-item {
+    padding: 0.5rem !important;
+}
+
+.encuesta-details .detail-item div {
+    margin-bottom: 0.4rem !important;
+}
+
+/* ======== ESTADOS ======== */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #6c757d;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+/* ======== ALERTA ENCUESTA ======== */
+.alert-info {
+    padding: 0.4rem 0.7rem !important;
+    font-size: 0.85rem;
+}

@@ -1,0 +1,25 @@
+export interface Docente {
+  id: number;
+  nombre: string;
+}
+
+export interface DocenteStats {
+  total_asignaturas: number;
+  total_estudiantes: number;
+  encuestas_finalizadas: number;
+  evaluacion_promedio: number;
+  semestre_actual: string;
+}
+
+// simulado por ahora
+export const docenteService = {
+  getDocenteStats: async (docenteId: number): Promise<DocenteStats> => {
+    return {
+      total_asignaturas: 5,
+      total_estudiantes: 150,
+      encuestas_finalizadas: 120,
+      evaluacion_promedio: 3.8,
+      semestre_actual: "2025-1"
+    };
+  }
+};
