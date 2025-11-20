@@ -29,7 +29,7 @@ export default function ListarAsignaturas({ asignaturas, loading = false }: Prop
         <div className="estado-vacio">
           <i className="bi bi-journal-x"></i>
           <h3 className="h5">No hay asignaturas disponibles</h3>
-          <p className="text-muted">No se encontraron asignaturas habilitadas para este docente</p>
+          <p className="text-muted">No se encontraron asignaturas disponibles para este docente</p>
         </div>
       </div>
     );

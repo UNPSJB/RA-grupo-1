@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import type { Asignatura } from "../../asignaturas/types/asignaturaTypes";
 import { Link } from "react-router-dom";
+import ROUTES from "../../paths";
 
 type Respuesta = {
   id: number;
@@ -16,7 +17,7 @@ type EncuestaFinalizada = {
   encuesta_id: number;
   asignatura_id: number;
   anio: number;
-  periodo: string;
+  duracion: string;
   respuestas: Respuesta[];
 };
 
@@ -61,7 +62,7 @@ export default function EncuestasCompletadas({ encuestas }: Props) {
 
                 <span className="text-dark">
                   {" "}
-                  — {e.anio} {e.periodo}
+                  — {e.anio} {e.duracion}
                 </span>
               </div>
               <Link

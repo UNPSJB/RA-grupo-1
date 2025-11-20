@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session, joinedload
 from . import models, schemas, exceptions
 from src.asignaturas.models import Asignatura
 from src.vinculaciones.asignatura_docente.models import AsignaturaDocente
-from src.vinculaciones.models import alumno_asignatura, alumno_encuesta
+from src.vinculaciones.models import asignatura_alumno, alumno_encuesta
 from src.personas.models import Persona
 
 def listar_docentes(db: Session) -> List[models.Docente]:

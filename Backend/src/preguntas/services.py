@@ -30,9 +30,10 @@ def crear_cerrada(db: Session, pregunta: schemas.PreguntaCerradaCreate) -> Pregu
         )
 
     nueva_pregunta = Pregunta(
-        texto=pregunta.oracion, 
+        texto=pregunta.texto, 
         tipo=pregunta.tipo or "cerrada",
-        encuesta_id=pregunta.encuesta_id
+        encuesta_id=pregunta.encuesta_id,
+        categoria_id=pregunta.categoria_id
     )
     nueva_pregunta.opciones = opciones_validas
 

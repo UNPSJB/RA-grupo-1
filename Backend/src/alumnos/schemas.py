@@ -59,3 +59,21 @@ class EncuestaDisponible(BaseModel):
 class AlumnoEncuestasDisponibles(BaseModel):
     alumno_id: int
     encuestas: List[EncuestaDisponible] = []
+
+class AsignaturaConDetalles(BaseModel):
+
+    id: int
+    nombre: str
+    matricula: str
+    
+    # Datos de la inscripción (desde asignatura_alumno)
+    nota_cursada: Optional[int] = None
+    anio: Optional[int] = None
+    duracion: Optional[str] = None
+    
+    class Config:
+        from_attributes = True
+
+class AlumnoDeleteResponse(BaseModel):
+    message: str
+    id: int

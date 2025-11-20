@@ -57,7 +57,7 @@ export default function GestorOpciones({
     return (
         <div className="mb-3 border p-3 bg-white rounded">
             <h6 className="fw-bold">Opciones para respuesta cerrada</h6>
-            <label className="form-label">Seleccionar Opciones habilitadas:</label>
+            <label className="form-label">Seleccionar Opciones disponibles:</label>
             <div className="list-group mb-2" style={{ maxHeight: '150px', overflowY: 'auto' }}>
                 {opcionesCatalogo.map((opcion) => (
                     <label key={opcion.id} className="list-group-item d-flex align-items-center">

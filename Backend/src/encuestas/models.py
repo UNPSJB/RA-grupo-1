@@ -4,7 +4,13 @@ from datetime import datetime
 from src.models import ModeloBase
 from src.vinculaciones.models import alumno_encuesta, Duracion
 from enum import StrEnum
-from typing import Optional, List
+from typing import Optional, List, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from src.asignaturas.models import Asignatura
+    from src.alumnos.models import Alumno
+    from src.encuesta_finalizada.models import EncuestaFinalizada
+    from src.categorias.models import Categoria
 
 class EstadoEncuesta(StrEnum):
     abierta = "abierta"
@@ -22,19 +28,18 @@ class Encuesta(ModeloBase):
     estado: Mapped[EstadoEncuesta] = mapped_column(Enum(EstadoEncuesta), nullable=False, default=EstadoEncuesta.abierta)
     titulo: Mapped[str] = mapped_column(String(255), nullable=False)
     fecha_inicio: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-    fecha_fin: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    fecha_fin: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     activa: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     
-    # Foreign Keys
+  
     asignatura_id: Mapped[int] = mapped_column(Integer, ForeignKey("asignaturas.id"))
-    
-    # Relaciones
     asignatura: Mapped["Asignatura"] = relationship(
-        "Asignatura", back_populates="encuestas"
+        "Asignatura",
+        back_populates="encuestas"
     )
 
-    alumnos: Mapped[list["Alumno"]] = relationship(
+    alumnos: Mapped[List["Alumno"]] = relationship(
         "Alumno", secondary=alumno_encuesta, back_populates="encuestas"
     )
 
@@ -43,16 +48,21 @@ class Encuesta(ModeloBase):
         back_populates="encuesta"
     )
 
+    preguntas = relationship("Pregunta", back_populates="encuesta", cascade="all, delete")
+
     categorias: Mapped[List["Categoria"]] = relationship(
-    "src.categorias.models.Categoria",
-    back_populates="encuesta"
+        "Categoria",
+        back_populates="encuesta"
     )
 
-
-    # Verifica si la encuesta esta activa
+    asignatura = relationship("Asignatura", lazy="joined")
+   
+    # Verifica si la encuesta está activa
     @property
     def esta_activa(self) -> bool:
         ahora = datetime.now()
-        return (self.activa and 
-                self.estado == EstadoEncuesta.abierta and
-                self.fecha_inicio <= ahora <= self.fecha_fin)
+        return (
+            self.activa and 
+            self.estado == EstadoEncuesta.abierta and
+            self.fecha_inicio <= ahora <= (self.fecha_fin or ahora)
+        )

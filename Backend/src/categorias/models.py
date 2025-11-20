@@ -1,8 +1,7 @@
-from sqlalchemy import Integer, String, ForeignKey, Table, Column
+from sqlalchemy import Integer, String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.models import ModeloBase
 from typing import Optional, List
-from src.vinculaciones.models import pregunta_opcion
 from src.encuestas.models import Encuesta
 from src.preguntas.models import Pregunta
 

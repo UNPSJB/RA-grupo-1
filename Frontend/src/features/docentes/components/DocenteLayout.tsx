@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import { Container } from "react-bootstrap";
 import { Navbar } from "../../../components/layout/Navbar/Navbar";
 import { Footer } from "../../../components/layout/Footer/Footer";
+import '../styles/DocenteLayout.css'
 
 export const DocenteLayout = ({ children }) => {
   const docenteNavLinks = [

@@ -14,10 +14,13 @@ class CategoriaEncuesta(Categoria):
     encuesta_id: int
 
 class CategoriaInformeBase(Categoria):
-    informe_base_id: int
+    informe_catedra_id: int
        
 class CategoriaEncuestaCreate(CategoriaBase):
     encuesta_id: int
 
 class CategoriaInformeBaseCreate(CategoriaBase):
-    informe_base_id: int
+    informe_catedra_id: int
+
+class CategoriaCreate(CategoriaBase):
+    encuesta_id: Optional[int] = None

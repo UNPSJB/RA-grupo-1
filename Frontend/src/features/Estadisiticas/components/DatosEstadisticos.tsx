@@ -19,7 +19,7 @@ export default function DatosEstadisticosPage() {
   const informeId = 6;
   const asignaturaId = 7;
   const anio = 2025;
-  const periodo = "PRIMER_CUATRIMESTRE";
+  const duracion = "PRIMER_CUATRIMESTRE";
 
   const fetchDatos = async (tipo: "calculados" | "existentes") => {
     try {
@@ -29,7 +29,7 @@ export default function DatosEstadisticosPage() {
 
       let url = "";
       if (tipo === "calculados") {
-        url = `http://127.0.0.1:8000/datos_estadisticos/?id_asignatura=${asignaturaId}&anio=${anio}&periodo=${periodo}`;
+        url = `http://127.0.0.1:8000/datos_estadisticos/?id_asignatura=${asignaturaId}&anio=${anio}&duracion=${duracion}`;
       } else {
         url = `http://127.0.0.1:8000/datos_estadisticos/recuperar_existentes/${informeId}`;
       }
@@ -81,7 +81,7 @@ export default function DatosEstadisticosPage() {
             <strong>Informe ID:</strong> {informeId} <br />
             <strong>Asignatura ID:</strong> {asignaturaId} <br />
             <strong>Año:</strong> {anio} <br />
-            <strong>Periodo:</strong> {periodo}
+            <strong>Duracion:</strong> {duracion}
           </div>
 
           <div className="d-flex flex-column gap-3 mb-4">

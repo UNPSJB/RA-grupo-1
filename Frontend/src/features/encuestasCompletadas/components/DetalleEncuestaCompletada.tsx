@@ -1,190 +1,218 @@
-import { useParams, Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import CategoriaManager from "../informeCatedra/ManejadorCategoria"
+import OpcionesManager from "../informeCatedra/ManejadorOpciones";
+import ROUTES from "../../paths";
 
-interface Opcion {
-  id: number;
-  contenido: string;
-}
+interface CategoriaTemp { cod: string; texto: string; }
+interface PreguntaTemp { enunciado: string; categoria_cod: string; tipo: 'abierta' | 'cerrada'; opcion_ids: number[]; }
+interface Opcion { id: number; contenido: string; }
 
-interface Pregunta {
-  id: number;
-  enunciado: string;
-  categoria_id: number;
-  encuesta_id: number;
-  tipo: "cerrada" | "abierta";
-}
+export default function EncuestaBaseForm() {
+    const navigate = useNavigate();
+    const [nombre, setNombre] = useState("");
+    const [cargando, setCargando] = useState(false);
 
-interface Respuesta {
-  id: number;
-  pregunta_id: number;
-  opcion_id: number[];
-  texto_respuesta: string;
-  encuesta_completada_id: number;
-}
+    const [categorias, setCategorias] = useState<CategoriaTemp[]>([]);
+    const [preguntas, setPreguntas] = useState<PreguntaTemp[]>([]);
+    const [opcionesCatalogo, setOpcionesCatalogo] = useState<Opcion[]>([]); 
 
-interface EncuestaFinalizada {
-  id: number;
-  alumno_id: number;
-  encuesta_id: number;
-  asignatura_id: number;
-  anio: number;
-  periodo: string;
-  respuestas: Respuesta[];
-}
+    const [nuevoEnunciado, setNuevoEnunciado] = useState("");
+    const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("");
+    const [nuevoTipoPregunta, setNuevoTipoPregunta] = useState<'abierta' | 'cerrada'>('abierta'); 
+    const [opcionesSeleccionadas, setOpcionesSeleccionadas] = useState<number[]>([]); 
+    
+    useEffect(() => {
+        fetch("http://localhost:8000/opciones")
+            .then((res) => res.json())
+            .then((data) => setOpcionesCatalogo(Array.isArray(data) ? data : []))
+            .catch((err) => console.error("Error cargando opciones:", err));
+    }, []);
 
-interface Asignatura {
-  id: number;
-  nombre: string;
-  matricula: string;
-}
+    const agregarPregunta = () => {
+        if (!nuevoEnunciado.trim() || !categoriaSeleccionada || categorias.length === 0) {
+            alert("Debe ingresar enunciado y seleccionar una categoría.");
+            return;
+        }
+        if (nuevoTipoPregunta === 'cerrada' && opcionesSeleccionadas.length === 0) {
+            alert("Las preguntas cerradas deben tener al menos una opción.");
+            return;
+        }
 
-export default function EncuestaFinalizadaDetalle() {
-  const { id } = useParams();
-  const [encuesta, setEncuesta] = useState<EncuestaFinalizada | null>(null);
-  const [asignatura, setAsignatura] = useState<Asignatura | null>(null);
-  const [preguntas, setPreguntas] = useState<Record<number, Pregunta>>({});
-  const [opciones, setOpciones] = useState<Record<number, Opcion[]>>({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+        const nuevaPregunta: PreguntaTemp = {
+            enunciado: nuevoEnunciado,
+            categoria_cod: categoriaSeleccionada,
+            tipo: nuevoTipoPregunta,
+            opcion_ids: nuevoTipoPregunta === 'cerrada' ? opcionesSeleccionadas : [],
+        };
 
-  useEffect(() => {
-    if (!id) return;
+        setPreguntas(prev => [...prev, nuevaPregunta]);
+        setNuevoEnunciado("");
+        setOpcionesSeleccionadas([]);
+    };
 
-    fetch(`http://127.0.0.1:8000/encuesta-finalizada/${id}`)
-      .then((res) => {
-        if (!res.ok) throw new Error("Error al obtener la encuesta completada");
-        return res.json();
-      })
-      .then(async (data: EncuestaFinalizada) => {
-        setEncuesta(data);
+    const eliminarPregunta = (index: number) => {
+        setPreguntas(prev => prev.filter((_, i) => i !== index));
+    };
 
-        fetch(`http://127.0.0.1:8000/asignaturas/${data.asignatura_id}`)
-          .then((res) => res.json())
-          .then((m: Asignatura) => setAsignatura(m))
-          .catch(() => setAsignatura(null));
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
 
-        const preguntasTemp: Record<number, Pregunta> = {};
-        const opcionesTemp: Record<number, Opcion[]> = {};
+        if (!nombre.trim() || categorias.length === 0 || preguntas.length === 0) {
+            alert("Complete todos los campos y agregue al menos una categoría y una pregunta.");
+            return;
+        }
 
-        await Promise.all(
-          data.respuestas.map(async (r) => {
-            const pRes = await fetch(
-              `http://127.0.0.1:8000/preguntas/${r.pregunta_id}`
-            );
-            if (pRes.ok) {
-              const pregunta: Pregunta = await pRes.json();
-              preguntasTemp[r.pregunta_id] = pregunta;
+        setCargando(true);
 
-              if (pregunta.tipo === "cerrada") {
-                const oRes = await fetch(
-                  `http://127.0.0.1:8000/preguntas/${pregunta.id}/opciones`
-                );
-                if (oRes.ok) {
-                  const ops: Opcion[] = await oRes.json();
-                  opcionesTemp[pregunta.id] = ops;
-                }
-              }
+        try {
+            const resEncuesta = await fetch("http://localhost:8000/encuestas/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nombre }),
+            });
+            if (!resEncuesta.ok) { 
+                const errorData = await resEncuesta.json();
+                throw new Error(errorData.detail || "Error al crear encuesta."); 
             }
-          })
-        );
+            const { id: encuestaId } = await resEncuesta.json();
+            const categoriasCreadas = [];
+            
+            for (const categoriaTemp of categorias) {
+                const resCat = await fetch("http://localhost:8000/categorias/paraEncuesta/", { 
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        cod: categoriaTemp.cod,
+                        texto: categoriaTemp.texto || "",
+                        encuesta_id: encuestaId,
+                    }),
+                });
+                if (!resCat.ok) { 
+                    const errorData = await resCat.json();
+                    throw new Error(errorData.detail || `Error al crear categoría ${categoriaTemp.cod}. El código ya está en uso.`); 
+                }
+                const categoriaCreada = await resCat.json();
+                categoriasCreadas.push(categoriaCreada);
+            }
 
-        setPreguntas(preguntasTemp);
-        setOpciones(opcionesTemp);
-      })
-      .catch((err) => {
-        console.error(err);
-        setError("No se pudo cargar la encuesta completada");
-      })
-      .finally(() => setLoading(false));
-  }, [id]);
+            for (const preg of preguntas) {
+                const categoria = categoriasCreadas.find((c) => c.cod === preg.categoria_cod);
+                if (!categoria) continue; 
+                const endpoint = preg.tipo === 'cerrada' ? "http://localhost:8000/preguntas/cerrada" : "http://localhost:8000/preguntas/abierta";   
+                const payload = {
+                    categoria_id: categoria.id,
+                    enunciado: preg.enunciado,
+                    tipo: preg.tipo, 
+                    ...(preg.tipo === 'cerrada' && { opcion_ids: preg.opcion_ids }), 
+                };
+                const resPreg = await fetch(endpoint, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(payload),
+                });
 
-  if (loading)
-    return <div className="text-center mt-4">Cargando encuesta...</div>;
+                if (!resPreg.ok) { 
+                     const errorData = await resPreg.json();
+                     throw new Error(errorData.detail || `Error al crear la pregunta: ${preg.enunciado}`);
+                }
+            }
 
-  if (error)
-    return <div className="alert alert-danger text-center mt-4">{error}</div>;
+            alert("Encuesta creado con éxito.");
+            navigate(ROUTES.HOME);
 
-  if (!encuesta)
+        } catch (error) {
+            console.error("Error en la cascada de creación:", error);
+            const messageToShow = error instanceof Error ? error.message : "Error desconocido al procesar la solicitud.";
+            alert(`Fallo en la creación del encuesta. Error: ${messageToShow}`);
+        } finally {
+            setCargando(false);
+        }
+    };
+
     return (
-      <div className="alert alert-warning text-center mt-4">
-        La encuesta completada no se encontro registrada
-      </div>
-    );
-
-  return (
-    <div className="container py-4">
-      <div className="card">
-        <div className="card-header bg-primary text-white">
-          <h1 className="h4 mb-0">
-            Asignatura: {asignatura ? asignatura.nombre : "Desconocida"}
-          </h1>
-        </div>
-
-        <div className="card-body">
-          <div className="alert alert-info">
-            <strong>Año:</strong> {encuesta.anio}
-            <br />
-            <strong>Período:</strong> {encuesta.periodo}
-          </div>
-
-          <h5 className="mt-4">Respuestas</h5>
-
-          {encuesta.respuestas.length > 0 ? (
-            <ul className="list-group">
-              {encuesta.respuestas.map((r) => {
-                const pregunta = preguntas[r.pregunta_id];
-                if (!pregunta) {
-                  return (
-                    <li key={r.id} className="list-group-item text-muted">
-                      La pregunta no se encontro (ID {r.pregunta_id})
-                    </li>
-                  );
-                }
-
-                let respuestaTexto = "—";
-
-                if (pregunta.tipo === "abierta") {
-                  respuestaTexto = r.texto_respuesta || "—";
-                } else if (pregunta.tipo === "cerrada") {
-                  const opcionesDePregunta = opciones[pregunta.id] || [];
-                  const opcionIds = Array.isArray(r.opcion_id)
-                    ? r.opcion_id
-                    : r.opcion_id != null
-                    ? [r.opcion_id]
-                    : [];
-
-                  const seleccionadas = opcionesDePregunta.filter((op) =>
-                    opcionIds.includes(op.id)
-                  );
-
-                  respuestaTexto =
-                    seleccionadas.length > 0
-                      ? seleccionadas.map((op) => op.contenido).join(", ")
-                      : "—";
-                }
-
-                return (
-                  <li key={r.id} className="list-group-item">
-                    {pregunta.enunciado}
-                    <br />
-                    <span>
-                      Respuesta: {respuestaTexto}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          ) : (
-            <div className="alert alert-secondary mt-3">
-              No existen respuestas guardadas
+        <div className="container py-4">
+            <div className="card shadow">
+                <div className="card-header bg-unpsjb-header">
+                    <h1 className="h4 mb-0">Nueva Encuesta Base</h1>
+                </div>
+                <div className="card-body">
+                    <form onSubmit={handleSubmit}>  
+                        <div className="mb-4 p-3 border rounded bg-light">
+                            <label className="form-label fw-bold">Nombre de la Encuesta</label>
+                            <input type="text" className="form-control" value={nombre} onChange={(e) => setNombre(e.target.value)} required disabled={cargando} />
+                        </div>
+                        <CategoriaManager
+                            categorias={categorias}
+                            setCategorias={setCategorias}
+                            preguntas={preguntas}
+                            cargando={cargando}
+                        />
+                        
+                        <h5 className="mb-3">2. Definición de Preguntas</h5>
+                        <div className="card bg-light mb-4 p-3">
+                            <div className="row mb-3">
+                                <div className="col-md-3">
+                                    <label className="form-label fw-bold">Tipo</label>
+                                    <select 
+                                        className="form-select" 
+                                        value={nuevoTipoPregunta} 
+                                        onChange={(e) => { setNuevoTipoPregunta(e.target.value as 'abierta' | 'cerrada'); setOpcionesSeleccionadas([]); }} 
+                                        disabled={cargando || categorias.length === 0} 
+                                    >
+                                        <option value="abierta">Abierta</option>
+                                        <option value="cerrada">Cerrada</option>
+                                    </select>
+                                </div>
+                                <div className="col-md-9">
+                                    <label className="form-label fw-bold">Categoría</label>
+                                    <select className="form-select" value={categoriaSeleccionada} onChange={(e) => setCategoriaSeleccionada(e.target.value)} disabled={cargando || categorias.length === 0} >
+                                        <option value="">Seleccione categoría</option>
+                                        {categorias.map((cat) => ( <option key={cat.cod} value={cat.cod}>{cat.cod} {cat.texto ? `- ${cat.texto}` : ''}</option> ))}
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="mb-3">
+                                <label className="form-label fw-bold">Enunciado</label>
+                                <textarea className="form-control" rows={2} value={nuevoEnunciado} onChange={(e) => setNuevoEnunciado(e.target.value)} disabled={cargando || categorias.length === 0} />
+                            </div>
+                            {nuevoTipoPregunta === 'cerrada' && (
+                                <OpcionesManager
+                                    opcionesCatalogo={opcionesCatalogo}
+                                    opcionesSeleccionadas={opcionesSeleccionadas}
+                                    setOpcionesSeleccionadas={setOpcionesSeleccionadas}
+                                    setOpcionesCatalogo={setOpcionesCatalogo}
+                                    cargando={cargando}
+                                />
+                            )}
+                            <div className="d-flex justify-content-end mt-2">
+                                <button type="button" className="btn btn-primary" onClick={agregarPregunta} disabled={cargando || categorias.length === 0 || !nuevoEnunciado.trim() || !categoriaSeleccionada || (nuevoTipoPregunta === 'cerrada' && opcionesSeleccionadas.length === 0)} >
+                                    Agregar Pregunta a la Lista
+                                </button>
+                            </div>
+                        </div>
+                        {preguntas.length > 0 && (
+                            <ul className="list-group mb-4">
+                                {preguntas.map((preg, i) => (
+                                    <li key={i} className={`list-group-item d-flex justify-content-between align-items-center ${preg.tipo === 'cerrada' ? 'bg-info-subtle' : ''}`}>
+                                        <span>
+                                            <strong className={`badge ${preg.tipo === 'cerrada' ? 'bg-primary' : 'bg-secondary'} me-2`}>{preg.tipo.toUpperCase()}</strong>
+                                            <strong className="text-primary">[{preg.categoria_cod}]</strong> {preg.enunciado}
+                                        </span>
+                                        <button type="button" className="btn btn-danger btn-sm" onClick={() => eliminarPregunta(i)} disabled={cargando}>Eliminar</button>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                        <div className="d-flex justify-content-end gap-2 border-top pt-3">
+                            <button type="button" className="btn btn-secondary" onClick={() => navigate(ROUTES.HOME)} disabled={cargando}>Cancelar</button>
+                            <button type="submit" className="btn btn-theme-primary" disabled={cargando}>
+                                {cargando ? "Guardando en cascada..." : "Guardar Encuesta Completa"}
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-          )}
-
-          <Link to="/encuestas-completadas" className="btn btn-secondary mt-4">
-            Volver
-          </Link>
         </div>
-      </div>
-    </div>
-  );
+    );
 }

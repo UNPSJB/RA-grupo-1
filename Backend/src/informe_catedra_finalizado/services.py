@@ -1,13 +1,14 @@
 from typing import List
-from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import select
+from sqlalchemy.orm import Session, joinedload, selectinload
+from sqlalchemy import select, func
 from src.informe_catedra_finalizado import schemas, models, exceptions
 from src.informe_catedra_finalizado.models import InformeCatedraFinalizado
 from src.asignaturas.models import Asignatura
 from src.vinculaciones.asignatura_docente.models import AsignaturaDocente
 from src.vinculaciones.models import Duracion
 from src.resultado_informe import services as respuestas_services
-
+from src.resultado_informe.models import ResultadoInforme  
+from src.preguntas.models import Pregunta
 
 def obtener_informes_pendientes(db: Session, docente_id: int,anio: int,duracion: Duracion) -> List[dict]:
     relaciones = db.scalars(
@@ -37,6 +38,12 @@ def obtener_informes_pendientes(db: Session, docente_id: int,anio: int,duracion:
     
     return pendientes
 
+def verificar_informe_existente(db: Session, docente_asignatura_id: int) -> bool:
+    informe = db.scalar(
+        select(InformeCatedraFinalizado)
+        .where(InformeCatedraFinalizado.docente_asignatura_id == docente_asignatura_id)
+    )
+    return informe is not None
 
 def verificar_informe_existente(db: Session, asignatura_docente_id: int) -> bool:
     informe = db.scalar(
@@ -59,7 +66,7 @@ def crear_informe_finalizado(db: Session, informe_data: schemas.InformeCatedraFi
     
     existe = db.scalar(
         select(InformeCatedraFinalizado)
-        .where(InformeCatedraFinalizado.docente_asignatura_id == informe_data.docente_asignatura_id)
+        .where(InformeCatedraFinalizado.asignatura_docente_id == informe_data.asignatura_docente_id)
     )
     if existe:
         raise exceptions.InformeFinzalizadoYaExiste()
@@ -75,6 +82,9 @@ def crear_informe_finalizado(db: Session, informe_data: schemas.InformeCatedraFi
         duracion=informe_data.duracion,
         cantidadComisionesTeoricas=informe_data.cantidadComisionesTeoricas,
         cantidadComisionesPracticas=informe_data.cantidadComisionesPracticas,
+        JTP=informe_data.JTP,
+        aux_primera=informe_data.aux_primera,
+        aux_segunda=informe_data.aux_segunda
     )
     db.add(informe_db)
     db.commit()  
@@ -93,7 +103,16 @@ def crear_informe_finalizado(db: Session, informe_data: schemas.InformeCatedraFi
 
 
 def obtener_informe_finalizado(db: Session, informe_id: int) -> models.InformeCatedraFinalizado:
-    informe = db.scalar(select(InformeCatedraFinalizado).where(InformeCatedraFinalizado.id == informe_id))
+    stmt = (
+        select(models.InformeCatedraFinalizado)
+        .where(models.InformeCatedraFinalizado.id == informe_id)
+        .options(
+            selectinload(models.InformeCatedraFinalizado.respuestas_informe)
+            .selectinload(ResultadoInforme.pregunta)  
+        )
+    )
+    
+    informe = db.scalar(stmt)
     if not informe:
         raise exceptions.InformeFinalizadoNoEncontrado()
     return informe
@@ -101,8 +120,61 @@ def obtener_informe_finalizado(db: Session, informe_id: int) -> models.InformeCa
 def obtener_informes_por_departamento(db: Session, departamento_id: int) -> List[models.InformeCatedraFinalizado]:
     informes = db.scalars(
         select(InformeCatedraFinalizado)
-        .join(AsignaturaDocente, InformeCatedraFinalizado.docente_asignatura_id == AsignaturaDocente.id)
+        .join(AsignaturaDocente, InformeCatedraFinalizado.asignatura_docente_id == AsignaturaDocente.id)
         .join(Asignatura, AsignaturaDocente.asignatura_id == Asignatura.id)
         .where(Asignatura.departamento_id == departamento_id)
     ).all()
     return informes
+
+def obtener_informe_finalizado_detalle(db: Session, informe_id: int) -> dict:
+    stmt = (
+        select(models.InformeCatedraFinalizado)
+        .where(models.InformeCatedraFinalizado.id == informe_id)
+        .options(
+            selectinload(models.InformeCatedraFinalizado.respuestas_informe)
+            .selectinload(respuestas_informe.pregunta),
+            joinedload(models.InformeCatedraFinalizado.asignatura_docente) 
+                .joinedload(AsignaturaDocente.asignatura),
+            joinedload(models.InformeCatedraFinalizado.asignatura_docente)
+                .joinedload(AsignaturaDocente.docente)
+        )
+    )
+    
+    informe = db.scalar(stmt)
+    if not informe:
+        raise exceptions.InformeFinalizadoNoEncontrado()
+    
+    informe_dict = {
+        "id": informe.id,
+        "asignatura_docente_id": informe.asignatura_docente_id,
+        "informe_catedra_base_id": informe.informe_catedra_base_id,
+        "titulo": informe.titulo,
+        "contenido": informe.contenido,
+        "cantidadAlumnos": informe.cantidadAlumnos,
+        "anio": informe.anio,
+        "periodo": informe.periodo,
+        "cantidadComisionesTeoricas": informe.cantidadComisionesTeoricas,
+        "cantidadComisionesPracticas": informe.cantidadComisionesPracticas,
+        "respuestas_informe": informe.respuestas_informe,
+        "JTP": informe.JTP,
+        "aux_primera": informe.aux_primera,
+        "aux_segunda": informe.aux_segunda,
+        
+        "asignaturaId": -1, 
+        "asignaturaNombre": None,
+        "asignaturaCodigo": None,
+        "docenteResponsable": None,
+        "sede": "Trelew" 
+    }
+
+    if informe.asignatura_docente:
+        if informe.asignatura_docente.asignatura:
+            informe_dict["asignaturaId"] = informe.asignatura_docente.asignatura.id
+            informe_dict["asignaturaNombre"] = informe.asignatura_docente.asignatura.nombre
+            informe_dict["asignaturaCodigo"] = informe.asignatura_docente.asignatura.matricula
+        
+        if informe.asignatura_docente.docente:
+            docente = informe.asignatura_docente.docente
+            informe_dict["docenteResponsable"] = f"{docente.nombre} {docente.apellido}"
+
+    return informe_dict

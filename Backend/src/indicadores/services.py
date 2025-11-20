@@ -1,102 +1,104 @@
 from typing import List, Optional
-from sqlalchemy import select, func
+from sqlalchemy import select, func, delete, update
 from sqlalchemy.orm import Session
-from src.indicadores.models import IndicadoresInforme, IndicadoresPregunta
 from src.informe_catedra_finalizado.models import InformeCatedraFinalizado
 from src.encuesta_finalizada.models import EncuestaFinalizada
 from src.asignaturas.models import Asignatura
 from src.preguntas.models import Pregunta
 from src.respuestas.models import Respuesta
+from src.categorias.models import Categoria
 from src.opciones.models import Opcion
 from src.encuestas.models import Encuesta
 from src.vinculaciones.models import Duracion
 from src.indicadores import schemas
+from src.indicadores.models import IndicadoresInforme, IndicadoresPregunta
+from src.indicadores import schemas
 from src.encuestas import services as encuesta_services
 from src.preguntas import schemas as pregunta_schemas
 
-def obtener_indicadores(
-    db: Session, 
-    id_asignatura: int, 
-    anio: int, 
-    duracion: Duracion
-) -> List[schemas.IndicadoresPregunta]:
-    """
-    Obtiene los indicadores estadísticos de las preguntas cerradas
-    para una asignatura, año y duración específicos.
-    """
-    # Verificar que la asignatura existe
-    asignatura: Optional[Asignatura] = db.scalar(
-        select(Asignatura).where(Asignatura.id == id_asignatura)
-    )
-    
-    if not asignatura:
-        raise ValueError(f"Asignatura con id {id_asignatura} no encontrada")
-    
-    # Obtener encuesta asociada a la asignatura
+def obtener_indicadores(db: Session, id_asignatura: int, anio: int, duracion: Duracion):
+    asignatura: Asignatura = db.scalar(select(Asignatura).where(asignatura.id == id_asignatura))     
     encuesta: Encuesta = asignatura.encuesta
-    if not encuesta:
+    categorias: List[Categoria] = encuesta.categorias
+
+    categorias = [c for c in categorias if c.cod != "A"]
+
+    if not categorias:
         return []
     
-    # Obtener preguntas cerradas directamente desde la base de datos
-    preguntas = db.scalars(
-        select(Pregunta)
-        .where(Pregunta.encuesta_id == encuesta.id)
-        .where(Pregunta.tipo == 'cerrada')  # Ajusta según tu modelo
-    ).all()
-    
-    if not preguntas:
-        return []
-    
-    # Obtener encuestas finalizadas
     encuestas_finalizadas = db.scalars(
-        select(EncuestaFinalizada)
+        select(EncuestaFinalizada)  
         .where(EncuestaFinalizada.asignatura_id == id_asignatura)
         .where(EncuestaFinalizada.anio == anio)
         .where(EncuestaFinalizada.duracion == duracion)
     ).all()
-    
-    if not encuestas_finalizadas:
+
+    if len(encuestas_finalizadas) == 0:
         return []
     
-    # Obtener respuestas de las encuestas finalizadas
     ids_encuestas = [e.id for e in encuestas_finalizadas]
     respuestas = db.scalars(
         select(Respuesta).where(Respuesta.encuesta_finalizada_id.in_(ids_encuestas))
     ).all()
-    
-    # Calcular indicadores
-    indicadores: List[schemas.IndicadoresPregunta] = []
+
     total_encuestas = len(encuestas_finalizadas)
     
-    for pregunta in preguntas:
-        # Obtener opciones para esta pregunta
-        opciones = db.scalars(
-            select(Opcion).where(Opcion.pregunta_id == pregunta.id)
-        ).all()
-        
-        indicadores_opciones: List[schemas.OpcionPorcentaje] = []
-        respuestas_pregunta = [r for r in respuestas if r.pregunta_id == pregunta.id]
-        
-        for opcion in opciones:
-            respuestas_opcion = [r for r in respuestas_pregunta if r.opcion_id == opcion.id]
-            cantidad = len(respuestas_opcion)
-            porcentaje = (cantidad / total_encuestas * 100) if total_encuestas > 0 else 0
-            
-            indicadores_opciones.append(
-                schemas.OpcionPorcentaje(
-                    opcion_id=str(opcion.contenido),
-                    porcentaje=round(porcentaje, 2)
-                )
-            )
-        
-        indicadores_pregunta = schemas.IndicadoresPregunta(
-            id_pregunta=str(pregunta.enunciado),
-            indicadores=indicadores_opciones
-        )
-        indicadores.append(indicadores_pregunta)
-        
-    return indicadores
+    resultado: List[schemas.IndicadoresCategoria] = []
 
+    for categoria in categorias:
+        if categoria.codigo == "G":
+            preguntas_info = []
+        else:
+            preguntas_categoria = [p for p in categoria.preguntas if p.tipo == "cerrada"]
+            if not preguntas_categoria:
+                continue
+
+            preguntas_info = []
+            acumulados = {}
+            conteo = {}
+
+            for pregunta in preguntas_categoria:
+                respuestas_pregunta = [r for r in respuestas if r.pregunta_id == pregunta.id]
+                opciones = pregunta.opciones
+
+                datos_opciones = []
+                for opcion in opciones:
+                    respuestas_opcion = [r for r in respuestas_pregunta if r.opcion_id == opcion.id]
+                    cantidad = len(respuestas_opcion)
+                    porcentaje = (cantidad / total_encuestas * 100)
+
+                    datos_opciones.append(
+                        schemas.OpcionPorcentaje(opcion_id=opcion.contenido, porcentaje=round(porcentaje, 2))
+                    )
+
+                    acumulados[opcion.contenido] = acumulados.get(opcion.contenido, 0) + porcentaje
+                    conteo[opcion.contenido] = conteo.get(opcion.contenido, 0) + 1
+
+                preguntas_info.append(
+                    schemas.DatosEstadisticosPregunta(
+                        id_pregunta=pregunta.oracion,
+                        datos=datos_opciones
+                    )
+                )
+
+            promedio_opciones = [
+                schemas.OpcionPorcentaje(
+                    opcion_id=op,
+                    porcentaje=round(acumulados[op] / conteo[op], 2) if conteo[op] > 0 else 0.0
+                )
+                for op in acumulados.keys()
+            ]
+
+        resultado.append(
+            schemas.DatosEstadisticosCategoria(
+                categoria_codigo=categoria.codigo,
+                categoria_texto=categoria.texto,
+                promedio_categoria=promedio_opciones,
+                preguntas=preguntas_info
+            )
+        )
+
+    return resultado
 
 def guardar_indicadores(db: Session, id_informe_catedra: int) -> None:
     """
@@ -225,14 +227,14 @@ def recuperar_indicadores(
         
         indicadores.append(
             schemas.IndicadoresPregunta(
-                id_pregunta=str(pregunta.enunciado) if pregunta else f"Pregunta {informe.id_pregunta_encuesta}",
+                id_pregunta=str(pregunta.oracion) if pregunta else f"Pregunta {informe.id_pregunta_encuesta}",
                 indicadores=opciones
             )
         )
     
     return [
     schemas.IndicadoresPregunta(
-        id_pregunta=str(pregunta.enunciado) if pregunta else f"Pregunta {informe.id_pregunta_encuesta}",
+        id_pregunta=str(pregunta.oracion) if pregunta else f"Pregunta {informe.id_pregunta_encuesta}",
         indicadores=[
             schemas.OpcionPorcentaje(
                 opcion_id=str(opcion.contenido) if opcion else f"Opción {dato.id_opcion}",
@@ -261,3 +263,61 @@ def cantidad_encuestas_finalizadas(
     count = db.scalar(stmt)
     return count or 0
 
+
+def obtener_respuestas_abiertas_por_asignatura(
+    db: Session,
+    id_asignatura: int,
+    anio: int,
+    duracion: Duracion
+) -> List[schemas.IndicadoresAbiertosCategoria]:
+
+    asignatura: Asignatura = db.scalar(select(Asignatura).where(Asignatura.id == id_asignatura))
+    encuesta = asignatura.encuesta
+
+    categoria_g: Categoria = next((c for c in encuesta.categorias if c.cod == "G"), None)
+    if not categoria_g:
+        return []
+
+    encuestas_finalizadas = db.scalars(
+        select(EncuestaFinalizada)
+        .where(EncuestaFinalizada.asignatura_id == id_asignatura)
+        .where(EncuestaFinalizada.anio == anio)
+        .where(EncuestaFinalizada.duracion == duracion)
+    ).all()
+
+    if len(encuestas_finalizadas) == 0:
+        return []
+
+    ids_encuestas = [e.id for e in encuestas_finalizadas]
+
+    respuestas_abiertas = db.scalars(
+        select(Respuesta)
+        .where(Respuesta.encuesta_completada_id.in_(ids_encuestas))
+        .where(Respuesta.texto_respuesta != None)
+    ).all()
+
+    # Agrupar respuestas por pregunta
+    resultado = []
+    for pregunta in categoria_g.preguntas[:3]:
+        respuestas_pregunta = [
+            r.texto_respuesta for r in respuestas_abiertas if r.pregunta_id == pregunta.id
+        ]
+
+        if len(respuestas_pregunta) == 0:
+            continue
+
+        resultado.append(
+            schemas.DatosAbiertosPregunta(
+                id_pregunta=pregunta.id,
+                oracion=pregunta.oracion,
+                respuestas=respuestas_pregunta
+            )
+        )
+
+    return [
+        schemas.DatosAbiertosCategoria(
+            categoria_codigo=categoria_g.codigo,
+            categoria_texto=categoria_g.texto,
+            preguntas=resultado
+        )
+    ]

@@ -5,6 +5,7 @@ class InformeSinteticoBase(BaseModel):
     titulo: str
     contenido: str
     fecha: date
+    carrera_id: int | None = None
 
 class InformeSinteticoCreate(InformeSinteticoBase):
     pass

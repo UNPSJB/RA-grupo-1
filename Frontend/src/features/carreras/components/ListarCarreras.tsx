@@ -7,7 +7,7 @@ type Props = {
 
 function ListarCarreras({ carreras }: Props) {
   if (!carreras || carreras.length === 0) {
-    return <div className="alert alert-info text-center">No existen carreras habilitadas</div>;
+    return <div className="alert alert-info text-center">No existen carreras disponibles</div>;
   }
 
   return (

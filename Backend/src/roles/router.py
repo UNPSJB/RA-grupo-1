@@ -5,6 +5,10 @@ from src.roles import schemas, services
 
 router = APIRouter(prefix="/roles", tags=["roles"])
 
+@router.post("/", response_model=schemas.Rol)
+def create_rol(rol: schemas.RolCreate, db: Session = Depends(get_db)):
+    return services.crear_rol(db, rol)
+
 @router.get("/", response_model=list[schemas.Rol])
 def read_roles(db: Session = Depends(get_db)):
     return services.listar_roles(db)

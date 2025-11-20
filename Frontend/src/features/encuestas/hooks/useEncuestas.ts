@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 export enum EstadoEncuesta {
   ABIERTA = "abierta",
@@ -6,53 +6,76 @@ export enum EstadoEncuesta {
 }
 
 export enum Cursado {
-    PrimerCuatrimestre = "cuatrimestre 1",
-    SegundoCuatrimestre = "cuatrimestre 2",
-    Anual = "Anual",
-    Docente_id = 2,
+    PrimerCuatrimestre = "PRIMER CUATRIMESTRE",
+    SegundoCuatrimestre = "SEGUNDO CUATRIMESTRE",
+    Anual = "ANUAL",
     AnioActual = 2025
 }
 
 export interface Encuesta {
     id: number;
+    nombre: string;
     asignatura: string;
-    cursado: Cursado;
-    estado: EstadoEncuesta;  
-    fecha_fin: Date;
+    docente: string;
+    ciclo_lectivo: string;
+    año?: number;
+    cursado?: string;
+    fecha_inicio?: string;
+    fecha_fin?: string;
+    carrera?: string;
+    sede?: string;
+    titulo?: string;
+    asignatura_id?: number;
+    estado?: EstadoEncuesta;
+    activa?: boolean;
 }
 
-export function useEncuestas(){
-    const[encuestas, setEncuestas] = useState<Encuesta[]>([]);
-    const[loading, setLoading] = useState<boolean>(true);
-    const[error, setError] = useState<string | null>(null);
- 
-    const API_URL = "http://localhost:8000/encuestas"; 
+export const useEncuestas = (alumnoIdParam?: number) => {
+  const [encuestas, setEncuestas] = useState<Encuesta[]>([]); 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-    const fetchEncuestas = async () => {
-        try {
-            setLoading(true);
-            const response = await fetch(API_URL);
-            if (!response.ok) { 
-                throw new Error("Error al conseguir las encuestas");
-            }
-            const data = await response.json();
-            setEncuestas(data);
-            setError(null);
-        }catch (err: any) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    }    
+  const alumnoId = alumnoIdParam ?? Number(localStorage.getItem("alumno_id") || "1");
 
-useEffect(() => {
+  const fetchEncuestas = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      console.log(`🔍 Fetching encuestas para alumno ${alumnoId}...`);
+
+      const response = await fetch(
+        `http://127.0.0.1:8000/encuestas/alumno/${alumnoId}/disponibles`
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("❌ Error del servidor:", errorData);
+        throw new Error(errorData.detail || `Error ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      
+      if (!Array.isArray(data)) {
+        console.error("❌ La respuesta no es un array:", data);
+        throw new Error("Formato de respuesta inválido");
+      }
+
+      console.log(`✅ ${data.length} encuestas cargadas`);
+      setEncuestas(data);
+      
+    } catch (err: any) {
+      console.error("❌ Error cargando encuestas:", err);
+      setError(err.message || "Error al cargar encuestas");
+      setEncuestas([]); 
+    } finally {
+      setLoading(false);
+    }
+  }, [alumnoId]);
+
+  useEffect(() => {
     fetchEncuestas();
-}, []);
+  }, [fetchEncuestas]);
 
-return {
-    encuestas,
-    loading,
-    error,
-    refetch: fetchEncuestas 
-    };
-}
+  return { encuestas, loading, error, refetch: fetchEncuestas };
+};

@@ -1,27 +1,34 @@
-from sqlalchemy import Integer, String, ForeignKey, Text
+from sqlalchemy import Integer, ForeignKey, Text, String, Column, JSON, DateTime, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from src.models import ModeloBase
 from typing import Optional, TYPE_CHECKING
-from src.models import ModeloBase  # 👈 coherente con el resto de los modelos
 
 if TYPE_CHECKING:
+    from src.encuesta_finalizada.models import EncuestaFinalizada
     from src.preguntas.models import Pregunta
-    from src.alumnos.models import Alumno
-    from src.opciones.models import Opcion
+    from src.ciclos.models import CicloEncuesta
 
 class Respuesta(ModeloBase):
-    __tablename__ = "respuestas_estudiantes"
+    __tablename__ = "respuestas"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     alumno_id: Mapped[int] = mapped_column(Integer, ForeignKey("alumnos.id"))
-    pregunta_id: Mapped[int] = mapped_column(Integer, ForeignKey("preguntas.id"), nullable=False)
+    pregunta_id: Mapped[int] = mapped_column(ForeignKey("preguntas.id"))
+    respuesta_texto: Mapped[str | None] = mapped_column(String(150), nullable=True)
+    opcion_id: Mapped[int] = mapped_column(ForeignKey("opciones.id"), nullable=True)
+    encuesta_finalizada_id: Mapped[int] = mapped_column(ForeignKey("encuestas_finalizadas.id"))
+    ciclo_id: Mapped[int] = mapped_column(ForeignKey("ciclos_encuesta.id"))
 
-    # Campos para diferentes tipos de respuesta
-    respuesta_texto: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    opcion_id: Mapped[Optional[int]] = mapped_column(Integer, ForeignKey("opciones.id"), nullable=True)
 
-    progreso: Mapped[int] = mapped_column(Integer, default=0)
+    opcion_seleccionada = Column(String(255), nullable=True) 
+    texto_respuesta = Column(Text, nullable=True)             
+    subrespuestas = Column(JSON, nullable=True)               
 
-    # Relaciones
-    alumno: Mapped[Optional["Alumno"]] = relationship("Alumno", lazy="joined")
-    pregunta: Mapped["Pregunta"] = relationship("Pregunta", back_populates="respuestas")
-    opcion: Mapped[Optional["Opcion"]] = relationship("Opcion")
+    fecha_respuesta = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    
+    # RELACIONES 
+    pregunta = relationship("Pregunta", back_populates="respuestas") 
+    alumno = relationship("Alumno", back_populates="respuestas", lazy="select")
+    opcion: Mapped["Opcion"] = relationship("Opcion")
+    encuesta_finalizada: Mapped["EncuestaFinalizada"] = relationship("EncuestaFinalizada", back_populates="respuestas")
+    ciclo: Mapped["CicloEncuesta"] = relationship("CicloEncuesta", back_populates="respuestas")

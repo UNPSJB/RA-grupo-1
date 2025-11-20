@@ -83,13 +83,13 @@ export default function PreguntaFormulario() {
   };
 
   return (
-    <>
-      {notificacionExito && (
-        <NotificacionExito
-          notificacion={notificacionExito}
-          onClose={() => setNotificacionExito(null)}
-        />
-      )}
+     <div className="p-2">
+        {notificacionExito && (
+          <NotificacionExito
+            notificacion={notificacionExito}
+            onClose={() => setNotificacionExito(null)}
+          />
+        )}
 
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
