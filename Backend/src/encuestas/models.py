@@ -55,11 +55,8 @@ class Encuesta(ModeloBase):
         back_populates="encuesta"
     )
 
-    #finalizaciones = relationship("EncuestaFinalizada", back_populates="encuesta", cascade="all, delete")
-
     asignatura = relationship("Asignatura", lazy="joined")
    
-
     # Verifica si la encuesta está activa
     @property
     def esta_activa(self) -> bool:

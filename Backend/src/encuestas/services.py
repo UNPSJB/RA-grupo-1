@@ -390,6 +390,8 @@ def obtener_encuesta_para_completar(db: Session, encuesta_id: int) -> schemas.En
         asignatura=encuesta.asignatura.nombre,
         docente=docente_nombre,
         ciclo_lectivo=f"{encuesta.año}-{encuesta.cursado.value}",
+        codigo_asignatura=encuesta.asignatura.codigo,   
+        carrera=encuesta.carrera,
         categorias=categorias_data,
         preguntas_abiertas=preguntas_abiertas
     )

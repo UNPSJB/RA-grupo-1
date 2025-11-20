@@ -16,11 +16,9 @@ class OpcionBase(BaseModel):
 
 
 class OpcionCreate(OpcionBase):
-    texto: str
-    pregunta_id: int
+    contenido: str
     pregunta_id: Optional[int] = None
-
-
+    
 class OpcionUpdate(OpcionBase):
     contenido: str
 

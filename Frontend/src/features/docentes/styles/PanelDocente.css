@@ -1,0 +1,83 @@
+:root {
+  --uni-primary: #0056b3; 
+  --uni-primary-light: #e7f1ff; 
+  --uni-secondary: #6c757d;
+  --card-hover-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.08);
+}
+
+.stat-card {
+  border: none;
+  border-radius: 12px;
+  background: #fff;
+  transition: all 0.3s ease-in-out;
+  overflow: hidden;
+  position: relative;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--card-hover-shadow);
+}
+
+.stat-card.border-primary { border-left: 4px solid #0d6efd !important; }
+.stat-card.border-success { border-left: 4px solid #198754 !important; }
+.stat-card.border-warning { border-left: 4px solid #ffc107 !important; }
+.stat-card.border-info { border-left: 4px solid #0dcaf0 !important; }
+
+.icon-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover .icon-circle {
+  transform: scale(1.1) rotate(5deg);
+}
+
+
+.stat-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #8898aa;
+  text-transform: uppercase;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #32325d;
+}
+
+
+.reports-card {
+  border-radius: 12px;
+  border: none;
+}
+
+.reports-header {
+  background-color: transparent;
+  border-bottom: 1px solid #eee;
+  padding: 1.5rem;
+}
+
+.report-item {
+  transition: background-color 0.2s;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.report-item:hover {
+  background-color: #f8f9fa;
+}
+
+
+.status-badge {
+  font-size: 0.75em;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+}

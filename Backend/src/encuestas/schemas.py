@@ -154,6 +154,8 @@ class EncuestaParaCompletar(BaseModel):
     asignatura: str
     docente: str
     ciclo_lectivo: str
+    codigo_asignatura: Optional[str] = None  
+    carrera: Optional[str] = None  
     categorias: List[categoria_schemas.Categoria]
     preguntas_abiertas: List[PreguntaAbiertaEstudiante] = []
     
