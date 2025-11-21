@@ -61,7 +61,7 @@ export const LoginAlumno = () => {
       localStorage.setItem('alumno_apellido', data.apellido);
       localStorage.setItem('alumno_email', data.email);
 
-      navigate('/alumno/incompletas');
+      navigate('/alumno/panel');
     } catch (err) {
       console.error('Error en login:', err);
       setError(err.message || 'Error al iniciar sesión. Por favor, intenta nuevamente.');

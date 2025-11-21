@@ -3,7 +3,7 @@ import {
   Container, Row, Col, Card, Table, Button, 
   Form, Modal, Spinner, Alert, Badge 
 } from 'react-bootstrap';
-import '../styles/Departamento.css';
+
 
 interface Encuesta {
   id: number;
@@ -27,8 +27,7 @@ export const GestionEncuestas = () => {
       try {
         setLoading(true);
         await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // aca van los datos con la API
+    
         const encuestasData: Encuesta[] = [
           {
             id: 1,
@@ -39,16 +38,6 @@ export const GestionEncuestas = () => {
             fechaFin: '2025-07-30',
             asignaturasAsignadas: 45,
             respuestasRecibidas: 1250
-          },
-          {
-            id: 2,
-            nombre: "Elementos de Logica y matematica discreta",
-            descripcion: "Evaluación docente del segundo cuatrimestre",
-            estado: 'programada',
-            fechaInicio: '2025-08-04',
-            fechaFin: '2025-12-20',
-            asignaturasAsignadas: 52,
-            respuestasRecibidas: 0
           },
         ];
         

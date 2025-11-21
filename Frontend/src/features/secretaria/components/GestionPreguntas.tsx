@@ -3,8 +3,8 @@ import {
   Container, Row, Col, Card, Table, Button, 
   Form, Modal, Spinner, Alert, Badge, Accordion
 } from 'react-bootstrap';
-import { useSecretaria } from '../../secretaria/hooks/useSecretaria';
-import { Pregunta, TipoPregunta, CategoriaPregunta } from '../../secretaria/types/encuestasTypes';
+import { useSecretaria } from '../hooks/useSecretaria';
+import { Pregunta, TipoPregunta, CategoriaPregunta } from '../types/encuestasTypes';
 
 export const GestionPreguntas = () => {
   const { 

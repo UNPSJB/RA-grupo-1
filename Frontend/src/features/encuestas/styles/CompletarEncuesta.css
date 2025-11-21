@@ -1,17 +1,39 @@
+.encuesta-wrapper {
+  max-width: 900px;
+  margin: auto;
+}
+
 .encuesta-header {
   background-color: #eef5ff;
   border: 1px solid #dde7ff;
   border-radius: 12px;
 }
 
-.encuesta-header h2 {
-  color: #1a2b6d;
+.categoria-box {
+  background: white;
+  border: 1px solid #e0e6f6;
+  border-radius: 12px;
 }
 
-.encuesta-header .badge.bg-primary {
-  background-color: #0056d2 !important;
+.progress {
+  height: 22px;
+  border-radius: 10px;
 }
 
-.encuesta-header .badge.bg-secondary {
-  background-color: #6c757d !important;
+.progress-bar {
+  background: linear-gradient(90deg, #004aad, #007bff);
+  font-weight: bold;
+}
+
+.form-check-input:checked {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+.alert-warning {
+  border-left: 4px solid #ffc107;
+}
+
+.badge {
+  font-weight: 600;
 }

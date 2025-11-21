@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import { RoleSelection } from '../features/inicio/components/RoleSelection';
 import { LoginAlumno } from '../features/alumnos/components/LoginAlumno';
+import { PanelAlumno } from '../features/alumnos/components/PanelAlumno';
 import { ProtectedRoute } from '../features/alumnos/components/ProtectedRoute';
 import { AlumnoLayout } from '../features/alumnos/components/AlumnoLayout';
 import { AsignaturasCursadas } from '../features/alumnos/components/AsignaturasCursadas';
@@ -12,8 +13,8 @@ import { PanelDocente } from '../features/docentes/components/PanelDocente';
 import { MisAsignaturas } from '../features/docentes/components/MisAsignaturas';
 import { DepartamentoLayout } from '../features/departamentos/components/DepartamentoLayout';
 import { PanelDepartamento } from '../features/departamentos/components/PanelDepartamento'
-import { GestionPreguntas } from '../features/departamentos/components/GestionPreguntas';
-import { GestionEncuestas } from '../features/departamentos/components/GestionEncuestas';
+import { GestionPreguntas } from '../features/secretaria/components/GestionPreguntas';
+import { GestionEncuestas } from '../features/secretaria/components/GestionEncuestas';
 import { SecretariaLayout } from '../features/secretaria/components/SecretariaLayout';
 import { CrearEncuesta } from '../features/secretaria/components/CrearEncuesta';
 import { PanelEncuestas } from '../features/secretaria/components/PanelEncuestas';
@@ -38,21 +39,22 @@ function App() {
       <Route path="/alumno/login" element={<LoginAlumno />} />
       
       {/* Rutas de alumno (PROTEGIDAS) */}
-      <Route 
-        path="/alumno" 
-        element={
-          <ProtectedRoute>
-            <AlumnoLayout />
-          </ProtectedRoute>
-        }
-      > 
-        <Route path="asignaturas" element={<AsignaturasCursadas />} />
-        <Route path="asignatura/:id" element={<AsignaturaDetalle />} />
-        <Route path="incompletas" element={<EncuestasIncompletas />} />
-        <Route path="encuestas/:encuestaId/completar" element={<CompletarEncuesta />} />
-        <Route path="completadas" element={<EncuestasCompletas />} />
-        <Route path="encuesta/:id" element={<DetalleEncuesta />} />
-      </Route>
+        <Route 
+          path="/alumno" 
+          element={
+            <ProtectedRoute>
+              <AlumnoLayout />
+            </ProtectedRoute>
+          }
+        > 
+          <Route path="panel" element={<PanelAlumno />} />
+          <Route path="asignaturas" element={<AsignaturasCursadas />} />
+          <Route path="asignatura/:id" element={<AsignaturaDetalle />} />
+          <Route path="incompletas" element={<EncuestasIncompletas />} />
+          <Route path="encuestas/:encuestaId/completar" element={<CompletarEncuesta />} />
+          <Route path="completadas" element={<EncuestasCompletas />} />
+          <Route path="encuesta/:id" element={<DetalleEncuesta />} />
+        </Route>
       
       {/* Rutas de docente */}
       <Route path="/docente" element={<DocenteLayout />}>
@@ -64,15 +66,13 @@ function App() {
       {/* Rutas de departamento */}
       <Route path="/departamento" element={<DepartamentoLayout />}>
         <Route index element={<PanelDepartamento />} />
-        <Route path="gestion-preguntas" element={<GestionPreguntas />} />
-        <Route path="gestion-encuestas" element={<GestionEncuestas />} />
       </Route>
 
       {/* Rutas de secretaría */}
       <Route path="/secretaria" element={<SecretariaLayout />}>
-        <Route path="crear-encuesta" element={<CrearEncuesta />} />
+        <Route path="gestion-preguntas" element={<GestionPreguntas />} />
+        <Route path="gestion-encuestas" element={<GestionEncuestas />} />
         <Route path="estadisticas/:encuestaId" element={<EstadisticasEncuesta />} />
-        <Route path="panel-encuestas" element={<PanelEncuestas />} />
         <Route path="ciclos" element={<CiclosPage />} />
         <Route path="/secretaria/nueva-encuesta" element={<NuevaEncuesta />} />
       </Route>

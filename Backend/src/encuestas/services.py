@@ -222,6 +222,7 @@ def listar_encuestas_para_alumno(db: Session, alumno_id: int):
     """
     Lista las encuestas disponibles para un alumno específico
     """
+
     from src.asignaturas.models import Asignatura
     from src.vinculaciones.models import asignatura_alumno
     from src.encuesta_finalizada.models import EncuestaFinalizada
@@ -234,7 +235,7 @@ def listar_encuestas_para_alumno(db: Session, alumno_id: int):
         .where(asignatura_alumno.c.alumno_id == alumno_id)
     ).all()
     print(f"DEBUG - Asignaturas del alumno {alumno_id}: {asignaturas_alumno}")
-
+    
     # DEBUG 2: Ver todas las encuestas activas
     todas_encuestas = db.scalars(
         select(Encuesta)
@@ -283,7 +284,7 @@ def listar_encuestas_para_alumno(db: Session, alumno_id: int):
         docente_nombre = "No asignado"
         if encuesta.asignatura and encuesta.asignatura.docente:
             docente_nombre = f"{encuesta.asignatura.docente.nombre} {encuesta.asignatura.docente.apellido}"
-
+        
         resultado.append(
             schemas.EncuestaAlumnoInfo(
                 id=encuesta.id,
@@ -293,7 +294,6 @@ def listar_encuestas_para_alumno(db: Session, alumno_id: int):
                 ciclo_lectivo=f"{encuesta.año}-{encuesta.cursado.value}"
             )
         )
-
     return resultado
 
 def obtener_encuesta_para_completar(db: Session, encuesta_id: int) -> schemas.EncuestaParaCompletar:

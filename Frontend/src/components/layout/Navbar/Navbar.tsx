@@ -8,15 +8,15 @@ interface NavbarProps {
   navLinks?: Array<{
     to: string;
     label: string;
-    onClick?: () => void; 
+    onClick?: () => void;
   }>;
   showUserInfo?: boolean;
   rol?: string;
 }
 
-export const Navbar = ({ 
-  navLinks = [], 
-  showUserInfo = true, 
+export const Navbar = ({
+  navLinks = [],
+  showUserInfo = true,
   rol = 'alumno'
 }: NavbarProps) => {
   const { persona, nombreCompleto, loading, error } = usePersona(rol);
@@ -35,43 +35,70 @@ export const Navbar = ({
   return (
     <BSNavbar bg="light" variant="light" expand="lg" className="shadow-sm navbar-custom">
       <Container>
+        {/* Se quita el texto del sistema SOLO para departamento_alumnos */}
         <BSNavbar.Brand className="fw-bold brand-custom d-flex align-items-center">
           <a 
-            href="https://www.unp.edu.ar/" 
-            target="_blank" 
+            target="_blank"
             rel="noopener noreferrer"
             className="text-decoration-none d-flex align-items-center"
           >
             <img 
-              src="/src/assets/logo uni.png" 
+              src="/src/assets/logo_unpsjb.png" 
               alt="UNPSJB Logo" 
-              className="navbar-logo me-3"
+              className="navbar-logo"
             />
-            <span className="brand-text">Sistema de encuestas de la UNPSJB</span>
+
+            {/*Se muestra el texto SOLO si el rol NO es departamento_alumnos */}
+            {rol !== "departamento_alumnos" && (
+              <span className="brand-text">Sistema de encuestas UNPSJB</span>
+            )}
           </a>
         </BSNavbar.Brand>
-        
         <BSNavbar.Toggle aria-controls="basic-navbar-nav" />
-        
         <BSNavbar.Collapse id="basic-navbar-nav">
           {navLinks.length > 0 && (
             <Nav className="me-auto">
-              {navLinks.map((link) => (
-                <Nav.Link 
-                  key={link.to}
-                  as={link.onClick ? 'button' : Link} 
-                  to={link.onClick ? undefined : link.to} 
-                  onClick={link.onClick} 
-                  className={`nav-link-custom ${rol === 'docente' ? 'docente-nav-link' : ''} ${rol === 'departamento_alumnos' ? 'depto-alumnos-nav-link' : ''}`}
-                  style={link.onClick ? { cursor: 'pointer' } : {}}
-                >
-                  {link.label}
-                </Nav.Link>
-              ))}
+              {navLinks.map((link) => {
+                if (link.label === "Informes") {
+                  return (
+                    <Dropdown key="informes" className="me-2">
+                      <Dropdown.Toggle 
+                        variant="light"
+                        id="dropdown-informes"
+                        className={`nav-link-custom ${rol === 'departamento_alumnos' ? 'depto-alumnos-nav-link' : ''}`}
+                      >
+                        Informes
+                      </Dropdown.Toggle>
+
+                      <Dropdown.Menu>
+                        <Dropdown.Item as={Link} to="/departamento/informes/sinteticos">
+                          Informe Sintético
+                        </Dropdown.Item>
+
+                        <Dropdown.Item as={Link} to="/departamento/informes/catedra">
+                          Informe de Cátedra
+                        </Dropdown.Item>
+                      </Dropdown.Menu>
+                    </Dropdown>
+                  );
+                }
+                return (
+                  <Nav.Link 
+                    key={link.to}
+                    as={link.onClick ? 'button' : Link} 
+                    to={link.onClick ? undefined : link.to} 
+                    onClick={link.onClick} 
+                    className={`nav-link-custom 
+                      ${rol === 'docente' ? 'docente-nav-link' : ''} 
+                      ${rol === 'departamento_alumnos' ? 'depto-alumnos-nav-link' : ''}`}
+                    style={link.onClick ? { cursor: 'pointer' } : {}}
+                  >
+                    {link.label}
+                  </Nav.Link>
+                );
+              })}
             </Nav>
           )}
-          
-          {/* Información del usuario con dropdown */}
           {showUserInfo && (
             <Nav className="ms-auto">
               {loading ? (
@@ -127,7 +154,9 @@ export const Navbar = ({
                         <small className="text-muted">{persona.email}</small>
                       </div>
                     </Dropdown.Header>
+
                     <Dropdown.Divider />
+
                     <Dropdown.Item 
                       className="dropdown-item-custom"
                       onClick={handleLogout}
@@ -140,7 +169,7 @@ export const Navbar = ({
               ) : (
                 <Nav.Item className="d-flex align-items-center user-profile">
                   <i className="bi bi-person-circle text-muted me-2"></i>
-                  <span className="text-muted">El usuario no se encontro</span>
+                  <span className="text-muted">El usuario no se encontró</span>
                 </Nav.Item>
               )}
             </Nav>

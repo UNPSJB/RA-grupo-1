@@ -1,0 +1,220 @@
+/* --- VARIABLES DE IDENTIDAD INSTITUCIONAL --- */
+:root {
+  /* Azul del Logo de tu Universidad (Fondo del logo) */
+  --uni-primary: #3682C5; 
+  
+  /* Amarillo del Logo (Pico del ave - para acentos) */
+  --uni-secondary: #FDB913; 
+  
+  /* Fondo muy claro (Azulado suave) */
+  --uni-bg: #F0F6FA; 
+  
+  /* Color de texto principal (Gris oscuro de las alas) */
+  --text-main: #373737;
+
+  /* Colores de acento extra para las métricas */
+  --accent-teal: #20c997;
+  --accent-rose: #e83e8c;
+  --white: #ffffff;
+}
+
+/* --- LAYOUT GENERAL --- */
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+}
+
+.departamento-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--uni-bg);
+  color: var(--text-main);
+}
+
+/* --- HEADER ESPECÍFICO DEL DASHBOARD --- */
+.dashboard-header {
+  /* Degradado usando TU azul institucional */
+  background: linear-gradient(135deg, var(--uni-primary) 0%, #004a80 100%);
+  padding: 3rem 2rem 5rem 2rem; /* Padding inferior grande para efecto flotante */
+  border-bottom: 4px solid var(--uni-secondary); /* Línea dorada abajo */
+  color: var(--white);
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: white;
+}
+
+.header-subtitle {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+}
+
+/* --- CONTENIDO PRINCIPAL --- */
+.main-content-area {
+  flex: 1;
+  margin-top: -60px; /* Efecto: Las tarjetas suben sobre el header */
+  padding: 0 2rem 2rem 2rem;
+}
+
+.content-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* --- GRID DE MÉTRICAS (Reemplaza al sistema Row/Col de Bootstrap) --- */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+/* --- TARJETAS DE MÉTRICAS --- */
+.metrica-card {
+  background: var(--white);
+  border-radius: 12px;
+  /* Sombra suave idéntica a la referencia */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); 
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  overflow: hidden;
+  position: relative;
+  cursor: default;
+  height: 100%;
+}
+
+.card-body {
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Efecto Hover (Flotar) */
+.metrica-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(54, 130, 197, 0.15); /* Sombra azulada */
+}
+
+/* Decoración inferior en hover */
+.metrica-card::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 0%;
+  background-color: var(--uni-secondary); /* Amarillo */
+  transition: width 0.3s ease;
+}
+
+.metrica-card:hover::after {
+  width: 100%;
+}
+
+/* --- ICONOS EN CAJITA --- */
+.icon-wrapper {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Colores de los iconos */
+.type-primary { 
+  background-color: rgba(54, 130, 197, 0.1); /* Azul logo transparente */
+  color: var(--uni-primary); 
+}
+.type-secondary { 
+  background-color: rgba(253, 185, 19, 0.15); /* Amarillo logo transparente */
+  color: #c59200; /* Un amarillo más oscuro para el icono para que se lea bien */
+}
+.type-accent { 
+  background-color: rgba(32, 201, 151, 0.1); 
+  color: var(--accent-teal); 
+}
+.type-neutral { 
+  background-color: rgba(232, 62, 140, 0.1); 
+  color: var(--accent-rose); 
+}
+
+/* Textos de la tarjeta */
+.text-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.metrica-title {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #8898aa;
+  margin: 0 0 0.25rem 0;
+  letter-spacing: 0.5px;
+}
+
+.metrica-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 0.25rem 0;
+  line-height: 1.2;
+}
+
+.metrica-desc {
+  font-size: 0.85rem;
+  color: #8898aa;
+}
+
+/* --- CONTENEDOR DE OUTLET --- */
+.outlet-container {
+  background: var(--white);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  min-height: 400px;
+}
+
+/* --- ANIMACIONES --- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 30px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-slide-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+.delay-0 { animation-delay: 0.1s; }
+.delay-1 { animation-delay: 0.2s; }
+.delay-2 { animation-delay: 0.3s; }
+.delay-3 { animation-delay: 0.4s; }

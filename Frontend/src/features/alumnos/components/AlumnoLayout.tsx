@@ -38,6 +38,7 @@ export const AlumnoLayout = ({ children }: AlumnoLayoutProps) => {
   };
 
   const alumnoNavLinks = [
+    { to: "/alumno/panel", label: "Panel Principal" },
     { to: "/alumno/incompletas", label: "Encuestas Incompletas" },
     { to: "/alumno/completadas", label: "Encuestas Completadas" }
   ];

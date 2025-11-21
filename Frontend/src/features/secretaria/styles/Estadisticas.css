@@ -1,0 +1,155 @@
+:root {
+    --uni-primary: #3584C2;
+    --uni-primary-dark: #246291;
+    --uni-accent: #FFC425;
+    --uni-bg: #F8FAFC;
+    --text-dark: #383838;
+}
+
+
+.loading-container {
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* --- Header Styles --- */
+.back-btn:hover {
+    color: var(--uni-primary) !important;
+    padding-left: 5px !important;
+    transition: all 0.3s ease;
+}
+
+.total-badge {
+    background-color: white;
+    border: 1px solid rgba(53, 132, 194, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.total-badge:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(53, 132, 194, 0.1) !important;
+}
+
+.icon-circle {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    background-color: rgba(53, 132, 194, 0.1) !important; /* Fondo azul suave */
+}
+
+/* --- Mini Cards (Resumen) --- */
+.stat-mini-card {
+    border: 1px solid rgba(0,0,0,0.03);
+    transition: all 0.3s ease;
+}
+
+.stat-mini-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.08) !important;
+}
+
+/* --- Question Cards --- */
+.question-card {
+    background: white;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+}
+
+.question-card:hover {
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05) !important;
+}
+
+/* --- Tablas Modernas --- */
+.custom-table thead th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #e9ecef;
+    letter-spacing: 0.5px;
+}
+
+.custom-table tbody tr {
+    transition: background-color 0.2s;
+}
+
+.custom-table tbody tr:hover {
+    background-color: rgba(53, 132, 194, 0.02);
+}
+
+/* Barras de progreso animadas */
+.progress-bar {
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    background-image: linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent);
+    background-size: 1rem 1rem;
+}
+
+/* --- Respuestas Abiertas (Chat style) --- */
+.answers-scroll-area {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.answer-bubble {
+    background-color: #fff !important;
+    border: 1px solid #eee;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    transition: transform 0.2s;
+}
+
+.answer-bubble:hover {
+    transform: translateX(5px);
+    border-left-color: var(--uni-primary) !important; /* Cambia a azul al hover */
+}
+
+.answer-bubble i {
+    transition: color 0.3s;
+}
+.answer-bubble:hover i {
+    color: var(--uni-primary) !important;
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--uni-primary);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 20px, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.animate-slide-up {
+    opacity: 0; 
+    animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.8s ease-out forwards;
+}

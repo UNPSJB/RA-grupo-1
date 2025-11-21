@@ -8,8 +8,12 @@
 
 .brand-text {
   color: #308df0 !important;
-  font-weight: 600;
-  text-shadow: 0 1px 2px #00000033;
+  font-weight: 200;
+  text-shadow: 0 1px 9px #00000033;
+}
+
+.brand-custom {
+  margin-left: -60px;   /* movelo más o menos según prefieras */
 }
 
 /* Estilos generales para los links */
@@ -34,11 +38,6 @@
 .navbar-custom .docente-nav-link:hover {
   color: #0000FF !important; 
   background-color: #1e90ff1a;
-}
-
-.navbar-logo {
-  height: 40px;
-  width: auto;
 }
 
 /* Estilos para el área de usuario */
@@ -104,7 +103,6 @@
   background-color: #e9ecef;
 }
 
-/* En tu Navbar.css agrega estos estilos */
 .depto-alumnos-nav-link {
   color: #314e6d !important;
   font-weight: 500;
@@ -117,7 +115,6 @@
   border-radius: 5px;
 }
 
-/* Estilo específico para el botón de Cerrar Sesión */
 .navbar-custom .nav-link-custom[onclick] {
   color: #e74c3c !important;
   font-weight: 600;

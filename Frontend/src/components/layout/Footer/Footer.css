@@ -1,29 +1,84 @@
+:root {
+    /* Definimos los colores aquí por si no los tienes globales */
+    --uni-primary: #002B5C; 
+    --uni-gold: #B4A269;
+}
+
 .footer {
-  background-color: #1a1d20; 
-  border-top: 4px solid #0056b3; 
-  padding: 30px 0;
-  margin-top: auto;
-  color: #adb5bd; 
+  background-color: #ffffff;
+  border-top: 4px solid var(--uni-primary);
+  padding: 40px 0 35px 0;
+  box-shadow: 0 -4px 20px #00000008; /* Sombra muy sutil hacia arriba */
 }
 
-.footer-content {
-  text-align: center;
-}
-
+/* Texto Principal: Ahora es Azul Oscuro para contrastar con el fondo blanco */
 .footer-title {
-  color: #ffffff; 
-  margin-bottom: 8px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
+  color: var(--uni-primary);
+  font-weight: 700;
+  letter-spacing: 0.3px;
   font-size: 1rem;
 }
 
-.footer-subtitle {
-  color: #6c757d;
-  font-size: 0.85rem;
-  display: block; 
+/* Divisor dorado pequeño */
+.footer-divider {
+  height: 3px;
+  width: 50px;
+  background-color: var(--uni-gold);
+  margin: 10px auto 15px auto;
+  border-radius: 2px;
 }
 
-.footer-title:hover {
-  color: #e7f1ff;
+.footer-subtitle {
+  color: #6c757d; /* Gris medio para texto secundario */
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* --- Iconos Sociales --- */
+.footer-socials {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background-color: #f8f9fa;
+  color: var(--uni-primary);
+  text-decoration: none;
+  font-size: 1.2rem;
+  border: 1px solid #e9ecef;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Facebook Blue */
+.social-link.facebook:hover {
+  background-color: #1877F2;
+  color: white;
+  border-color: #1877F2;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(24, 119, 242, 0.3);
+}
+
+/* CAMBIO: Sitio Web (Color Dorado Institucional) */
+.social-link.website:hover {
+  background-color: #B4A269; /* Dorado de la UNP */
+  color: white;
+  border-color: #B4A269;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(180, 162, 105, 0.4);
+}
+
+/* Instagram Gradient */
+.social-link.instagram:hover {
+  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+  color: white;
+  border-color: transparent;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(214, 36, 159, 0.3);
 }

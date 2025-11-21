@@ -1,43 +1,134 @@
+/* DocenteLayout.css - Estilo Unificado con Secretaría Académica */
+
+/* --- Variables de Identidad Institucional --- */
+:root {
+  /* Azul Universitario (Seriedad y confianza - Logo) */
+  --uni-primary: #002B5C; 
+  /* Dorado Institucional (Excelencia - Detalles) */
+  --uni-secondary: #B4A269; 
+  /* Fondo claro general */
+  --uni-bg: #F4F6F9; 
+  /* Colores de acento modernos para iconos */
+  --accent-blue: #0077CC;
+  --accent-teal: #20c997;
+  --accent-rose: #e83e8c;
+}
+
+/* --- Layout General --- */
 .docente-layout {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  min-height: 100vh; 
+  background-color: var(--uni-bg);
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
 }
 
-.main-content {
-  flex-grow: 1; 
-  padding: 20px 0; 
-  background-color: #f8f9fa; 
+/* --- Header Específico del Dashboard --- */
+.dashboard-header {
+  /* Gradiente institucional elegante */
+  background: linear-gradient(135deg, var(--uni-primary) 0%, #001a38 100%);
+  padding-bottom: 4rem; /* Espacio para efecto flotante */
+  border-bottom: 4px solid var(--uni-secondary); /* Línea dorada sutil */
 }
 
-.content-container {
-  padding: 20px;
-  background-color: #ffffff; 
-  border-radius: 8px; 
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.docente-main-content {
+  flex: 1;
+  /* Efecto de solapamiento negativo para acercar las tarjetas al header */
+  margin-top: -20px; 
 }
 
-.navbar-docente {
-  background-color: #007bff; 
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+/* --- Tarjetas de Métricas Modernas --- */
+.metrica-card {
+  background: white;
+  border-radius: 12px !important;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  overflow: hidden;
+  position: relative;
+  z-index: 10; /* Asegura que floten sobre el contenido */
 }
 
-.navbar-docente .nav-link {
-  color: #ffffff;
-  font-weight: 500;
-  margin-right: 20px;
-  transition: color 0.3s ease;
+/* Efecto Hover: Elevación y Sombra */
+.metrica-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 43, 92, 0.15) !important;
 }
 
-.navbar-docente .nav-link:hover {
-  color: #e2e6ea; 
-  text-decoration: none;
+/* Decoración lateral inferior dorada al pasar el mouse */
+.metrica-card::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 0%;
+  background-color: var(--uni-secondary);
+  transition: width 0.3s ease;
 }
 
-
-.footer-docente {
-  background-color: #343a40; 
-  color: #ffffff;
-  padding: 20px 0;
-  text-align: center;
+.metrica-card:hover::after {
+  width: 100%;
 }
+
+/* --- Iconos Mejorados --- */
+.icon-wrapper {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+/* Variantes de color para los iconos */
+.type-primary { background-color: rgba(0, 43, 92, 0.1); color: var(--uni-primary); }
+.type-secondary { background-color: rgba(180, 162, 105, 0.15); color: #968345; } /* Tono dorado oscuro para texto */
+.type-accent { background-color: rgba(32, 201, 151, 0.1); color: var(--accent-teal); }
+.type-neutral { background-color: rgba(232, 62, 140, 0.1); color: var(--accent-rose); }
+
+.description-text {
+  font-size: 0.8rem;
+  color: #8898aa;
+}
+
+/* --- Contenedor del Outlet (Donde se renderizan las páginas hijas) --- */
+.outlet-container {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  min-height: 400px; /* Altura mínima para estética */
+}
+
+/* --- Animaciones (Efectos visuales de entrada) --- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 30px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-slide-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+  opacity: 0; /* Inicialmente oculto para evitar parpadeo */
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+/* Retardos para efecto cascada en las tarjetas */
+.delay-0 { animation-delay: 0.1s; }
+.delay-1 { animation-delay: 0.2s; }
+.delay-2 { animation-delay: 0.3s; }
+.delay-3 { animation-delay: 0.4s; }
