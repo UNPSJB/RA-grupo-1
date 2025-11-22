@@ -16,8 +16,8 @@ import { PanelDepartamento } from '../features/departamentos/components/PanelDep
 import { GestionPreguntas } from '../features/secretaria/components/GestionPreguntas';
 import { GestionEncuestas } from '../features/secretaria/components/GestionEncuestas';
 
-
 import InformeSinteticoCabeceraPage from '../features/departamentos/pages/InformeSinteticoCabeceraPage';
+import InformeSinteticoPreguntasPage from '../features/departamentos/pages/InformeSinteticoPreguntasPage';
 
 import { SecretariaLayout } from '../features/secretaria/components/SecretariaLayout';
 import { CrearEncuesta } from '../features/secretaria/components/CrearEncuesta';
@@ -43,22 +43,22 @@ function App() {
       <Route path="/alumno/login" element={<LoginAlumno />} />
       
       {/* Rutas de alumno (PROTEGIDAS) */}
-        <Route 
-          path="/alumno" 
-          element={
-            <ProtectedRoute>
-              <AlumnoLayout />
-            </ProtectedRoute>
-          }
-        > 
-          <Route path="panel" element={<PanelAlumno />} />
-          <Route path="asignaturas" element={<AsignaturasCursadas />} />
-          <Route path="asignatura/:id" element={<AsignaturaDetalle />} />
-          <Route path="incompletas" element={<EncuestasIncompletas />} />
-          <Route path="encuestas/:encuestaId/completar" element={<CompletarEncuesta />} />
-          <Route path="completadas" element={<EncuestasCompletas />} />
-          <Route path="encuesta/:id" element={<DetalleEncuesta />} />
-        </Route>
+      <Route 
+        path="/alumno" 
+        element={
+          <ProtectedRoute>
+            <AlumnoLayout />
+          </ProtectedRoute>
+        }
+      > 
+        <Route path="panel" element={<PanelAlumno />} />
+        <Route path="asignaturas" element={<AsignaturasCursadas />} />
+        <Route path="asignatura/:id" element={<AsignaturaDetalle />} />
+        <Route path="incompletas" element={<EncuestasIncompletas />} />
+        <Route path="encuestas/:encuestaId/completar" element={<CompletarEncuesta />} />
+        <Route path="completadas" element={<EncuestasCompletas />} />
+        <Route path="encuesta/:id" element={<DetalleEncuesta />} />
+      </Route>
       
       {/* Rutas de docente */}
       <Route path="/docente" element={<DocenteLayout />}>
@@ -69,18 +69,25 @@ function App() {
 
       {/* Rutas departamento */}
       <Route path="/departamento" element={<DepartamentoLayout />}>
-        <Route index element={<PanelDepartamento />} />
+        {/* /departamento → solo dashboard (header + métricas).
+            Si querés, podés poner aquí algún texto tipo:
+            <Route index element={<div>Seleccione una opción del menú</div>} />
+        */}
+
+        {/* 👇 /departamento/informes/sinteticos → Panel con selección de carrera + informes */}
+        <Route path="informes/sinteticos" element={<PanelDepartamento />} />
+
         <Route path="gestion-preguntas" element={<GestionPreguntas />} />
         <Route path="gestion-encuestas" element={<GestionEncuestas />} />
 
-        {/*NUEVAS RUTAS DEL INFORME SINTETICO*/}
+        {/* Pasos del informe sintético */}
         <Route 
           path="informe-sintetico/cabecera" 
           element={<InformeSinteticoCabeceraPage />} 
         />
         <Route 
           path="informe-sintetico/preguntas" 
-          element={<div>Preguntas del informe (en desarrollo)</div>} 
+          element={<InformeSinteticoPreguntasPage />} 
         />
       </Route>
 
