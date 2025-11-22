@@ -13,8 +13,9 @@ import { PanelDocente } from '../features/docentes/components/PanelDocente';
 import { MisAsignaturas } from '../features/docentes/components/MisAsignaturas';
 import { DepartamentoLayout } from '../features/departamentos/components/DepartamentoLayout';
 import { PanelDepartamento } from '../features/departamentos/components/PanelDepartamento';
-import { GestionPreguntas } from '../features/departamentos/components/GestionPreguntas';
-import { GestionEncuestas } from '../features/departamentos/components/GestionEncuestas';
+import { GestionPreguntas } from '../features/secretaria/components/GestionPreguntas';
+import { GestionEncuestas } from '../features/secretaria/components/GestionEncuestas';
+
 
 import InformeSinteticoCabeceraPage from '../features/departamentos/pages/InformeSinteticoCabeceraPage';
 
