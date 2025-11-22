@@ -11,6 +11,7 @@ class Categoria(ModeloBase):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     codigo: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     texto: Mapped[str] = mapped_column(String, nullable=False)
+    orden: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     encuesta_id: Mapped[int] = mapped_column(
         ForeignKey("encuestas.id")
     )  

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Navbar } from '../../../components/layout/Navbar/Navbar';
+import { Footer } from '../../../components/layout/Footer/Footer';
 import { 
   GraduationCap, 
   ClipboardCheck, 
@@ -150,6 +151,7 @@ export const DepartamentoLayout: React.FC = () => {
           <Outlet />
         </div>
       </main>
+      <Footer />
     </div>
   );
 };

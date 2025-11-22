@@ -2,6 +2,7 @@ from pydantic import BaseModel, field_validator, Field
 from src.preguntas import exceptions
 from typing import List, Optional
 from src.opciones import schemas as opcion_schemas
+from src.opciones.schemas import OpcionParaEstudiante
 
 class PreguntaBase(BaseModel):
     texto: str
@@ -61,3 +62,9 @@ class PreguntaUpdate(BaseModel):
 class PreguntaDelete(BaseModel):
     id: int
     mensaje: str = "Pregunta eliminada correctamente"
+
+class PreguntaParaEstudiante(BaseModel):
+    id: int
+    texto: str
+    tipo: str
+    opciones: List[OpcionParaEstudiante]
