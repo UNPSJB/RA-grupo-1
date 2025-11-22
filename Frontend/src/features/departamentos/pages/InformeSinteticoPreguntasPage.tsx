@@ -16,13 +16,13 @@ type CabeceraInformeSintetico = {
 };
 
 type RespuestasMapa = {
-  [preguntaId: number]: string;
+  [preguntaId: string]: string;
 };
 
 export default function InformeSinteticoPreguntasPage() {
   const navigate = useNavigate();
 
-  // lee la cabecera desde localstorage
+  // 🔹 1. Leer cabecera desde localStorage
   const [cabecera, setCabecera] = useState<CabeceraInformeSintetico | null>(null);
   const [informeBaseId, setInformeBaseId] = useState<number | null>(null);
 
@@ -44,7 +44,7 @@ export default function InformeSinteticoPreguntasPage() {
         const parsed = JSON.parse(rawCabecera);
         setCabecera(parsed);
       } catch (e) {
-        console.error("Error parseando cabecera_informe_sintetico:", e);
+        console.error(" Error parseando cabecera_informe_sintetico:", e);
       }
     }
 
@@ -76,7 +76,8 @@ export default function InformeSinteticoPreguntasPage() {
 
     const cuerpo = {
       titulo: `Informe Sintético ${anio}`,
-      contenido: "", // Esto va a servir mas adelante si llegamos para un resumen       anio: Number(anio),
+      contenido: "", // Esto va a servir mas adelante si llegamos para un resumen       
+      anio: Number(anio),
       duracion, // "ANUAL" | "PRIMER_CUATRIMESTRE" | "SEGUNDO_CUATRIMESTRE"
       informe_base_id: informeBaseId,
       carrera_id: carrera_id,

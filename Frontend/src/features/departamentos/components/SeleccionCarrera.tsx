@@ -56,11 +56,24 @@ const tryFetch = async () => {
   });
 
 const handleSelect = (c: Carrera) => {
-  localStorage.setItem("carreraSeleccionada", JSON.stringify(c));
+
+  //  guarda datos incluyendo el dpto
+  const data = {
+    id: c.id,
+    nombre: c.nombre,
+    departamento_id: c.departamento_id ?? null,
+    facultad: c.facultad ?? null
+  };
+
+  localStorage.setItem("carreraSeleccionada", JSON.stringify(data));
   setSeleccionadaId(c.id);
-  window.dispatchEvent(new CustomEvent("carreraChanged", { detail: c }));
-  //setMensaje(`✅ Carrera guardada: ${c.nombre}`);
+
+  // avisar al sistema que algo cambio
+  window.dispatchEvent(
+    new CustomEvent("carreraChanged", { detail: data })
+  );
 };
+
 
 
   return (

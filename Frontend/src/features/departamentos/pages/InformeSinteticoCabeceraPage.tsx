@@ -28,8 +28,9 @@ export default function InformeSinteticoCabeceraPage() {
   const [selectedSede, setSelectedSede] = useState<string>("");
   const [selectedDuracion, setSelectedDuracion] = useState<string>("");
   const [anio, setAnio] = useState("");
+  const [integrantes, setIntegrantes] = useState(""); // 🟦 NUEVO
 
-  // 🔹 1. Traer departamentos
+  // trae los dpto de la base
   useEffect(() => {
     fetch(`${API}/departamentos/`)
       .then((res) => res.json())
@@ -37,7 +38,7 @@ export default function InformeSinteticoCabeceraPage() {
       .catch(() => alert("Error cargando departamentos"));
   }, []);
 
-  // 🔹 2. Traer carreras cuando cambia el departamento
+  // trae carrera cuando se cambia de dpto
   useEffect(() => {
     if (!selectedDepto) return;
 
@@ -47,27 +48,50 @@ export default function InformeSinteticoCabeceraPage() {
       .catch(() => alert("Error cargando carreras"));
   }, [selectedDepto]);
 
-  // 🔹 3. Continuar a preguntas del informe
+  //continuar a preguntas del informe
   const handleContinuar = () => {
-    if (!selectedDepto || !selectedCarrera || !selectedSede || !anio || !selectedDuracion) {
+    if (
+      !selectedDepto ||
+      !selectedCarrera ||
+      !selectedSede ||
+      !anio ||
+      !selectedDuracion ||
+      !integrantes.trim()
+    ) {
       alert("Complete todos los campos");
       return;
     }
 
-    // Guardamos la cabecera en localStorage
+    // guardamos la cabecera en localStorage
     const cabecera = {
       departamento_id: selectedDepto,
       carrera_id: selectedCarrera,
       sede: selectedSede,
       anio,
       duracion: selectedDuracion,
+      integrantes, 
     };
 
     localStorage.setItem("cabecera_informe_sintetico", JSON.stringify(cabecera));
 
-    // Redirigir al paso 2 (preguntas)
+    // redirigir al paso de preguntas cuando se complete la cabecera
     navigate("/departamento/informe-sintetico/preguntas");
   };
+  // cargar carrera  desde localStorage
+  useEffect(() => {
+  const stored = localStorage.getItem("carreraSeleccionada");
+  if (stored) {
+    const carrera = JSON.parse(stored);
+
+    // Setear carrera preseleccionada
+    setSelectedCarrera(carrera.id);
+
+    // tambien traer el dpto
+    if (carrera.departamento_id) {
+      setSelectedDepto(carrera.departamento_id);
+    }
+  }
+}, []);
 
   return (
     <div className="container py-4">
@@ -80,7 +104,7 @@ export default function InformeSinteticoCabeceraPage() {
 
           {/* Departamento */}
           <div className="mb-3">
-            <label className="form-label fw-bold">Departamento</label>
+            <label className="form-label fw-bold">Comisión Asesora de Carrera o Departamental correspondiente a:</label>
             <select
               className="form-control"
               value={selectedDepto ?? ""}
@@ -119,7 +143,7 @@ export default function InformeSinteticoCabeceraPage() {
             <input
               type="number"
               className="form-control"
-              placeholder="Ejemplo: 2024"
+              placeholder="Ejemplo 2024"
               value={anio}
               onChange={(e) => setAnio(e.target.value)}
             />
@@ -127,7 +151,7 @@ export default function InformeSinteticoCabeceraPage() {
 
           {/* Duración */}
           <div className="mb-3">
-            <label className="form-label fw-bold">Duración</label>
+            <label className="form-label fw-bold">Ciclo Lectivo y/o cuatrimestre evaluado</label>
             <select
               className="form-control"
               value={selectedDuracion}
@@ -159,10 +183,22 @@ export default function InformeSinteticoCabeceraPage() {
             </select>
           </div>
 
-          {/* Botón continuar */}
+          {/*integrantes */}
+          <div className="mb-3">
+            <label className="form-label fw-bold">Integrantes</label>
+            <textarea
+              className="form-control"
+              rows={3}
+              placeholder="Integrantes..."
+              value={integrantes}
+              onChange={(e) => setIntegrantes(e.target.value)}
+            />
+          </div>
+
+          {/* boton de continuar continuar */}
           <div className="d-flex justify-content-end mt-4">
             <button className="btn btn-primary" onClick={handleContinuar}>
-              Continuar →
+              Continuar
             </button>
           </div>
 

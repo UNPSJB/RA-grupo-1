@@ -23,7 +23,7 @@ export default function InformeSinteticoPage() {
   const [error, setError] = useState<string | null>(null);
   const [nuevo, setNuevo] = useState({ titulo: "", contenido: "" });
 
-  // 1️⃣ Cargar la carrera seleccionada
+  // Cargar la carrera seleccionada
   useEffect(() => {
     try {
       const raw = localStorage.getItem("carreraSeleccionada");
@@ -39,7 +39,7 @@ export default function InformeSinteticoPage() {
     }
   }, []);
 
-  // 2️⃣ Cargar informes de la carrera seleccionada
+  // cargar informes de la carrera seleccionada
   useEffect(() => {
     if (!carrera) {
       setLoading(false);
@@ -62,7 +62,7 @@ export default function InformeSinteticoPage() {
       });
   }, [carrera]);
 
-  // 3️⃣ Crear un nuevo informe
+  // crear un nuevo informe
   const handleCrearInforme = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!nuevo.titulo || !nuevo.contenido || !carrera) return;

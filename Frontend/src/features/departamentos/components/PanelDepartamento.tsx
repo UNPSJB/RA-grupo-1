@@ -7,14 +7,14 @@ import { useNavigate } from "react-router-dom";
 export const PanelDepartamento: React.FC = () => {
   const [carreraSeleccionada, setCarreraSeleccionada] = useState<{ id: number; nombre: string } | null>(null);
 
-  const navigate = useNavigate(); // <--- 🔥 IMPORTANTE
+  const navigate = useNavigate(); // IMPORTANTE
 
   useEffect(() => {
     const stored = localStorage.getItem("carreraSeleccionada");
     if (stored) setCarreraSeleccionada(JSON.parse(stored));
 
     const handleCarreraChanged = (e: any) => {
-      console.log("🎓 Carrera cambiada:", e.detail);
+      console.log(" Carrera cambiada:", e.detail);
       setCarreraSeleccionada(e.detail);
     };
 
@@ -64,16 +64,26 @@ export const PanelDepartamento: React.FC = () => {
       {!loading && informesIncompletos.length > 0 && (
         <ul className="list-group">
           {informesIncompletos.map((inf) => (
-            <li key={inf.id} className="list-group-item d-flex justify-content-between align-items-center">
+            <li
+              key={inf.id}
+              className="list-group-item d-flex justify-content-between align-items-center"
+            >
               <div>
                 <strong>{inf.titulo}</strong> <br />
                 {inf.fecha && <small>{inf.fecha}</small>}
               </div>
 
-              {/* 🔥 AHORA SÍ NAVEGA */}
-              <Button 
+              <Button
                 variant="primary"
-                onClick={() => navigate("/departamento/informe-sintetico/cabecera")}
+                onClick={() => {
+                  //  guardamos el ID del informe base
+                  localStorage.setItem(
+                    "informe_sintetico_base_id",
+                    String(inf.id)
+                  );
+                  // y vamos a la cabecera
+                  navigate("/departamento/informe-sintetico/cabecera");
+                }}
               >
                 Completar
               </Button>
@@ -84,7 +94,7 @@ export const PanelDepartamento: React.FC = () => {
 
       <div className="mt-3 text-end">
         <Button variant="outline-secondary" onClick={() => refetch()}>
-          🔄 Actualizar
+          🔄Actualizar
         </Button>
       </div>
     </Container>

@@ -7,6 +7,6 @@ class CarreraBase(BaseModel):
 
 class Carrera(CarreraBase):
     id: int
-    informe_base_id: Optional[int] = None
+    informes_base_id: Optional[int] = None   # probar
 
     model_config = {"from_attributes": True}

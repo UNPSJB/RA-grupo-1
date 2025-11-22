@@ -19,7 +19,6 @@ export function useInformes(carreraId?: number | null) {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // 🔥 ENDPOINT CORRECTO
   const API_URL = "http://localhost:8000/informes_sinteticos";
 
   const fetchInformes = async () => {
@@ -27,7 +26,7 @@ export function useInformes(carreraId?: number | null) {
       setLoading(true);
       setError(null);
 
-      // Si no hay carrera seleccionada, vacía la lista
+      // si no hay carrera seleccionada, vacia la lista
       if (!carreraId) {
         setInformes([]);
         return;
