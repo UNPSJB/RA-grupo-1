@@ -178,3 +178,25 @@ def obtener_informe_finalizado_detalle(db: Session, informe_id: int) -> dict:
             informe_dict["docenteResponsable"] = f"{docente.nombre} {docente.apellido}"
 
     return informe_dict
+
+def get_informes_pendientes_por_departamento(db: Session, departamento_id: int):
+    from src.docentes.models import Docente
+    from src.asignaturas.models import Asignatura
+
+    # docentes del departamento → asignaturas del depto → informes pendientes
+    subquery_asignaturas = (
+        select(Asignatura.id)
+        .where(Asignatura.departamento_id == departamento_id)
+        .subquery()
+    )
+
+    pendientes = (
+        db.query(InformeCatedraFinalizado)
+        .filter(
+            InformeCatedraFinalizado.asignatura_id.in_(subquery_asignaturas),
+            InformeCatedraFinalizado.estado == "pendiente"
+        )
+        .all()
+    )
+
+    return pendientes

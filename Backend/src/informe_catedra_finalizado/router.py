@@ -34,3 +34,8 @@ def obtener_informe_catedra_finalizado(informe_id: int, db: Session = Depends(ge
 @router.get("/departamento/{departamento_id}", response_model=List[schemas.InformeCatedraFinalizado])
 def obtener_informes_por_departamento(departamento_id: int, db: Session = Depends(get_db)):
     return services.obtener_informes_por_departamento(db, departamento_id)
+
+#ver
+@router.get("/departamento/{departamento_id}/pendientes", response_model=List[schemas.InformePendiente]) #esto es solo para los pendientes
+def get_informes_pendientes_por_departamento(departamento_id: int, db: Session = Depends(get_db)):
+    return services.get_informes_pendientes_por_departamento(db, departamento_id)
