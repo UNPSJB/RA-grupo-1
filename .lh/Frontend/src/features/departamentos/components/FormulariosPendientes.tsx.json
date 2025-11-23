@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Frontend/src/features/departamentos/components/FormulariosPendientes.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1763847083036,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1763847083036,
+            "name": "Commit-0",
+            "content": "import { useEffect, useState } from \"react\";\r\nimport { getFormulariosPendientes } from \"../services/departamentoServices\";\r\n\r\nexport const FormulariosPendientes = () => {\r\n  const [formularios, setFormularios] = useState([]);\r\n  const [loading, setLoading] = useState(true);\r\n\r\n  useEffect(() => {\r\n    getFormulariosPendientes(1)  // departamento_id = 1\r\n      .then(data => setFormularios(data))\r\n      .finally(() => setLoading(false));\r\n  }, []);\r\n\r\n  if (loading) return <p>Cargando...</p>;\r\n  if (formularios.length === 0) return <p>No hay formularios pendientes.</p>;\r\n\r\n  return (\r\n    <div>\r\n      <h2>Formularios Pendientes</h2>\r\n      {formularios.map(f => (\r\n        <div className=\"card my-3 p-3\" key={f.id}>\r\n          <h5>{f.titulo}</h5>\r\n          <p><strong>Asignatura:</strong> {f.asignatura}</p>\r\n          <p><strong>Docente:</strong> {f.docente}</p>\r\n          <p><strong>Fecha límite:</strong> {f.fecha_limite}</p>\r\n          <span className=\"badge bg-warning\">Pendiente</span>\r\n        </div>\r\n      ))}\r\n    </div>\r\n  );\r\n};\r\n"
+        }
+    ]
+}
