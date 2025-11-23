@@ -7,6 +7,7 @@ import { AlumnoLayout } from '../features/alumnos/components/AlumnoLayout';
 import { AsignaturasCursadas } from '../features/alumnos/components/AsignaturasCursadas';
 import { AsignaturaDetalle } from '../features/alumnos/components/AsignaturaDetalle';
 import { DocenteLayout } from '../features/docentes/components/DocenteLayout';
+import { ReporteDocente }  from '../features/docentes/components/ReporteDocente';
 import { EncuestasIncompletas } from '../features/encuestas/components/EncuestasIncompletas';
 import { EncuestasCompletas } from '../features/encuestas/components/EncuestasCompletas';
 import { PanelDocente } from '../features/docentes/components/PanelDocente';
@@ -15,6 +16,7 @@ import { DepartamentoLayout } from '../features/departamentos/components/Departa
 import { PanelDepartamento } from '../features/departamentos/components/PanelDepartamento';
 import { GestionPreguntas } from '../features/secretaria/components/GestionPreguntas';
 import { GestionEncuestas } from '../features/secretaria/components/GestionEncuestas';
+import { Carreras } from '../features/secretaria/components/Carrera';
 
 import InformeSinteticoCabeceraPage from '../features/departamentos/pages/InformeSinteticoCabeceraPage';
 import InformeSinteticoPreguntasPage from '../features/departamentos/pages/InformeSinteticoPreguntasPage';
@@ -63,24 +65,16 @@ function App() {
       {/* Rutas de docente */}
       <Route path="/docente" element={<DocenteLayout />}>
         <Route index element={<PanelDocente />} />
-        <Route path="reportes" element={<div>Reportes de Encuestas</div>} />
+        <Route path="reportes" element={<ReporteDocente />} />
         <Route path="mis-asignaturas" element={<MisAsignaturas />} />
       </Route>
 
       {/* Rutas departamento */}
       <Route path="/departamento" element={<DepartamentoLayout />}>
-        {/* /departamento → solo dashboard (header + métricas).
-            Si querés, podés poner aquí algún texto tipo:
-            <Route index element={<div>Seleccione una opción del menú</div>} />
-        */}
-
-        {/* 👇 /departamento/informes/sinteticos → Panel con selección de carrera + informes */}
         <Route path="informes/sinteticos" element={<PanelDepartamento />} />
-
+        <Route path="informes/carreras" element={<PanelDepartamento />} />
         <Route path="gestion-preguntas" element={<GestionPreguntas />} />
         <Route path="gestion-encuestas" element={<GestionEncuestas />} />
-
-        {/* Pasos del informe sintético */}
         <Route 
           path="informe-sintetico/cabecera" 
           element={<InformeSinteticoCabeceraPage />} 

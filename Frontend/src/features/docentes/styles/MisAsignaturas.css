@@ -1,156 +1,101 @@
+/* MisAsignaturas.css */
+
+:root {
+  --uni-primary: #002B5C; /* Azul Universidad */
+  --uni-gold: #B4A269;    /* Dorado Universidad */
+}
+
 .mis-asignaturas-container {
-  padding: 20px 0;
+  padding: 20px 0 60px 0;
 }
 
-.header-section {
-  text-align: center;
-  margin-bottom: 40px;
-}
-
-.asignatura-card {
+/* --- 1. FILTROS CON FONDO UNIVERSITARIO --- */
+.filters-card-blue {
+  /* Fondo Gradiente Azul Institucional */
+  background: linear-gradient(135deg, var(--uni-primary) 0%, #001a38 100%);
   border: none;
-  border-radius: 15px;
-  box-shadow: 0 4px 6px #0000001a;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.asignatura-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 15px #00000026;
-}
-
-.card-header-custom {
-  background: linear-gradient(135deg, #5572f7 0%, #dbdfe7 100%);
-  color: white;
-  border-radius: 15px 15px 0 0 !important;
-  padding: 15px 20px;
-}
-
-.card-body-custom {
-  padding: 25px 20px;
-}
-
-.card-footer-custom {
-  background-color: #f8f9fa;
-  border-top: 1px solid #e9ecef;
-  border-radius: 0 0 15px 15px !important;
-  padding: 20px;
-}
-
-.asignatura-title {
-  color: #2c3e50;
-  font-weight: 600;
-  font-size: 1.2rem;
-  margin-bottom: 10px;
-}
-
-.carrera-text {
-  color: #5a6c7d;
-  margin-bottom: 20px;
-}
-
-.asignatura-stats {
-  margin-top: 15px;
-}
-
-.stat-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-  padding: 8px 0;
-  border-bottom: 1px solid #f1f1f1;
-}
-
-.stat-item:last-child {
-  border-bottom: none;
-}
-
-.stat-value {
-  font-weight: 600;
-  color: #2c3e50;
-}
-
-.progress-container {
-  margin-top: 15px;
-}
-
-.progress-label {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 5px;
-  font-size: 0.9rem;
-  color: #5a6c7d;
-}
-
-.progress {
-  height: 8px;
-  border-radius: 4px;
-  background-color: #e9ecef;
-}
-
-.porcentaje-badge {
-  font-size: 0.8rem;
-  padding: 6px 10px;
-  border-radius: 20px;
-}
-
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-  color: #7f8c8d;
-}
-
-.empty-icon {
-  font-size: 4rem;
-  color: #bdc3c7;
-  margin-bottom: 20px;
-}
-
-.empty-state h3 {
-  color: #95a5a6;
-  margin-bottom: 15px;
-}
-
-.loading-text {
-  color: #3498db;
-  font-weight: 500;
-}
-
-.error-alert {
-  border-radius: 15px;
-  border: none;
-  box-shadow: 0 4px 6px #0000001a;
-}
-
-.filters-card {
-  border: none;
-  border-radius: 15px;
-  box-shadow: 0 2px 4px #0000001a;
-}
-
-.filters-card .card-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border-radius: 15px 15px 0 0 !important;
-  font-weight: 600;
-}
-
-.results-info {
-  font-size: 0.9rem;
-}
-
-/* Estilos para los badges de estado */
-.estado-badge {
-  font-size: 0.7rem;
-  padding: 4px 8px;
   border-radius: 12px;
+  border-bottom: 4px solid var(--uni-gold); /* Detalle dorado inferior */
+  margin-bottom: 30px;
 }
 
-.fechas-info {
-  margin-bottom: 15px;
-  padding: 8px;
+.filter-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  opacity: 0.9;
+}
+
+/* Inputs dentro del filtro azul */
+.filter-input-group {
+  border-radius: 6px;
+  overflow: hidden;
+}
+.filter-input-group .form-control:focus {
+  box-shadow: inset 0 0 0 2px var(--uni-gold); /* Foco dorado */
+}
+
+/* --- 2. TARJETAS ALARGADAS (Horizontal Layout) --- */
+.asignatura-card-horizontal {
+  border: none;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05); /* Sombra suave inicial */
+  transition: all 0.2s ease-in-out;
+  overflow: hidden;
+  position: relative;
+  /* Altura compacta */
+  min-height: 100px; 
+}
+
+/* Indicador lateral de color (Status Indicator) */
+.status-indicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+}
+.status-indicator.completada { background-color: #198754; } /* Verde */
+.status-indicator.en-progreso { background-color: var(--uni-gold); } /* Dorado */
+.status-indicator.no-iniciada { background-color: #6c757d; } /* Gris */
+
+/* --- DETALLES INTERNOS --- */
+
+/* Badge de código pequeño y gris */
+.codigo-badge-compact {
   background-color: #f8f9fa;
-  border-radius: 5px;
-  font-size: 0.85rem;
+  border: 1px solid #dee2e6;
+  color: #495057;
+  font-size: 0.75rem;
+  font-family: monospace;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+/* Pills de estado (Arriba derecha) */
+.badge-pill-status {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 10px;
+  letter-spacing: 0.5px;
+}
+.badge-pill-status.completada { color: #198754; background: rgba(25, 135, 84, 0.1); }
+.badge-pill-status.en-progreso { color: #b69022; background: rgba(180, 162, 105, 0.15); }
+.badge-pill-status.no-iniciada { color: #6c757d; background: rgba(108, 117, 125, 0.1); }
+
+/* Ajustes Responsive */
+@media (max-width: 768px) {
+  .asignatura-card-horizontal {
+    text-align: center;
+  }
+  .stats-section {
+    display: none !important; /* Ocultar stats detallados en móvil para ahorrar espacio */
+  }
+  .action-section {
+    width: 100%;
+    align-items: center !important;
+  }
 }

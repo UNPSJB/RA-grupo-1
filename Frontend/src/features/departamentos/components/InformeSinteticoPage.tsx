@@ -14,7 +14,7 @@ type Informe = {
   carrera_id?: number;
 };
 
-const API_BASE = "http://127.0.0.1:8000"; // ajustá si usás otro host o puerto
+const API_BASE = "http://127.0.0.1:8000"; 
 
 export default function InformeSinteticoPage() {
   const [carrera, setCarrera] = useState<Carrera | null>(null);

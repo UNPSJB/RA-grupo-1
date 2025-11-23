@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Container, Row, Col, Card, Spinner, Alert, Badge, 
+  Container, Row, Col, Card, Spinner, Alert, 
   Form, InputGroup, Button 
 } from 'react-bootstrap';
 import '../styles/MisAsignaturas.css';
@@ -26,7 +26,7 @@ export const MisAsignaturas = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Estados para los filtros
+  // Filtros
   const [filtroAsignatura, setFiltroAsignatura] = useState('');
   const [filtroEstado, setFiltroEstado] = useState<string>('todos');
   const [filtroFechaInicio, setFiltroFechaInicio] = useState('');
@@ -36,22 +36,18 @@ export const MisAsignaturas = () => {
     navigate(`/docente/asignatura/${asignaturaId}`);
   };
 
-  // DATOS HARCODEADOS
   useEffect(() => {
     const fetchAsignaturas = async () => {
       try {
         setLoading(true);
+        await new Promise(resolve => setTimeout(resolve, 800));
         
-        // Simulamos llamada a la API
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // DATOS HARCODEADOS
         const AsignaturasData: Asignatura[] = [
           {
             id: 1,
-            nombre: "Programación I",
-            codigo: "IF003",
-            carrera: "Ingeniería en Sistemas",
+            nombre: "Álgebra",
+            codigo: "MA02",
+            carrera: "Analista Programador Universitario",
             cantidadAlumnos: 45,
             encuestasContestadas: 38,
             porcentajeCompletado: 84,
@@ -59,73 +55,36 @@ export const MisAsignaturas = () => {
             fechaFin: "2025-07-15",
             estadoEncuesta: 'completada'
           },
-          {
-            id: 2,
-            nombre: "Base de Datos 1",
-            codigo: "IF007",
-            carrera: "Ingeniería en Sistemas",
-            cantidadAlumnos: 32,
-            encuestasContestadas: 25,
-            porcentajeCompletado: 78,
-            fechaInicio: "2025-03-01",
-            fechaFin: "2025-07-20",
-            estadoEncuesta: 'en-progreso'
-          },
-          {
-            id: 3,
-            nombre: "Arquitectura de Computadoras",
-            codigo: "IF005",
-            carrera: "Ingeniería en Sistemas",
-            cantidadAlumnos: 28,
-            encuestasContestadas: 15,
-            porcentajeCompletado: 54,
-            fechaInicio: "2025-03-15",
-            fechaFin: "2025-07-30",
-            estadoEncuesta: 'en-progreso'
-          },
         ];
         
-        setAsignaturas(asignaturasData);
-        setAsignaturasFiltradas(asignaturasData);
+        setAsignaturas(AsignaturasData);
+        setAsignaturasFiltradas(AsignaturasData);
         setLoading(false);
       } catch (err) {
         setError("Error al cargar las asignaturas");
         setLoading(false);
       }
     };
-
     fetchAsignaturas();
   }, []);
 
-  // Función para aplicar filtros
   const aplicarFiltros = () => {
     let resultados = [...asignaturas];
-
     if (filtroAsignatura) {
       resultados = resultados.filter(asignatura =>
         asignatura.nombre.toLowerCase().includes(filtroAsignatura.toLowerCase()) ||
         asignatura.codigo.toLowerCase().includes(filtroAsignatura.toLowerCase())
       );
     }
-
-    // Filtro por estado de encuesta
     if (filtroEstado !== 'todos') {
       resultados = resultados.filter(asignatura => asignatura.estadoEncuesta === filtroEstado);
     }
-
-    // Filtro por rango de fechas
-    if (filtroFechaInicio) {
-      resultados = resultados.filter(asignatura => asignatura.fechaInicio >= filtroFechaInicio);
-    }
-
-    if (filtroFechaFin) {
-      resultados = resultados.filter(asignatura => asignatura.fechaFin <= filtroFechaFin);
-    }
-
+    if (filtroFechaInicio) resultados = resultados.filter(a => a.fechaInicio >= filtroFechaInicio);
+    if (filtroFechaFin) resultados = resultados.filter(a => a.fechaFin <= filtroFechaFin);
+    
     setAsignaturasFiltradas(resultados);
   };
 
-  // Función para limpiar filtros
   const limpiarFiltros = () => {
     setFiltroAsignatura('');
     setFiltroEstado('todos');
@@ -134,260 +93,160 @@ export const MisAsignaturas = () => {
     setAsignaturasFiltradas(asignaturas);
   };
 
-  // Aplicar filtros cuando cambien los valores
-  useEffect(() => {
-    aplicarFiltros();
-  }, [filtroAsignatura, filtroEstado, filtroFechaInicio, filtroFechaFin, asignaturas]);
+  useEffect(() => { aplicarFiltros(); }, [filtroAsignatura, filtroEstado, filtroFechaInicio, filtroFechaFin, asignaturas]);
 
   const getProgressVariant = (porcentaje: number) => {
     if (porcentaje >= 80) return 'success';
-    if (porcentaje >= 60) return 'warning';
-    return 'danger';
-  };
-
-  const getBadgeVariant = (porcentaje: number) => {
-    if (porcentaje === 100) return 'success';
-    if (porcentaje >= 80) return 'primary';
-    if (porcentaje >= 60) return 'warning';
-    return 'secondary';
-  };
-
-  const getEstadoBadgeVariant = (estado: string) => {
-    switch (estado) {
-      case 'completada': return 'success';
-      case 'en-progreso': return 'warning';
-      case 'no-iniciada': return 'secondary';
-      default: return 'secondary';
-    }
+    if (porcentaje >= 40) return 'primary'; // Azul institucional
+    return 'warning';
   };
 
   const getEstadoText = (estado: string) => {
     switch (estado) {
-      case 'completada': return 'Completada';
-      case 'en-progreso': return 'En Progreso';
-      case 'no-iniciada': return 'No Iniciada';
+      case 'completada': return 'Finalizada';
+      case 'en-progreso': return 'En Curso';
+      case 'no-iniciada': return 'Sin Iniciar';
       default: return estado;
     }
   };
 
   const formatearFecha = (fecha: string) => {
-    return new Date(fecha).toLocaleDateString('es-ES');
+    return new Date(fecha).toLocaleDateString('es-AR', {day: '2-digit', month: '2-digit'});
   };
 
-  if (loading) {
-    return (
-      <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: '60vh' }}>
-        <div className="text-center">
-          <Spinner animation="border" role="status" className="mb-3" variant="primary">
-            <span className="visually-hidden">Cargando...</span>
-          </Spinner>
-          <p className="loading-text">Cargando mis asignaturas...</p>
-        </div>
-      </Container>
-    );
-  }
-
-  if (error) {
-    return (
-      <Container className="mt-4">
-        <Alert variant="danger" className="error-alert">
-          <Alert.Heading>Error al cargar las asignaturas</Alert.Heading>
-          <p className="mb-3">{error}</p>
-        </Alert>
-      </Container>
-    );
-  }
+  if (loading) return <Container className="text-center py-5"><Spinner animation="border" variant="primary"/></Container>;
+  if (error) return <Container className="mt-4"><Alert variant="danger">{error}</Alert></Container>;
 
   return (
-    <Container className="mis-asignaturas-container">
-      {/* Sección de Filtros */}
-      <Card className="filters-card mb-4">
-        <Card.Header>
-          <h5 className="mb-0">
-            <i className="bi bi-funnel me-2"></i>
-            Filtros de Búsqueda
-          </h5>
-        </Card.Header>
-        <Card.Body>
-          <Row className="g-3">
+    <Container className="mis-asignaturas-container animate-fade-in">
+      
+      {/* --- SECCIÓN DE FILTROS REDISEÑADA --- */}
+      <Card className="filters-card-blue shadow-lg">
+        <Card.Body className="p-4">
+          <Row className="justify-content-center align-items-end g-3">
+            
+            {/* Buscador Principal */}
             <Col md={4}>
-              <Form.Group>
-                <Form.Label>Buscar por asignatura</Form.Label>
-                <InputGroup>
-                  <InputGroup.Text>
-                    <i className="bi bi-search"></i>
-                  </InputGroup.Text>
-                  <Form.Control
-                    type="text"
-                    placeholder="Nombre o código de la asignatura..."
-                    value={filtroAsignatura}
-                    onChange={(e) => setFiltroAsignatura(e.target.value)}
+              <Form.Label className="filter-label text-white">BUSCAR ASIGNATURA</Form.Label>
+              <InputGroup className="filter-input-group">
+                <InputGroup.Text className="bg-white border-0">
+                  <img 
+                    src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHZpMm1oc25yMW15MmI0bnJzNXE4d3B1aHhrejI1MXlrNmVoNnA0biZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/1pUvx2WHilZYxZ60e1/giphy.gif"
+                    alt="buscar" style={{ width: "20px" }}
                   />
-                </InputGroup>
-              </Form.Group>
+                </InputGroup.Text>
+                <Form.Control
+                  className="border-0 shadow-none"
+                  type="text"
+                  placeholder="Nombre o código..."
+                  value={filtroAsignatura}
+                  onChange={(e) => setFiltroAsignatura(e.target.value)}
+                />
+              </InputGroup>
             </Col>
 
-            {/* Filtro por Estado */}
+            {/* Estado */}
             <Col md={3}>
-              <Form.Group>
-                <Form.Label>Estado de encuesta</Form.Label>
-                <Form.Select
-                  value={filtroEstado}
-                  onChange={(e) => setFiltroEstado(e.target.value)}
-                >
-                  <option value="todos">Todos los estados</option>
-                  <option value="completada">Completada</option>
-                  <option value="en-progreso">En Progreso</option>
-                  <option value="no-iniciada">No Iniciada</option>
-                </Form.Select>
-              </Form.Group>
-            </Col>
-
-            {/* Filtro por Fecha Inicio */}
-            <Col md={2}>
-              <Form.Group>
-                <Form.Label>Fecha desde</Form.Label>
-                <Form.Control
-                  type="date"
-                  value={filtroFechaInicio}
-                  onChange={(e) => setFiltroFechaInicio(e.target.value)}
-                />
-              </Form.Group>
-            </Col>
-
-            {/* Filtro por Fecha Fin */}
-            <Col md={2}>
-              <Form.Group>
-                <Form.Label>Fecha hasta</Form.Label>
-                <Form.Control
-                  type="date"
-                  value={filtroFechaFin}
-                  onChange={(e) => setFiltroFechaFin(e.target.value)}
-                />
-              </Form.Group>
-            </Col>
-
-            {/* Botón Limpiar */}
-            <Col md={1} className="d-flex align-items-end">
-              <Button 
-                variant="outline-secondary" 
-                onClick={limpiarFiltros}
-                className="w-100"
-                title="Limpiar filtros"
+              <Form.Label className="filter-label text-white">ESTADO</Form.Label>
+              <Form.Select
+                className="filter-select border-0"
+                value={filtroEstado}
+                onChange={(e) => setFiltroEstado(e.target.value)}
               >
-                <i className="bi bi-arrow-clockwise"></i>
-              </Button>
+                <option value="todos">Todos</option>
+                <option value="completada">Finalizada</option>
+                <option value="en-progreso">En Curso</option>
+                <option value="no-iniciada">Sin Iniciar</option>
+              </Form.Select>
             </Col>
+
+            {/* Fechas y Botón Limpiar */}
+            <Col md={4}>
+              <Form.Label className="filter-label text-white">FECHAS</Form.Label>
+              <div className="d-flex gap-2">
+                <Form.Control type="date" className="border-0" value={filtroFechaInicio} onChange={(e) => setFiltroFechaInicio(e.target.value)}/>
+                <Form.Control type="date" className="border-0" value={filtroFechaFin} onChange={(e) => setFiltroFechaFin(e.target.value)}/>
+                <Button variant="light" onClick={limpiarFiltros} title="Limpiar"><i className="bi bi-arrow-counterclockwise text-primary"></i></Button>
+              </div>
+            </Col>
+
           </Row>
         </Card.Body>
       </Card>
 
-      {/* Contador de resultados */}
-      <div className="results-info mb-3">
-        <p className="text-muted">
-          Mostrando {asignaturasFiltradas.length} de {asignaturas.length} asignaturas
-        </p>
-      </div>
-
-      {asignaturasFiltradas.length === 0 ? (
-        <div className="empty-state">
-          <div className="empty-icon">
-            <i className="bi bi-search"></i>
-          </div>
-          <h3>No se encontraron asignaturas</h3>
-          <p>No hay asignaturas que coincidan con los filtros aplicados.</p>
-          <Button variant="primary" onClick={limpiarFiltros}>
-            Limpiar filtros
-          </Button>
-        </div>
-      ) : (
-        <Row>
-          {asignaturasFiltradas.map((asignatura) => (
-            <Col key={asignatura.id} xs={12} md={6} lg={4} className="mb-4">
-              <Card className="asignatura-card h-100">
-                <Card.Header className="card-header-custom">
-                  <div className="d-flex justify-content-between align-items-center">
-                    <Badge 
-                      bg={getBadgeVariant(asignatura.porcentajeCompletado)}
-                      className="porcentaje-badge"
-                    >
-                      {asignatura.porcentajeCompletado}%
-                    </Badge>
-                    <Badge 
-                      bg={getEstadoBadgeVariant(asignatura.estadoEncuesta)}
-                      className="estado-badge"
-                    >
-                      {getEstadoText(asignatura.estadoEncuesta)}
-                    </Badge>
-                  </div>
-                </Card.Header>
+      <Row className="g-3">
+        {asignaturasFiltradas.map((asignatura) => (
+          /* COL-12 para que ocupe todo el ancho y sea alargada */
+          <Col key={asignatura.id} xs={12}>
+            <Card className="asignatura-card-horizontal">
+              {/* Barra lateral de color según estado */}
+              <div className={`status-indicator ${asignatura.estadoEncuesta}`}></div>
+              
+              <Card.Body className="d-flex flex-column flex-md-row align-items-center justify-content-between p-3 w-100 gap-3">
                 
-                <Card.Body className="card-body-custom">
-                  <Card.Title className="asignatura-title">
-                    {asignatura.nombre}
-                  </Card.Title>
-                  
-                  <Card.Text className="carrera-text">
-                    <i className="bi bi-building me-2"></i>
-                    {asignatura.carrera}
-                    <br />
-                    <small className="text-muted">
-                      <i className="bi bi-code me-1"></i>
-                      {asignatura.codigo}
-                    </small>
-                  </Card.Text>
+                {/* SECCIÓN IZQUIERDA: INFORMACIÓN PRINCIPAL */}
+                <div className="info-section flex-grow-1 text-center text-md-start">
+                  <div className="d-flex align-items-center justify-content-center justify-content-md-start gap-2 mb-1">
+                    <span className="codigo-badge-compact">{asignatura.codigo}</span>
+                    <h5 className="mb-0 fw-bold text-dark text-truncate" style={{maxWidth: '350px'}} title={asignatura.nombre}>
+                      {asignatura.nombre}
+                    </h5>
+                  </div>
+                  <div className="text-muted small mb-1">
+                    <i className="bi bi-mortarboard-fill me-1"></i> {asignatura.carrera}
+                  </div>
+                  <div className="text-primary small fw-bold">
+                    <i className="bi bi-calendar-range me-1"></i> 
+                    {formatearFecha(asignatura.fechaInicio)} - {formatearFecha(asignatura.fechaFin)}
+                  </div>
+                </div>
 
-                  {/* Fechas */}
-                  <div className="fechas-info">
-                    <small className="text-muted">
-                      <i className="bi bi-calendar me-1"></i>
-                      {formatearFecha(asignatura.fechaInicio)} - {formatearFecha(asignatura.fechaFin)}
-                    </small>
+                {/* SECCIÓN CENTRAL: ESTADÍSTICAS COMPACTAS */}
+                <div className="stats-section d-flex gap-4 border-start border-end px-4 py-1 d-none d-md-flex">
+                  <div className="text-center">
+                    <div className="h5 mb-0 fw-bold">{asignatura.cantidadAlumnos}</div>
+                    <div className="small text-muted" style={{fontSize: '0.65rem'}}>ALUMNOS</div>
                   </div>
+                  <div className="text-center">
+                    <div className="h5 mb-0 fw-bold text-primary">{asignatura.encuestasContestadas}</div>
+                    <div className="small text-muted" style={{fontSize: '0.65rem'}}>RESPUESTAS</div>
+                  </div>
+                </div>
+
+                {/* SECCIÓN DERECHA: PROGRESO Y ACCIÓN */}
+                <div className="action-section d-flex flex-column align-items-end gap-2" style={{minWidth: '200px'}}>
+                  {/* Estado visible en texto */}
+                  <span className={`badge-pill-status ${asignatura.estadoEncuesta} ms-auto`}>
+                    {getEstadoText(asignatura.estadoEncuesta)}
+                  </span>
                   
-                  <div className="asignatura-stats">
-                    <div className="stat-item">
-                      <i className="bi bi-people me-2 text-primary"></i>
-                      <strong>Alumnos:</strong>
-                      <span className="stat-value">{asignatura.cantidadAlumnos}</span>
+                  {/* Barra de progreso */}
+                  <div className="w-100 d-flex align-items-center gap-2">
+                    <div className="progress flex-grow-1" style={{height: '6px', backgroundColor: '#e9ecef'}}>
+                      <div className={`progress-bar bg-${getProgressVariant(asignatura.porcentajeCompletado)}`} 
+                           style={{ width: `${asignatura.porcentajeCompletado}%` }}></div>
                     </div>
-                    
-                    <div className="stat-item">
-                      <i className="bi bi-check-circle me-2 text-success"></i>
-                      <strong>Encuestas contestadas:</strong>
-                      <span className="stat-value">{asignatura.encuestasContestadas}</span>
-                    </div>
-                    
-                    <div className="progress-container">
-                      <div className="progress-label">
-                        <span>Progreso de encuestas</span>
-                        <span>{asignatura.encuestasContestadas}/{asignatura.cantidadAlumnos}</span>
-                      </div>
-                      <div className="progress">
-                        <div 
-                          className={`progress-bar bg-${getProgressVariant(asignatura.porcentajeCompletado)}`}
-                          style={{ width: `${asignatura.porcentajeCompletado}%` }}
-                        ></div>
-                      </div>
-                    </div>
+                    <span className="small fw-bold">{asignatura.porcentajeCompletado}%</span>
                   </div>
-                </Card.Body>
-                
-                <Card.Footer className="card-footer-custom">
-                  <div className="d-grid gap-2">
-                    <button 
-                      className="btn btn-outline-primary btn-sm"
-                      onClick={() => handleVerDetalles(asignatura.id)}
-                    >
-                      <i className="bi bi-eye me-2"></i>
-                      Ver Detalles
-                    </button>
-                  </div>
-                </Card.Footer>
-              </Card>
-            </Col>
-          ))}
-        </Row>
+
+                  <Button 
+                    variant="outline-primary" 
+                    size="sm" 
+                    className="w-100 fw-bold rounded-pill mt-1"
+                    onClick={() => handleVerDetalles(asignatura.id)}
+                  >
+                    Ver Detalles
+                  </Button>
+                </div>
+
+              </Card.Body>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+      
+      {asignaturasFiltradas.length === 0 && (
+         <div className="text-center py-5 text-muted">No se encontraron asignaturas.</div>
       )}
     </Container>
   );

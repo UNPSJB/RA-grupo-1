@@ -14,11 +14,8 @@ export const DepartamentoLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const handleLogout = () => navigate('/');
-
-  // solo es "dashboard" cuando estás EXACTAMENTE en /departamento
   const isDashboard = location.pathname === "/departamento";
 
-  // 👇 Adaptado al tipo que espera Navbar: { to, label, onClick? }
   const departamentoNavLinks = [
     { 
       to: "/departamento", 

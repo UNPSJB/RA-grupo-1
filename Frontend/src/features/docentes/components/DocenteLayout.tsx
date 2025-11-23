@@ -5,11 +5,11 @@ import { Navbar } from "../../../components/layout/Navbar/Navbar";
 import { Footer } from "../../../components/layout/Footer/Footer";
 import '../styles/DocenteLayout.css';
 
-export const DocenteLayout = ({ children }) => {
+export const DocenteLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Detectar si estamos en la página principal del panel
+  // Detectar si estamos en el dashboard
   const isDashboard = location.pathname === "/docente";
 
   const handleLogout = () => navigate('/');
@@ -30,9 +30,9 @@ export const DocenteLayout = ({ children }) => {
   return (
     <div className="docente-layout">
       <Navbar 
-      navLinks={docenteNavLinks} 
-      showUserInfo={true} 
-      rol="docente"
+        navLinks={docenteNavLinks} 
+        showUserInfo={true} 
+        rol="docente"
       />
 
       {isDashboard && (
@@ -41,7 +41,7 @@ export const DocenteLayout = ({ children }) => {
             <p className="text-white-85 animate-fade-in delay-1">
               <img 
                 src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" 
-                width="35" 
+                width="35"
                 style={{ marginRight: "8px" }}
                 alt="mano saludando"
               />
@@ -53,32 +53,7 @@ export const DocenteLayout = ({ children }) => {
 
       <main className="docente-main-content">
         <Container className="py-4 content-wrapper">
-          {isDashboard && (
-            <Row className="mb-5 g-4">
-              {metricas.map((metrica, index) => (
-                <Col key={index} xl={3} md={6}>
-                  <Card className={`metrica-card border-0 shadow-sm h-100 animate-slide-up delay-${index}`}>
-                    <Card.Body className="d-flex align-items-center p-4">
-                      <div className={`icon-wrapper type-${metrica.type} me-3`}>
-                        <i className={`bi ${metrica.icono}`}></i>
-                      </div>
-                      <div>
-                        <h6 className="text-muted text-uppercase mb-1 small fw-bold">
-                          {metrica.titulo}
-                        </h6>
-                        <h3 className="fw-bold mb-0 text-dark">
-                          {metrica.valor}
-                        </h3>
-                        <small className="text-muted description-text">
-                          {metrica.descripcion}
-                        </small>
-                      </div>
-                    </Card.Body>
-                  </Card>
-                </Col>
-              ))}
-            </Row>
-          )}
+          <Outlet />
         </Container>
       </main>
 

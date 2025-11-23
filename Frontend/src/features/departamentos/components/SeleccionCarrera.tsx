@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-// datos que representan la carrera
+
 
 type Carrera = {
   id: number;
@@ -9,7 +9,6 @@ type Carrera = {
 };
 
 export default function SeleccionCarrera() {
-  //guarda la seleccion en memoria y al iniciar intenta leer desde localstore para "recordar" la seleccion entre sessiones
   const [carreras, setCarreras] = useState<Carrera[]>([]);
   const [filtro, setFiltro] = useState("");
   const [seleccionadaId, setSeleccionadaId] = useState<number | null>(() => {
