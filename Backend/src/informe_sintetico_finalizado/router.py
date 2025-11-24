@@ -1,9 +1,10 @@
 from fastapi import APIRouter, HTTPException, Depends,status, Query
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 from src.database import get_db
 from src.informe_sintetico_finalizado.models import InformeSinteticoFinalizado
 from src.informe_sintetico_finalizado import schemas, services
 from typing import List
+
 
 router = APIRouter(prefix="/informes_sinteticos_finalizados", tags=["informes_sinteticos_finalizados"])
 
@@ -17,13 +18,20 @@ def create_informe_finalizado(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al crear informe finalizado: {str(e)}")
     
-@router.get("/finalizados/")
+@router.get("/finalizados/", response_model=List[schemas.InformeSinteticoFinalizado])
 def get_informes_finalizados(db: Session = Depends(get_db)):
     try:
-        informes = db.query(InformeSinteticoFinalizado).all()
+        informes = (
+            db.query(InformeSinteticoFinalizado)
+            .options(selectinload(InformeSinteticoFinalizado.respuestas))
+            .all()
+        )
         return informes
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al obtener informes finalizados: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error al obtener informes finalizados: {str(e)}"
+        )
 
 @router.get("/finalizados/{id}")
 def get_informe_finalizado(id: int, db: Session = Depends(get_db)):
