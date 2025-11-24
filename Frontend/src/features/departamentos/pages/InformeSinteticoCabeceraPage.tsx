@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 const API = "http://localhost:8000";
 
-// 🔵 SEDES HARDCODEADAS (por ahora)
+// sedes de momento hardcodeas
 const SEDES = [
   "Puerto Madryn",
   "Comodoro Rivadavia",
@@ -13,8 +13,8 @@ const SEDES = [
 
 const DURACIONES = [
   { value: "ANUAL", label: "Anual" },
-  { value: "PRIMER_CUATRIMESTRE", label: "1er Cuatrimestre" },
-  { value: "SEGUNDO_CUATRIMESTRE", label: "2do Cuatrimestre" },
+  { value: "PRIMER CUATRIMESTRE", label: "1er Cuatrimestre" },
+  { value: "SEGUNDO CUATRIMESTRE", label: "2do Cuatrimestre" },
 ];
 
 export default function InformeSinteticoCabeceraPage() {

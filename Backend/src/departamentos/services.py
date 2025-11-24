@@ -5,7 +5,9 @@ from src.departamentos.models import Departamento
 from src.departamentos import schemas, exceptions
 
 def leer_departamento(db: Session, departamento_id: int) -> schemas.Departamento:
-    db_departamento = db.scalar(select(Departamento).where(Departamento.id == departamento_id))
+    db_departamento = db.scalar(
+        select(Departamento).where(Departamento.id == departamento_id)
+    )
     if db_departamento is None:
         raise exceptions.DepartamentoNoEncontrado()
     return db_departamento
@@ -14,7 +16,11 @@ def listar_departamentos(db: Session) -> List[schemas.Departamento]:
     return db.scalars(select(Departamento)).all()
 
 def crear_departamento(db: Session, dep: schemas.DepartamentoBase) -> Departamento:
-    nuevo = Departamento(nombre=dep.nombre)
+    nuevo = Departamento(
+        nombre=dep.nombre,
+        sede=dep.sede,                        
+        profesor_a_cargo=dep.profesor_a_cargo  
+    )
     db.add(nuevo)
     db.commit()
     db.refresh(nuevo)

@@ -1,10 +1,16 @@
 from pydantic import BaseModel
 from datetime import date
 from typing import List, Optional
-from src.resultado_informe.schemas import RespuestaInformeSintetico
-from src.resultado_informe import schemas as respuestas_schemas
+
+# Import correctos
+from src.resultado_informe.schemas import (
+    RespuestaInformeSintetico,          # schema de salida
+    RespuestaInformeSinteticoEntrada,   # schema que viene del front
+)
+
 from src.vinculaciones.models import Duracion
 from src.asignaturas import schemas as asignatura_schemas
+
 
 class InformeSinteticoFinalizadoBase(BaseModel):
     titulo: str
@@ -14,15 +20,19 @@ class InformeSinteticoFinalizadoBase(BaseModel):
     informe_base_id: int 
     carrera_id: int
 
+
+# 🔵 ESTE ES EL CAMBIO IMPORTANTE
 class InformeSinteticoFinalizadoCreate(InformeSinteticoFinalizadoBase):
-    respuestas: List[respuestas_schemas.RespuestaInformeSintetico]  
+    respuestas: List[RespuestaInformeSinteticoEntrada]
+
 
 class InformeSinteticoFinalizado(InformeSinteticoFinalizadoBase):
     id: int
-    respuestas: List[RespuestaInformeSintetico]  
+    respuestas: List[RespuestaInformeSintetico]
 
     class Config:
         from_attributes = True
+
 
 class TablaPregunta2Item(BaseModel):
     Asignatura: asignatura_schemas.Asignatura

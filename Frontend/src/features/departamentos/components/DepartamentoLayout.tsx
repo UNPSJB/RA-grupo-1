@@ -67,7 +67,7 @@ export const DepartamentoLayout: React.FC = () => {
       icon: <LogOut size={18} />,
       isLogout: true 
     }
-  ] as any; // 👈 casteo para que TypeScript no se queje
+  ] as any; // casteo para que TypeScript no se queje
 
   const metricas = [
     { 
