@@ -1,7 +1,9 @@
 from pydantic import BaseModel
 
 class DepartamentoBase(BaseModel):
-    nombre:str
+    nombre: str
+    sede: str               
+    profesor_a_cargo: str | None = None    
 
 class Departamento(DepartamentoBase):
     id: int
