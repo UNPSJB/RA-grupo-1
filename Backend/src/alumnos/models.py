@@ -6,7 +6,10 @@ from src.vinculaciones.models import asignatura_alumno, alumno_encuesta
 
 if TYPE_CHECKING:
     from src.respuestas.models import Respuesta
-
+    from src.encuesta_finalizada.models import EncuestaFinalizada
+    from src.asignaturas.models import Asignatura
+    from src.encuestas.models import Encuesta
+    
 class Alumno(ModeloBase):
     __tablename__ = "alumnos"
 
@@ -15,13 +18,12 @@ class Alumno(ModeloBase):
     CUIL: Mapped[str] = mapped_column(String, index=True)
     usuario: Mapped[str] = mapped_column(String, index=True)
     clave: Mapped[str] = mapped_column(String, index=True)
-    persona: Mapped["src.personas.models.Persona"] = relationship("src.personas.models.Persona", back_populates="alumno")
 
-    #respuestas: Mapped[List["src.respuestas.models.Respuesta"]] = relationship(
-    #    "src.respuestas.models.Respuesta",
-    #back_populates="alumno"
-    #)
-    
+    persona: Mapped["src.personas.models.Persona"] = relationship(
+        "src.personas.models.Persona",
+        back_populates="alumno"
+    )
+
     asignaturas: Mapped[List["Asignatura"]] = relationship(
         "Asignatura",
         secondary=asignatura_alumno,
@@ -35,3 +37,10 @@ class Alumno(ModeloBase):
     )
 
     respuestas = relationship("Respuesta", back_populates="alumno", lazy="select")
+
+    # 👇 esto faltaba para que EncuestaFinalizada no rompa
+    encuestas_finalizadas: Mapped[List["EncuestaFinalizada"]] = relationship(
+        "EncuestaFinalizada",
+        back_populates="alumno",
+        cascade="all, delete-orphan"
+    )

@@ -38,7 +38,7 @@ export const PanelDepartamento: React.FC = () => {
       <Row className="mb-4">
 
         {/* Card Seleccionar Carrera */}
-        <Col md={6}>
+        <Col md={7}>
           <Card>
             <Card.Body>
               <Card.Title>Seleccionar carrera</Card.Title>

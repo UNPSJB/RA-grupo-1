@@ -15,4 +15,4 @@ class CicloEncuesta(ModeloBase):
     creado_en = Column(DateTime, default=datetime.utcnow)
 
 # relacion con Respuesta un ciclo puede tener muchas respuestas, pero una respuesta pertenece a un ciclo
-    respuestas = relationship("Respuesta", back_populates="ciclo")
+    #respuestas = relationship("Respuesta", back_populates="ciclo")
