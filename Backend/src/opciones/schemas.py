@@ -1,4 +1,4 @@
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, ConfigDict
 from src.opciones import exceptions
 from typing import Optional
 
@@ -35,3 +35,10 @@ class Opcion(OpcionBase):
     model_config = {
         "from_attributes": True
     }
+
+class OpcionParaEstudiante(BaseModel):
+    id: int
+    texto: str
+    valor: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)

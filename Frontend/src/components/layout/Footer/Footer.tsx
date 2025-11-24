@@ -14,12 +14,7 @@ export const Footer = () => {
               </p>
               <div className="footer-divider"></div>
             </div>
-
-            {/* Descripción del Sistema */}
-            <small className="footer-subtitle mb-4 d-block">
-              Sitios Oficiales <br className="d-md-none"/> 
-            </small>
-
+      
             {/* Redes Sociales y Web */}
             <div className="footer-socials">
               {/* Facebook */}

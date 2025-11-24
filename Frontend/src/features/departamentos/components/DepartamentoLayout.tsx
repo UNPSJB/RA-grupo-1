@@ -1,6 +1,7 @@
 import React from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Navbar } from '../../../components/layout/Navbar/Navbar';
+import { Footer } from '../../../components/layout/Footer/Footer';
 import { 
   LayoutDashboard, 
   FileText, 
@@ -17,12 +18,8 @@ export const DepartamentoLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const handleLogout = () => navigate('/');
-
-  // estamos en el dashboard principal
   const isDashboard = location.pathname === "/departamento";
 
-  // ⚠️ Usamos la estructura vieja con dropdown (isSelect, options)
-  // y la casteamos a any para que no rompa el tipo simple del Navbar.
   const departamentoNavLinks = [
     { 
       to: "/departamento", 
@@ -164,6 +161,7 @@ export const DepartamentoLayout: React.FC = () => {
           <Outlet />
         </div>
       </main>
+      <Footer />
     </div>
   );
 };

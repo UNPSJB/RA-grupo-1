@@ -76,11 +76,6 @@ export const SecretariaLayout: React.FC = () => {
               ))}
             </Row>
           )}
-
-          <div className="outlet-container animate-fade-in">
-            <Outlet /> 
-          </div>
-
         </Container>
       </main>
       

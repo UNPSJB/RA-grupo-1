@@ -156,7 +156,7 @@ class EncuestaParaCompletar(BaseModel):
     ciclo_lectivo: str
     codigo_asignatura: Optional[str] = None  
     carrera: Optional[str] = None  
-    categorias: List[categoria_schemas.Categoria]
+    categorias: List[categoria_schemas.CategoriaConPreguntas] 
     preguntas_abiertas: List[PreguntaAbiertaEstudiante] = []
     
     model_config = ConfigDict(from_attributes=True)
