@@ -17,7 +17,7 @@ from src.opciones.models import Opcion
 from src.preguntas.models import Pregunta
 from src.asignaturas.models import Asignatura
 from src.encuestas.models import Encuesta
-from src.informes.models import Informe
+#from src.informes.models import Informe
 
 
 # Tablas de vinculación van al final
