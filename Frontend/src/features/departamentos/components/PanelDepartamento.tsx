@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Button, Spinner, Alert, Row, Col, Container } from 'react-bootstrap';
-// Nota: Asegúrate de que las rutas a tus hooks y componentes sean correctas
-import { useInformes, EstadoInforme } from '../hooks/useInformes'; 
+import { Informe, useInformes, EstadoInforme } from "../hooks/useInformes";
 import SeleccionCarrera from './SeleccionCarrera';
 import { Link } from "react-router-dom";
 
 export const PanelDepartamento: React.FC = () => {
-  const [carreraSeleccionada, setCarreraSeleccionada] = useState<{ id: number; nombre: string } | null>(null);
+  const [carreraSeleccionada, setCarreraSeleccionada] = useState<{ id: number; nombre: string } | null>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem("carreraSeleccionada");
@@ -17,27 +16,24 @@ export const PanelDepartamento: React.FC = () => {
       setCarreraSeleccionada(e.detail);
     };
 
-    const handleCarreraChanged = (e: any) => {
-      console.log(" Carrera cambiada:", e.detail);
-      setCarreraSeleccionada(e.detail);
-    };
+    window.addEventListener("carreraChanged", handleCarreraChanged);
+    return () => window.removeEventListener("carreraChanged", handleCarreraChanged);
+  }, []);
 
-    window.addEventListener("carreraChanged", handleCarreraChanged);
-    return () => window.removeEventListener("carreraChanged", handleCarreraChanged);
-  }, []);
-
-  // Asumimos que useInformes devuelve el tipo Informe[]
-  const { informes, loading, error, refetch } = useInformes(carreraSeleccionada?.id) as { 
-    informes: Informe[], 
-    loading: boolean, 
-    error: string | null, 
-    refetch: () => void 
+  const { informes, loading, error, refetch } = useInformes(carreraSeleccionada?.id) as {
+    informes: Informe[],
+    loading: boolean,
+    error: string | null,
+    refetch: () => void
   };
 
-  const informesIncompletos = informes.filter(
-    (i) => i.estado === EstadoInforme.ABIERTO || !i.estado
-  );
+  const informesIncompletos = informes.filter(
+    (i) => i.estado === EstadoInforme.ABIERTO || !i.estado
+  );
 
+  return (
+    <Container>
+      
       {/* ---- SECCIÓN DE CARDS ---- */}
       <Row className="mb-4">
 
@@ -71,12 +67,13 @@ export const PanelDepartamento: React.FC = () => {
           <strong>Carrera seleccionada:</strong> {carreraSeleccionada.nombre}
         </div>
       )}
-      
-      {!loading && informesIncompletos.length === 0 && carreraSeleccionada && (
-        <Alert variant="success" className="empty-state-alert">
-          <p className="mb-0">✅ ¡Felicitaciones! No hay informes sintéticos pendientes de completar para esta carrera.</p>
-        </Alert>
-      )}
+
+      {/* Estado vacío */}
+      {!loading && informesIncompletos.length === 0 && carreraSeleccionada && (
+        <Alert variant="success">
+          ✅ ¡Felicitaciones! No hay informes sintéticos pendientes de completar.
+        </Alert>
+      )}
 
       {/* Loading */}
       {loading && (
@@ -87,11 +84,6 @@ export const PanelDepartamento: React.FC = () => {
 
       {/* Error */}
       {error && <Alert variant="danger">Error: {error}</Alert>}
-
-      {/* Sin informes */}
-      {!loading && informesIncompletos.length === 0 && (
-        <p className="text-muted text-center mt-4">No hay informes para esta carrera.</p>
-      )}
 
       {/* Listado de informes */}
       {!loading && informesIncompletos.length > 0 && (
@@ -114,6 +106,7 @@ export const PanelDepartamento: React.FC = () => {
           🔄 Actualizar
         </Button>
       </div>
+
     </Container>
   );
 };
