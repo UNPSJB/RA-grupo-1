@@ -2,10 +2,14 @@ import React from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Navbar } from '../../../components/layout/Navbar/Navbar';
 import { 
+  LayoutDashboard, 
+  FileText, 
   GraduationCap, 
   ClipboardCheck, 
   Clock, 
   BarChart2, 
+  History, 
+  LogOut 
 } from 'lucide-react';
 import '../styles/DepartamentoLayout.css'; 
 
@@ -14,45 +18,59 @@ export const DepartamentoLayout: React.FC = () => {
   const location = useLocation();
   const handleLogout = () => navigate('/');
 
-  // solo es "dashboard" cuando estás EXACTAMENTE en /departamento
+  // estamos en el dashboard principal
   const isDashboard = location.pathname === "/departamento";
 
-  // 👇 Adaptado al tipo que espera Navbar: { to, label, onClick? }
+  // ⚠️ Usamos la estructura vieja con dropdown (isSelect, options)
+  // y la casteamos a any para que no rompa el tipo simple del Navbar.
   const departamentoNavLinks = [
     { 
       to: "/departamento", 
       label: "Panel Principal",
+      icon: <LayoutDashboard size={18} />
     },
     { 
-      to: "/departamento/informes/sinteticos", 
-      label: "Informes Sintéticos",
+      label: "Informes", 
+      icon: <FileText size={18} />,
+      isSelect: true,
+      options: [ 
+        { to: "/departamento/informes/sinteticos", label: "Informe Sintético" },
+        { to: "/departamento/informes/catedra", label: "Informe de Cátedra" }
+      ]
     },
     { 
       to: "/departamento/carreras", 
       label: "Carreras",
+      icon: <GraduationCap size={18} />
     },
     { 
       to: "/departamento/encuestas", 
       label: "Encuestas",
+      icon: <ClipboardCheck size={18} />
     },
     { 
       to: "/departamento/pendientes", 
       label: "Formularios Pendientes",
+      icon: <Clock size={18} />
     },
     { 
       to: "/departamento/estadisticas", 
       label: "Estadísticas",
+      icon: <BarChart2 size={18} />
     },
     { 
       to: "/departamento/historicos", 
       label: "Históricos",
+      icon: <History size={18} />
     },
     { 
       to: "#", 
       label: "Cerrar Sesión", 
-      onClick: handleLogout,
+      onClick: handleLogout, 
+      icon: <LogOut size={18} />,
+      isLogout: true 
     }
-  ];
+  ] as any; // 👈 casteo para que TypeScript no se queje
 
   const metricas = [
     { 
@@ -98,7 +116,7 @@ export const DepartamentoLayout: React.FC = () => {
     <div className="departamento-layout">
       <Navbar 
         rol="departamento_alumnos" 
-        navLinks={departamentoNavLinks}
+        navLinks={departamentoNavLinks as any}
         showUserInfo={false}
       />
 
@@ -115,8 +133,8 @@ export const DepartamentoLayout: React.FC = () => {
 
       <main className="main-content-area">
         <div className="content-wrapper">
-
-          {/* Métricas solo en /departamento */}
+          
+          {/* GRID DE MÉTRICAS solo en /departamento */}
           {isDashboard && (
             <div className="metrics-grid">
               {metricas.map((metrica, index) => (
@@ -142,11 +160,7 @@ export const DepartamentoLayout: React.FC = () => {
             </div>
           )}
 
-          {/* Aquí se renderizan las rutas hijas:
-              - /departamento/informes/sinteticos → PanelDepartamento
-              - /departamento/informe-sintetico/cabecera → cabecera
-              - /departamento/informe-sintetico/preguntas → preguntas
-          */}
+          {/* Aquí se renderizan las páginas hijas */}
           <Outlet />
         </div>
       </main>
@@ -155,3 +169,4 @@ export const DepartamentoLayout: React.FC = () => {
 };
 
 export default DepartamentoLayout;
+
