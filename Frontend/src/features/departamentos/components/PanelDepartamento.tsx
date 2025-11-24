@@ -33,7 +33,7 @@ export const PanelDepartamento: React.FC = () => {
 
   return (
     <Container>
-      
+
       {/* ---- SECCIÓN DE CARDS ---- */}
       <Row className="mb-4">
 
@@ -71,7 +71,7 @@ export const PanelDepartamento: React.FC = () => {
       {/* Estado vacío */}
       {!loading && informesIncompletos.length === 0 && carreraSeleccionada && (
         <Alert variant="success">
-          ✅ ¡Felicitaciones! No hay informes sintéticos pendientes de completar.
+           ¡Felicitaciones! No hay informes sintéticos pendientes de completar.
         </Alert>
       )}
 
@@ -89,12 +89,26 @@ export const PanelDepartamento: React.FC = () => {
       {!loading && informesIncompletos.length > 0 && (
         <ul className="list-group">
           {informesIncompletos.map((inf) => (
-            <li key={inf.id} className="list-group-item d-flex justify-content-between align-items-center">
+            <li
+              key={inf.id}
+              className="list-group-item d-flex justify-content-between align-items-center"
+            >
               <div>
                 <strong>{inf.titulo}</strong> <br />
                 {inf.fecha && <small>{inf.fecha}</small>}
               </div>
-              <Button variant="primary">Completar</Button>
+
+              {/* arreglo de boton */}
+              <Button
+                variant="primary"
+                onClick={() => {
+                  localStorage.setItem("informe_sintetico_base_id", String(inf.id));
+                  window.location.href = "/departamento/informe-sintetico/cabecera";
+                }}
+              >
+                Completar
+              </Button>
+
             </li>
           ))}
         </ul>
