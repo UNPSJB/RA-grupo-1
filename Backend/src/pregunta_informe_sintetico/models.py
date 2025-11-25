@@ -1,7 +1,7 @@
 from sqlalchemy import Integer, Text, ForeignKey, Enum, Column, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.models import ModeloBase
-from typing import List, TYPE_CHECKING
+from typing import List, TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from src.informe_sintetico.models import InformeSintetico
@@ -15,6 +15,9 @@ class PreguntaInformeSintetico(ModeloBase):
     oracion = Column(Text, nullable=False) 
     orden = Column(Integer, nullable=False) 
     informe_base_id = Column(Integer, ForeignKey("informes_sinteticos.id"), nullable=False)
+
+    # 🔥 FALTABA ESTO
+    estructura = Column(Text, nullable=True)
 
     informe_base: Mapped["InformeSintetico"] = relationship(
         "InformeSintetico",

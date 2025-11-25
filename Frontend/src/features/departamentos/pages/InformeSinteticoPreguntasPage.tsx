@@ -5,6 +5,8 @@ import {
   type PreguntaInformeSintetico,
 } from "../hooks/usePreguntasInformeSintetico";
 
+import TablaDinamica from "../components/TablaDinamica";
+
 const API = "http://localhost:8000";
 
 type CabeceraInformeSintetico = {
@@ -12,7 +14,7 @@ type CabeceraInformeSintetico = {
   carrera_id: number;
   sede: string;
   anio: number | string;
-  duracion: string; // "ANUAL" | "PRIMER_CUATRIMESTRE" | "SEGUNDO_CUATRIMESTRE"
+  duracion: string;
 };
 
 type RespuestasMapa = {
@@ -22,7 +24,6 @@ type RespuestasMapa = {
 export default function InformeSinteticoPreguntasPage() {
   const navigate = useNavigate();
 
-  // 🔹 1. Leer cabecera desde localStorage
   const [cabecera, setCabecera] = useState<CabeceraInformeSintetico | null>(null);
   const [informeBaseId, setInformeBaseId] = useState<number | null>(null);
 
@@ -37,18 +38,15 @@ export default function InformeSinteticoPreguntasPage() {
   });
 
   useEffect(() => {
-    // cabecera
     const rawCabecera = localStorage.getItem("cabecera_informe_sintetico");
     if (rawCabecera) {
       try {
-        const parsed = JSON.parse(rawCabecera);
-        setCabecera(parsed);
+        setCabecera(JSON.parse(rawCabecera));
       } catch (e) {
-        console.error(" Error parseando cabecera_informe_sintetico:", e);
+        console.error("Error parseando cabecera:", e);
       }
     }
 
-    // informe base id (lo vamos a guardar desde PanelDepartamento)
     const rawInformeBaseId = localStorage.getItem("informe_sintetico_base_id");
     if (rawInformeBaseId) {
       setInformeBaseId(Number(rawInformeBaseId));
@@ -62,68 +60,75 @@ export default function InformeSinteticoPreguntasPage() {
       ...respuestas,
       [preguntaId]: texto,
     };
+
     setRespuestas(nuevas);
     localStorage.setItem("respuestas_informe_sintetico", JSON.stringify(nuevas));
   };
 
-  const handleGuardarInforme = async () => {
-    if (!cabecera || !informeBaseId) {
-      alert("Faltan datos de cabecera o informe base. Volvé al paso anterior.");
+const handleGuardarInforme = async () => {
+  if (!cabecera || !informeBaseId) {
+    alert("Faltan datos de cabecera o informe base. Volvé al paso anterior.");
+    return;
+  }
+
+  const { carrera_id, anio, duracion } = cabecera;
+
+  const cuerpo = {
+    titulo: `Informe Sintético ${anio}`,
+    contenido: "",
+    anio: Number(anio),
+    duracion,
+    informe_base_id: informeBaseId,
+    carrera_id,
+    respuestas: preguntas.map((p: PreguntaInformeSintetico) => ({
+      pregunta_id: p.id,
+      texto_respuesta: respuestas[p.id] || "",
+      asignatura_id: 0,
+    })),
+  };
+
+  try {
+    const res = await fetch(
+      `${API}/informes_sinteticos_finalizados/finalizados/`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(cuerpo),
+      }
+    );
+
+    if (!res.ok) {
+      const text = await res.text();
+      console.error("Error al guardar:", text);
+      alert("Error al guardar el informe sintético.");
       return;
     }
 
-    const { carrera_id, anio, duracion } = cabecera;
+    // ✔ INFORME CREADO
+    const data = await res.json();
 
-    const cuerpo = {
-      titulo: `Informe Sintético ${anio}`,
-      contenido: "", // Esto va a servir mas adelante si llegamos para un resumen       
-      anio: Number(anio),
-      duracion, // "ANUAL" | "PRIMER_CUATRIMESTRE" | "SEGUNDO_CUATRIMESTRE"
-      informe_base_id: informeBaseId,
-      carrera_id: carrera_id,
-      respuestas: preguntas.map((p: PreguntaInformeSintetico) => ({
-        pregunta_id: p.id,
-        texto_respuesta: respuestas[p.id] || "",
-        // En el modelo esto se llama asignatura_id pero
-        // está como FK hacia informe_sintetico_finalizado.
-        // Ponemos 0; el servicio de backend lo adapta.
-        asignatura_id: 0,
-      })),
-    };
+    // ✔ PDF
+    window.open(
+      `${API}/informes_sinteticos_finalizados/${data.id}/pdf`,
+      "_blank"
+    );
 
-    console.log(" Enviando informe_sintetico_finalizado:", cuerpo);
+    // ✔ LIMPIAR TEMPORAL
+    localStorage.removeItem("respuestas_informe_sintetico");
+    localStorage.removeItem("cabecera_informe_sintetico");
+    localStorage.removeItem("informe_sintetico_base_id");
 
-    try {
-      const res = await fetch(
-        `${API}/informes_sinteticos_finalizados/finalizados/`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(cuerpo),
-        }
-      );
+    alert("Informe sintético guardado correctamente.");
 
-      if (!res.ok) {
-        const text = await res.text();
-        console.error(" Error al guardar informe:", text);
-        alert("Error al guardar el informe sintético.");
-        return;
-      }
+    // ✔ NAVEGAR
+    navigate("/departamento");
 
-      const data = await res.json();
-      console.log(" Informe sintético guardado:", data);
-      alert("Informe sintético guardado correctamente.");
+  } catch (e) {
+    console.error("Error de red:", e);
+    alert("Error de red al guardar el informe sintético.");
+  }
+};
 
-      // Opcional: limpiar localStorage de las respuestas
-      // localStorage.removeItem("respuestas_informe_sintetico");
-
-      // Podés redirigir al panel del departamento
-      navigate("/departamento");
-    } catch (e) {
-      console.error(" Error de red al guardar informe:", e);
-      alert("Error de red al guardar el informe sintético.");
-    }
-  };
 
   if (!cabecera) {
     return (
@@ -149,7 +154,8 @@ export default function InformeSinteticoPreguntasPage() {
         </div>
 
         <div className="card-body">
-          {/* cabecera resumida arriba */}
+
+          {/* Cabecera resumida */}
           <div className="mb-4 p-3 border rounded bg-light">
             <p className="mb-1">
               <strong>Ciclo lectivo / duración:</strong> {cabecera.anio} — {cabecera.duracion}
@@ -162,29 +168,60 @@ export default function InformeSinteticoPreguntasPage() {
             </p>
           </div>
 
+          {/* Preguntas */}
           {loading && <p>Cargando preguntas...</p>}
           {error && <p className="text-danger">Error: {error}</p>}
 
           {!loading &&
-            preguntas.map((p) => (
-              <div key={p.id} className="mb-4">
-                <label className="form-label fw-bold">
-                  {p.codigo}) {p.oracion}
-                </label>
-                <textarea
-                  className="form-control"
-                  rows={3}
-                  value={respuestas[p.id] || ""}
-                  onChange={(e) => handleChangeRespuesta(p.id, e.target.value)}
-                />
-              </div>
-            ))}
+            preguntas.map((p) => {
+              // ----------------------------------------
+              // NUEVO: PARSE SEGURO DE ESTRUCTURA
+              // ----------------------------------------
+              let estructura = null;
+              try {
+                estructura = p.estructura ? JSON.parse(p.estructura) : null;
+              } catch {
+                estructura = null;
+              }
 
+              // ----------------------------------------
+              // NUEVO: INICIALIZAR [] SI ES TABLA
+              // ----------------------------------------
+              if (estructura?.tipo === "tabla" && !respuestas[p.id]) {
+                handleChangeRespuesta(p.id, "[]");
+              }
+
+              return (
+                <div key={p.id} className="mb-4 p-3 border rounded bg-white shadow-sm">
+                  <label className="form-label fw-bold mb-2">
+                    {p.codigo}) {p.oracion}
+                  </label>
+
+                  {estructura?.tipo === "tabla" ? (
+                    <TablaDinamica
+                      estructura={estructura}
+                      value={respuestas[p.id]}
+                      onChange={(val: string) => handleChangeRespuesta(p.id, val)}
+                    />
+                  ) : (
+                    <textarea
+                      className="form-control"
+                      rows={3}
+                      value={respuestas[p.id] || ""}
+                      onChange={(e) => handleChangeRespuesta(p.id, e.target.value)}
+                    />
+                  )}
+                </div>
+              );
+            })}
+
+          {/* Guardar */}
           <div className="d-flex justify-content-end mt-4">
             <button className="btn btn-success" onClick={handleGuardarInforme}>
               Guardar Informe
             </button>
           </div>
+
         </div>
       </div>
     </div>

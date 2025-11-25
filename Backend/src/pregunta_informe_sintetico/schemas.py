@@ -1,14 +1,17 @@
 from pydantic import BaseModel
-from enum import Enum as PyEnum
+from typing import Optional
+
 
 class PreguntaInformeSinteticoBase(BaseModel):
     orden: int
     codigo: str
     oracion: str
-    
+    estructura: Optional[str] = None   
+
 
 class PreguntaInformeSinteticoCreate(PreguntaInformeSinteticoBase):
     pass
+
 
 class PreguntaInformeSintetico(PreguntaInformeSinteticoBase):
     id: int

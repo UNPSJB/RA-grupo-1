@@ -7,6 +7,8 @@ export interface PreguntaInformeSintetico {
   oracion: string;
   orden: number;
   informe_base_id: number;
+  estructura?: string | null;  
+
 }
 
 const API = "http://localhost:8000";
