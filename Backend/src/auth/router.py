@@ -30,7 +30,6 @@ def login(credentials: LoginRequest, session: Session = Depends(get_db)):
     if alumno.clave != credentials.clave:
         raise HTTPException(status_code=401, detail="Usuario o contraseña incorrectos")
 
-    # GENERACIÓN DE TOKEN (por ahora algo simple)
     token = f"TOKEN-{alumno.id}"
 
     return LoginResponse(

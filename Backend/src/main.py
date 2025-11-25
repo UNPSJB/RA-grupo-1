@@ -50,6 +50,7 @@ from src.informe_sintetico_finalizado.router import router as informe_sintetico_
 from src.pregunta_informe_sintetico.router import router as pregunta_informe_sintetico_router
 from src.respuestas_informe.router import router as respuestas_informe_router
 from src.auth.router import router as auth_router
+from src.personas.router import router as personas_router
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -104,6 +105,7 @@ app.include_router(informe_sintetico_finalizado_router)
 app.include_router(pregunta_informe_sintetico_router)
 app.include_router(respuestas_informe_router)
 app.include_router(auth_router)
+app.include_router(personas_router)
 
 @app.get("/")
 def read_root():
