@@ -21,18 +21,18 @@ export const usePersona = (rol?: string) => {
       try {
         setLoading(true);
         
-        let endpoint;
         let personaData: Persona | null = null;
 
         if (rol === 'docente') {
-          endpoint = 'http://127.0.0.1:8000/docentes/';
+          // Para docentes: mantener la lógica actual
+          const endpoint = 'http://127.0.0.1:8000/docentes/';
           
           const response = await fetch(endpoint);
           if (!response.ok) throw new Error('Error al cargar docentes');
           
           const docentes: any[] = await response.json();
           
-            if (docentes.length > 0) {
+          if (docentes.length > 0) {
             const docente = docentes[0];
             personaData = {
               id: docente.id,
@@ -45,14 +45,33 @@ export const usePersona = (rol?: string) => {
             };
           }
         } else {
-          endpoint = 'http://127.0.0.1:8000/personas/';
-          
-          const response = await fetch(endpoint);
-          if (!response.ok) throw new Error('Error al cargar personas');
-          
-          const personas: Persona[] = await response.json();
-          
-          personaData = personas.find(persona => persona.rol_id === 2) || null;
+          // Para alumnos: USAR DATOS DEL LOCALSTORAGE
+          const alumnoId = localStorage.getItem('alumno_id');
+          const alumnoNombre = localStorage.getItem('alumno_nombre');
+          const alumnoApellido = localStorage.getItem('alumno_apellido');
+          const alumnoEmail = localStorage.getItem('alumno_email');
+
+          if (alumnoId && alumnoNombre && alumnoApellido) {
+            // Si hay datos en localStorage, usarlos directamente
+            personaData = {
+              id: parseInt(alumnoId),
+              nombre: alumnoNombre,
+              apellido: alumnoApellido,
+              email: alumnoEmail || '',
+              dni: "",
+              rol_id: 2,
+              legajo: parseInt(alumnoId) // Puedes ajustar esto según tu lógica
+            };
+          } else {
+            // Si no hay datos en localStorage, hacer fetch por ID específico
+            const endpoint = `http://127.0.0.1:8000/personas/${alumnoId}`;
+            
+            const response = await fetch(endpoint);
+            if (!response.ok) throw new Error('Error al cargar datos del alumno');
+            
+            const personaFromApi: Persona = await response.json();
+            personaData = personaFromApi;
+          }
         }
 
         if (personaData) {

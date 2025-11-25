@@ -7,8 +7,8 @@ import json
 from src.database import get_db
 from src.informe_sintetico_finalizado.models import InformeSinteticoFinalizado
 from src.informe_sintetico_finalizado import schemas, services
-from src.resultado_informe.models import ResultadoInforme   # ✅ IMPORTANTE
-from weasyprint import HTML
+from src.resultado_informe.models import ResultadoInforme   
+#from weasyprint import HTML
 
 router = APIRouter(
     prefix="/informes_sinteticos_finalizados",
@@ -256,98 +256,99 @@ def get_desempeno_auxiliares(
         )
 
 # ==========================================================
-#   PDF DEL INFORME SINTÉTICO (CORREGIDO)
+#   PDF DEL INFORME SINTÉTICO (DESACTIVADO TEMPORALMENTE)
 # ==========================================================
-@router.get("/{informe_id}/pdf")
-def generar_pdf_informe(informe_id: int, db: Session = Depends(get_db)):
 
-    informe = (
-        db.query(InformeSinteticoFinalizado)
-        .options(
-            selectinload(InformeSinteticoFinalizado.respuestas)
-            .selectinload(ResultadoInforme.pregunta),     # ✅ CORREGIDO
-            selectinload(InformeSinteticoFinalizado.carrera),
-        )
-        .filter(InformeSinteticoFinalizado.id == informe_id)
-        .first()
-    )
-
-    if not informe:
-        raise HTTPException(status_code=404, detail="Informe no encontrado")
-
-    # Duración: Enum o string
-    try:
-        duracion_str = informe.duracion.value
-    except AttributeError:
-        duracion_str = str(informe.duracion)
-
-    carrera_nombre = (
-        informe.carrera.nombre if getattr(informe, "carrera", None) else informe.carrera_id
-    )
-
-    sede = getattr(informe, "sede", "")
-
-    html = f"""
-    <html>
-      <head>
-        <meta charset="utf-8" />
-        <title>Informe Sintético – {informe.anio}</title>
-        <style>
-          body {{
-            font-family: sans-serif;
-            font-size: 12px;
-          }}
-          h1 {{
-            text-align: center;
-            margin-bottom: 10px;
-          }}
-          table {{
-            border-collapse: collapse;
-            width: 100%;
-            margin-bottom: 10px;
-          }}
-          th, td {{
-            border: 1px solid #000;
-            padding: 4px;
-          }}
-        </style>
-      </head>
-      <body>
-        <h1>Informe Sintético – {informe.anio}</h1>
-
-        <h3>Datos de la cabecera</h3>
-        <p><strong>Sede:</strong> {sede}</p>
-        <p><strong>Carrera:</strong> {carrera_nombre}</p>
-        <p><strong>Duración:</strong> {duracion_str}</p>
-        <hr/>
-    """
-
-    for r in informe.respuestas:
-        if not getattr(r, "pregunta", None):
-            continue
-
-        html += f"<h3>{r.pregunta.codigo}) {r.pregunta.oracion}</h3>"
-
-        try:
-            data = json.loads(r.texto_respuesta)
-            if isinstance(data, list):
-                if len(data) > 0:
-                    columnas = data[0].keys()
-                    html += "<table><tr>"
-                    html += "".join(f"<th>{c}</th>" for c in columnas)
-                    html += "</tr>"
-                    for fila in data:
-                        html += "<tr>"
-                        html += "".join(f"<td>{fila.get(c,'')}</td>" for c in columnas)
-                        html += "</tr>"
-                    html += "</table>"
-                    continue
-        except Exception:
-            pass
-
-        html += f"<p>{(r.texto_respuesta or '').replace(chr(10), '<br/>')}</p>"
-
-    html += "</body></html>"
-
-    pdf = HTML(string=html).write_pdf()
-    return Response(content=pdf, media_type="application/pdf")
+# @router.get("/{informe_id}/pdf")
+# def generar_pdf_informe(informe_id: int, db: Session = Depends(get_db)):
+#
+#     informe = (
+#         db.query(InformeSinteticoFinalizado)
+#         .options(
+#             selectinload(InformeSinteticoFinalizado.respuestas)
+#             .selectinload(ResultadoInforme.pregunta),
+#             selectinload(InformeSinteticoFinalizado.carrera),
+#         )
+#         .filter(InformeSinteticoFinalizado.id == informe_id)
+#         .first()
+#     )
+#
+#     if not informe:
+#         raise HTTPException(status_code=404, detail="Informe no encontrado")
+#
+#     # Duración: Enum o string
+#     try:
+#         duracion_str = informe.duracion.value
+#     except AttributeError:
+#         duracion_str = str(informe.duracion)
+#
+#     carrera_nombre = (
+#         informe.carrera.nombre if getattr(informe, "carrera", None) else informe.carrera_id
+#     )
+#
+#     sede = getattr(informe, "sede", "")
+#
+#     html = f"""
+#     <html>
+#       <head>
+#         <meta charset="utf-8" />
+#         <title>Informe Sintético – {informe.anio}</title>
+#         <style>
+#           body {{
+#             font-family: sans-serif;
+#             font-size: 12px;
+#           }}
+#           h1 {{
+#             text-align: center;
+#             margin-bottom: 10px;
+#           }}
+#           table {{
+#             border-collapse: collapse;
+#             width: 100%;
+#             margin-bottom: 10px;
+#           }}
+#           th, td {{
+#             border: 1px solid #000;
+#             padding: 4px;
+#           }}
+#         </style>
+#       </head>
+#       <body>
+#         <h1>Informe Sintético – {informe.anio}</h1>
+#
+#         <h3>Datos de la cabecera</h3>
+#         <p><strong>Sede:</strong> {sede}</p>
+#         <p><strong>Carrera:</strong> {carrera_nombre}</p>
+#         <p><strong>Duración:</strong> {duracion_str}</p>
+#         <hr/>
+#     """
+#
+#     for r in informe.respuestas:
+#         if not getattr(r, "pregunta", None):
+#             continue
+#
+#         html += f"<h3>{r.pregunta.codigo}) {r.pregunta.oracion}</h3>"
+#
+#         try:
+#             data = json.loads(r.texto_respuesta)
+#             if isinstance(data, list):
+#                 if len(data) > 0:
+#                     columnas = data[0].keys()
+#                     html += "<table><tr>"
+#                     html += "".join(f"<th>{c}</th>" for c in columnas)
+#                     html += "</tr>"
+#                     for fila in data:
+#                         html += "<tr>"
+#                         html += "".join(f"<td>{fila.get(c,'')}</td>" for c in columnas)
+#                         html += "</tr>"
+#                     html += "</table>"
+#                     continue
+#         except Exception:
+#             pass
+#
+#         html += f"<p>{(r.texto_respuesta or '').replace(chr(10), '<br/>')}</p>"
+#
+#     html += "</body></html>"
+#
+#     # pdf = HTML(string=html).write_pdf()
+#     # return Response(content=pdf, media_type="application/pdf")

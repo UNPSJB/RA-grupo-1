@@ -16,7 +16,8 @@ import { DepartamentoLayout } from '../features/departamentos/components/Departa
 import { PanelDepartamento } from '../features/departamentos/components/PanelDepartamento';
 import { GestionPreguntas } from '../features/secretaria/components/GestionPreguntas';
 import { GestionEncuestas } from '../features/secretaria/components/GestionEncuestas';
-import { Carreras } from '../features/secretaria/components/Carrera';
+import { RegistroAlumno } from "../features/alumnos/components/RegistroAlumno";
+
 
 import InformeSinteticoCabeceraPage from '../features/departamentos/pages/InformeSinteticoCabeceraPage';
 import InformeSinteticoPreguntasPage from '../features/departamentos/pages/InformeSinteticoPreguntasPage';
@@ -43,6 +44,7 @@ function App() {
 
       {/* Login alumno */}
       <Route path="/alumno/login" element={<LoginAlumno />} />
+      <Route path="/registro" element={<RegistroAlumno />} />
       
       {/* Rutas de alumno (PROTEGIDAS) */}
       <Route 
