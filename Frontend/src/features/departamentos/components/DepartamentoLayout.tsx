@@ -2,6 +2,8 @@ import React from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Navbar } from '../../../components/layout/Navbar/Navbar';
 import { Footer } from '../../../components/layout/Footer/Footer';
+import { useMetricasDepartamento } from '../hooks/useMetricasDepartamento'; 
+
 import { 
   LayoutDashboard, 
   FileText, 
@@ -12,13 +14,20 @@ import {
   History, 
   LogOut 
 } from 'lucide-react';
+
 import '../styles/DepartamentoLayout.css'; 
 
 export const DepartamentoLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const handleLogout = () => navigate('/');
+
+  const handleLogout = () => navigate("/");
   const isDashboard = location.pathname === "/departamento";
+
+  const rawDepto = localStorage.getItem("departamentoSeleccionado");
+  const departamento = rawDepto ? JSON.parse(rawDepto) : null;
+
+  const metricasDepto = useMetricasDepartamento(departamento?.id ?? 1);
 
   const departamentoNavLinks = [
     { 
@@ -67,45 +76,47 @@ export const DepartamentoLayout: React.FC = () => {
       icon: <LogOut size={18} />,
       isLogout: true 
     }
-  ] as any; // casteo para que TypeScript no se queje
+  ] as any;
 
+  // 📌 Métricas reales
   const metricas = [
     { 
-      titulo: 'Carreras Activas', 
-      valor: 5, 
-      icono: 'graduation-cap',
-      type: 'primary', 
-      descripcion: '2159 estudiantes totales' 
+      titulo: "Carreras Activas", 
+      valor: metricasDepto.carrerasActivas,
+      icono: "graduation-cap",
+      type: "primary", 
+      descripcion: `${metricasDepto.carrerasActivas} carreras cargadas`
     },
     { 
-      titulo: 'Informes Pendientes', 
-      valor: 2, 
-      icono: 'clock', 
-      type: 'secondary', 
-      descripcion: 'Requieren atención inmediata' 
+      titulo: "Informes Pendientes", 
+      valor: metricasDepto.informesPendientes,
+      icono: "clock", 
+      type: "secondary", 
+      descripcion: "Requieren atención inmediata"
     },
     { 
-      titulo: 'En Progreso', 
+      titulo: "En Progreso", 
       valor: 1, 
-      icono: 'trending-up', 
-      type: 'accent', 
-      descripcion: 'Informes en desarrollo' 
+      icono: "trending-up",
+      type: "accent", 
+      descripcion: "En desarrollo"
     },
     { 
-      titulo: 'Completados', 
-      valor: 15, 
-      icono: 'check-circle', 
-      type: 'neutral', 
-      descripcion: 'Este período académico' 
+      titulo: "Completados", 
+      valor: metricasDepto.informesCompletados,
+      icono: "check-circle",
+      type: "neutral", 
+      descripcion: "Este período académico"
     }
   ];
 
+  // 📌 Render de iconos según el nombre
   const renderIcon = (name: string) => {
     switch(name) {
-      case 'graduation-cap': return <GraduationCap size={24}/>;
-      case 'clock': return <Clock size={24}/>;
-      case 'trending-up': return <BarChart2 size={24}/>; 
-      default: return <ClipboardCheck size={24}/>;
+      case "graduation-cap": return <GraduationCap size={24} />;
+      case "clock": return <Clock size={24} />;
+      case "trending-up": return <BarChart2 size={24} />;
+      default: return <ClipboardCheck size={24} />;
     }
   };
 
@@ -113,11 +124,11 @@ export const DepartamentoLayout: React.FC = () => {
     <div className="departamento-layout">
       <Navbar 
         rol="departamento_alumnos" 
-        navLinks={departamentoNavLinks as any}
+        navLinks={departamentoNavLinks}
         showUserInfo={false}
       />
 
-      {/* Header solo en /departamento */}
+      {/* HEADER SOLO EN /departamento */}
       {isDashboard && (
         <div className="dashboard-header">
           <div className="header-content animate-fade-in">
@@ -130,8 +141,8 @@ export const DepartamentoLayout: React.FC = () => {
 
       <main className="main-content-area">
         <div className="content-wrapper">
-          
-          {/* GRID DE MÉTRICAS solo en /departamento */}
+
+          {/* GRID DE MÉTRICAS SOLO EN /departamento */}
           {isDashboard && (
             <div className="metrics-grid">
               {metricas.map((metrica, index) => (
@@ -141,15 +152,9 @@ export const DepartamentoLayout: React.FC = () => {
                       {renderIcon(metrica.icono)}
                     </div>
                     <div className="text-wrapper">
-                      <h6 className="metrica-title">
-                        {metrica.titulo}
-                      </h6>
-                      <h3 className="metrica-value">
-                        {metrica.valor}
-                      </h3>
-                      <small className="metrica-desc">
-                        {metrica.descripcion}
-                      </small>
+                      <h6 className="metrica-title">{metrica.titulo}</h6>
+                      <h3 className="metrica-value">{metrica.valor}</h3>
+                      <small className="metrica-desc">{metrica.descripcion}</small>
                     </div>
                   </div>
                 </div>
@@ -157,14 +162,15 @@ export const DepartamentoLayout: React.FC = () => {
             </div>
           )}
 
-          {/* Aquí se renderizan las páginas hijas */}
+          {/* Render de las páginas hijas */}
           <Outlet />
+
         </div>
       </main>
+
       <Footer />
     </div>
   );
 };
 
 export default DepartamentoLayout;
-
