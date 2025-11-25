@@ -1,17 +1,12 @@
-/* DocenteLayout.css - Estilo Unificado con Secretaría Académica */
-
 /* --- Variables de Identidad Institucional --- */
 :root {
-  /* Azul Universitario (Seriedad y confianza - Logo) */
   --uni-primary: #002B5C; 
-  /* Dorado Institucional (Excelencia - Detalles) */
   --uni-secondary: #B4A269; 
-  /* Fondo claro general */
   --uni-bg: #F4F6F9; 
-  /* Colores de acento modernos para iconos */
   --accent-blue: #0077CC;
   --accent-teal: #20c997;
   --accent-rose: #e83e8c;
+  --accent-purple: #6f42c1;
 }
 
 /* --- Layout General --- */
@@ -23,37 +18,69 @@
   font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
 }
 
-/* --- Header Específico del Dashboard --- */
+/* --- Header del Dashboard (Compacto) --- */
 .dashboard-header {
-  /* Gradiente institucional elegante */
   background: linear-gradient(135deg, var(--uni-primary) 0%, #001a38 100%);
-  padding-bottom: 4rem; /* Espacio para efecto flotante */
-  border-bottom: 4px solid var(--uni-secondary); /* Línea dorada sutil */
+  padding: 2rem 0 1.5rem 0; /* Más compacto */
+  border-bottom: 3px solid var(--uni-secondary);
+  position: relative;
+  overflow: hidden;
 }
 
-.docente-main-content {
-  flex: 1;
-  /* Efecto de solapamiento negativo para acercar las tarjetas al header */
-  margin-top: -20px; 
+/* Efecto de brillo sutil en el header */
+.dashboard-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(180, 162, 105, 0.1) 0%, transparent 70%);
+  animation: headerGlow 8s ease-in-out infinite;
+}
+
+@keyframes headerGlow {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-20%, -20%); }
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+}
+
+.text-white-75 {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* --- Sección de Métricas FIJA --- */
+.metricas-section {
+  background-color: var(--uni-bg);
+  padding: 1.5rem 0;
+  position: sticky;
+  top: 56px; /* Altura del navbar (ajusta según tu navbar) */
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 /* --- Tarjetas de Métricas Modernas --- */
 .metrica-card {
   background: white;
+  border: none !important;
   border-radius: 12px !important;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   overflow: hidden;
   position: relative;
-  z-index: 10; /* Asegura que floten sobre el contenido */
+  height: 100%;
 }
 
-/* Efecto Hover: Elevación y Sombra */
+/* Efecto Hover: Elevación elegante */
 .metrica-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 30px rgba(0, 43, 92, 0.15) !important;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 43, 92, 0.12) !important;
 }
 
-/* Decoración lateral inferior dorada al pasar el mouse */
+/* Borde inferior decorativo */
 .metrica-card::after {
   content: '';
   position: absolute;
@@ -61,8 +88,8 @@
   bottom: 0;
   height: 3px;
   width: 0%;
-  background-color: var(--uni-secondary);
-  transition: width 0.3s ease;
+  background: linear-gradient(90deg, var(--uni-secondary), var(--uni-primary));
+  transition: width 0.4s ease;
 }
 
 .metrica-card:hover::after {
@@ -71,41 +98,68 @@
 
 /* --- Iconos Mejorados --- */
 .icon-wrapper {
-  width: 56px;
-  height: 56px;
-  border-radius: 12px;
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.metrica-card:hover .icon-wrapper {
+  transform: scale(1.1) rotate(5deg);
 }
 
 /* Variantes de color para los iconos */
-.type-primary { background-color: rgba(0, 43, 92, 0.1); color: var(--uni-primary); }
-.type-secondary { background-color: rgba(180, 162, 105, 0.15); color: #968345; } /* Tono dorado oscuro para texto */
-.type-accent { background-color: rgba(32, 201, 151, 0.1); color: var(--accent-teal); }
-.type-neutral { background-color: rgba(232, 62, 140, 0.1); color: var(--accent-rose); }
+.type-primary { 
+  background: linear-gradient(135deg, rgba(0, 43, 92, 0.1), rgba(0, 43, 92, 0.05));
+  color: var(--uni-primary); 
+}
+
+.type-secondary { 
+  background: linear-gradient(135deg, rgba(180, 162, 105, 0.15), rgba(180, 162, 105, 0.05));
+  color: #968345; 
+}
+
+.type-accent { 
+  background: linear-gradient(135deg, rgba(32, 201, 151, 0.12), rgba(32, 201, 151, 0.05));
+  color: var(--accent-teal); 
+}
+
+.type-neutral { 
+  background: linear-gradient(135deg, rgba(232, 62, 140, 0.12), rgba(232, 62, 140, 0.05));
+  color: var(--accent-rose); 
+}
 
 .description-text {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: #8898aa;
+  line-height: 1.3;
 }
 
-/* --- Contenedor del Outlet (Donde se renderizan las páginas hijas) --- */
-.outlet-container {
-  background: white;
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-  min-height: 400px; /* Altura mínima para estética */
+/* --- Contenido Principal --- */
+.docente-main-content {
+  flex: 1;
+  position: relative;
 }
 
-/* --- Animaciones (Efectos visuales de entrada) --- */
+.content-wrapper,
+.content-wrapper-dashboard {
+  min-height: 400px;
+}
+
+.content-wrapper-dashboard {
+  padding-top: 2rem !important;
+}
+
+/* --- Animaciones Suaves --- */
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translate3d(0, 30px, 0);
+    transform: translate3d(0, 20px, 0);
   }
   to {
     opacity: 1;
@@ -119,16 +173,89 @@
 }
 
 .animate-slide-up {
-  animation: fadeInUp 0.6s ease-out forwards;
-  opacity: 0; /* Inicialmente oculto para evitar parpadeo */
+  animation: fadeInUp 0.5s ease-out forwards;
+  opacity: 0;
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.8s ease-out forwards;
+  animation: fadeIn 0.6s ease-out forwards;
 }
 
-/* Retardos para efecto cascada en las tarjetas */
+/* Retardos en cascada para las tarjetas */
 .delay-0 { animation-delay: 0.1s; }
-.delay-1 { animation-delay: 0.2s; }
-.delay-2 { animation-delay: 0.3s; }
-.delay-3 { animation-delay: 0.4s; }
+.delay-1 { animation-delay: 0.15s; }
+.delay-2 { animation-delay: 0.2s; }
+.delay-3 { animation-delay: 0.25s; }
+
+/* --- Responsive Design --- */
+@media (max-width: 992px) {
+  .metricas-section {
+    position: relative; /* No sticky en tablets/móviles */
+    top: 0;
+  }
+
+  .dashboard-header {
+    padding: 1.5rem 0 1rem 0;
+  }
+
+  .header-content h4 {
+    font-size: 1.3rem;
+  }
+
+  .icon-wrapper {
+    width: 48px;
+    height: 48px;
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .metricas-section {
+    padding: 1rem 0;
+  }
+
+  .metrica-card {
+    margin-bottom: 0.5rem;
+  }
+
+  .icon-wrapper {
+    width: 44px;
+    height: 44px;
+    font-size: 1.1rem;
+  }
+
+  .metrica-card .h3 {
+    font-size: 1.5rem;
+  }
+
+  .header-content h4 {
+    font-size: 1.1rem;
+  }
+}
+
+/* --- Mejoras Visuales Adicionales --- */
+.metrica-card .card-body {
+  padding: 1rem !important;
+}
+
+.metrica-card h3 {
+  color: var(--uni-primary);
+  font-weight: 700;
+}
+
+.metrica-card h6 {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  font-size: 0.7rem;
+}
+
+/* Efecto de pulso sutil en los números */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+}
+
+.metrica-card:hover h3 {
+  animation: pulse 2s ease-in-out infinite;
+}

@@ -38,7 +38,7 @@ class Alumno(ModeloBase):
 
     respuestas = relationship("Respuesta", back_populates="alumno", lazy="select")
 
-    # 👇 esto faltaba para que EncuestaFinalizada no rompa
+    
     encuestas_finalizadas: Mapped[List["EncuestaFinalizada"]] = relationship(
         "EncuestaFinalizada",
         back_populates="alumno",
