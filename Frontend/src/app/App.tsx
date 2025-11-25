@@ -10,6 +10,7 @@ import { EncuestasIncompletas } from '../features/encuestas/components/Encuestas
 import { EncuestasCompletas } from '../features/encuestas/components/EncuestasCompletas';
 import { PanelDocente } from '../features/docentes/components/PanelDocente';
 import InformeCatedraDetalle from "../features/informeCatedra/components/InformeCatedraDetalle";
+import InformeFinalizadoDetalle from "../features/informeCatedra/informeCatedraTerminado/components/InformeFinalizadoDetalle";
 import { MisAsignaturas } from '../features/docentes/components/MisAsignaturas';
 import { DepartamentoLayout } from '../features/departamentos/components/DepartamentoLayout';
 import { PanelDepartamento } from '../features/departamentos/components/PanelDepartamento'
@@ -20,7 +21,7 @@ import { CrearEncuesta } from '../features/secretaria/components/CrearEncuesta';
 import { PanelEncuestas } from '../features/secretaria/components/PanelEncuestas';
 import { EstadisticasEncuesta } from '../features/secretaria/components/EstadisticasEncuesta';
 import { CiclosPage } from "../features/ciclos/components/CiclosPage";
-
+import { InformesFinalizados } from '../features/docentes/components/InformesFinalizados';
 import DetalleEncuesta from '../features/encuestas/components/DetalleEncuesta';
 import { NuevaEncuesta } from '../features/secretaria/components/NuevaEncuesta';
 import CompletarEncuesta from "../features/encuestas/components/CompletarEncuesta";
@@ -64,11 +65,12 @@ function App() {
       {/* Rutas de docente */}
       <Route path="/docente" element={<DocenteLayout />}>
         <Route index element={<PanelDocente />} /> 
-        <Route path="reportes" element={<div>Reportes de Encuestas</div>} />
+        <Route path="informes-finalizados" element={<InformesFinalizados />} />
         <Route path="mis-asignaturas" element={<MisAsignaturas />} />
+        <Route path="informes-catedra/completar/:finalizadoId/:plantillaId" element={<InformeCatedraDetalle />} />
+        <Route path="informes-catedra/ver/:finalizadoId/:plantillaId" element={<InformeFinalizadoDetalle />} />
       </Route>
 
-        <Route path="/informes-catedra/:id" element={<InformeCatedraDetalle />} />
 
       {/* Rutas de departamento */}
       <Route path="/departamento" element={<DepartamentoLayout />}>

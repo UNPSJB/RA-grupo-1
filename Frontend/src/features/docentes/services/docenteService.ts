@@ -1,6 +1,24 @@
-export interface Docente {
+import axios from "axios";
+
+const API_URL = "http://127.0.0.1:8000/docentes";
+
+export interface Persona {
   id: number;
   nombre: string;
+  apellido: string;
+  email: string;
+  dni: string;
+  rol_id: number;
+  legajo: number;
+  cuil: string;
+  usuario: string;
+  clave: string;
+}
+
+export interface Docente {
+  persona_id: number;
+  id: number;
+  persona: Persona;
 }
 
 export interface DocenteStats {
@@ -9,6 +27,13 @@ export interface DocenteStats {
   encuestas_finalizadas: number;
   evaluacion_promedio: number;
   semestre_actual: string;
+}
+
+export interface DocenteCreate extends Omit<Docente, "id"> {}
+
+export const getDocenteById = async (id: number): Promise<Docente> => {
+  const response = await axios.get(`${API_URL}/${id}`);
+  return response.data;
 }
 
 // simulado por ahora

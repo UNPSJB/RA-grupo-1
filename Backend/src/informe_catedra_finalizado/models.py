@@ -1,7 +1,7 @@
 from sqlalchemy import Integer, ForeignKey, Enum, Text, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.models import ModeloBase
-from src.vinculaciones.models import Duracion
+from src.vinculaciones.models import Duracion, Estado
 from typing import List, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -14,8 +14,7 @@ class InformeCatedraFinalizado(ModeloBase):
    __tablename__ = "informe_catedra_finalizado"
 
    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-   asignatura_docente_id: Mapped[int] = mapped_column(ForeignKey("asignatura_docente"
-   ".id"))
+   asignatura_docente_id: Mapped[int] = mapped_column(ForeignKey("asignatura_docente.id"))
    informe_catedra_id: Mapped[int] = mapped_column(ForeignKey("informe_catedra.id"))
    
    titulo: Mapped[Optional[str]] = mapped_column(String, nullable=True)
@@ -30,6 +29,8 @@ class InformeCatedraFinalizado(ModeloBase):
    JTP: Mapped[Optional[str]] = mapped_column(String, nullable=True)
    aux_primera: Mapped[Optional[str]] = mapped_column(String, nullable=True)
    aux_segunda: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+
+   estado: Mapped[Estado] = mapped_column(Enum(Estado), default=Estado.pendiente, nullable=False)
 
    asignatura_docente: Mapped["AsignaturaDocente"] = relationship("AsignaturaDocente")
    informe_catedra: Mapped["InformeCatedra"] = relationship(

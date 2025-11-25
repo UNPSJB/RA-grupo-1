@@ -3,6 +3,10 @@ from sqlalchemy import Integer, String, ForeignKey, Table, Column, Enum
 from src.models import ModeloBase
 from enum import auto, StrEnum
 
+class Estado(StrEnum):
+    pendiente = "pendiente"
+    finalizado = "finalizado"
+
 class Duracion(StrEnum):
     anual = "anual"
     cuatrimestre_1 = "primer cuatrimestre"
