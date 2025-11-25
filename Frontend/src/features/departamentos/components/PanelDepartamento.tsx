@@ -38,16 +38,22 @@ export const PanelDepartamento: React.FC = () => {
       <Row className="mb-4">
 
         {/* Card Seleccionar Carrera */}
-        <Col md={7}>
-          <Card>
-            <Card.Body>
-              <Card.Title>Seleccionar carrera</Card.Title>
-              <SeleccionCarrera />
-            </Card.Body>
-          </Card>
-        </Col>
+      <Col md={5} className="mt-5 mx-auto d-flex justify-content-center">
+        <Card className="shadow-lg border-0 rounded-4">
+        <Card.Body className="p-4">
+          <h3 className="text-center fw-bold mb-4">Seleccionar Carrera</h3>
+        <div style={{ padding: "5px 10px", display: "flex", justifyContent: "center" }}>
+          <div style={{ width: "100%", maxWidth: "500px" }}>
+            <SeleccionCarrera />
+          </div>
+        </div>
 
-        {/* NUEVA CARD: Formularios Pendientes */}
+        </Card.Body>
+        </Card>
+      </Col>
+
+
+        {/* NUEVA CARD: Formularios Pendientes 
         <Col md={6}>
           <Card>
             <Card.Body>
@@ -58,7 +64,7 @@ export const PanelDepartamento: React.FC = () => {
             </Card.Body>
           </Card>
         </Col>
-
+*/}
       </Row>
 
       {/* Carrera seleccionada */}

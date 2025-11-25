@@ -43,7 +43,7 @@ html, body {
 }
 
 .header-content {
-  max-width: 1200px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
@@ -63,8 +63,8 @@ html, body {
 /* --- CONTENIDO PRINCIPAL --- */
 .main-content-area {
   flex: 1;
-  margin-top: -60px; /* Efecto: Las tarjetas suben sobre el header */
-  padding: 0 2rem 2rem 2rem;
+  margin-top: -20px; /* Efecto: Las tarjetas suben sobre el header */
+  padding: 0 1rem 2rem 1rem;
 }
 
 .content-wrapper {

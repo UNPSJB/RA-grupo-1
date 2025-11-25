@@ -28,7 +28,7 @@ export default function InformeSinteticoCabeceraPage() {
   const [selectedSede, setSelectedSede] = useState<string>("");
   const [selectedDuracion, setSelectedDuracion] = useState<string>("");
   const [anio, setAnio] = useState("");
-  const [integrantes, setIntegrantes] = useState(""); // 🟦 NUEVO
+  const [integrantes, setIntegrantes] = useState("");
 
   // trae los dpto de la base
   useEffect(() => {
@@ -54,7 +54,6 @@ export default function InformeSinteticoCabeceraPage() {
       !selectedDepto ||
       !selectedCarrera ||
       !selectedSede ||
-      !anio ||
       !selectedDuracion ||
       !integrantes.trim()
     ) {
@@ -62,148 +61,145 @@ export default function InformeSinteticoCabeceraPage() {
       return;
     }
 
-    // guardamos la cabecera en localStorage
     const cabecera = {
       departamento_id: selectedDepto,
       carrera_id: selectedCarrera,
       sede: selectedSede,
       anio,
       duracion: selectedDuracion,
-      integrantes, 
+      integrantes,
     };
 
     localStorage.setItem("cabecera_informe_sintetico", JSON.stringify(cabecera));
-
-    // redirigir al paso de preguntas cuando se complete la cabecera
     navigate("/departamento/informe-sintetico/preguntas");
   };
+
   // cargar carrera  desde localStorage
   useEffect(() => {
-  const stored = localStorage.getItem("carreraSeleccionada");
-  if (stored) {
-    const carrera = JSON.parse(stored);
+    const stored = localStorage.getItem("carreraSeleccionada");
+    if (stored) {
+      const carrera = JSON.parse(stored);
+      setSelectedCarrera(carrera.id);
 
-    // Setear carrera preseleccionada
-    setSelectedCarrera(carrera.id);
-
-    // tambien traer el dpto
-    if (carrera.departamento_id) {
-      setSelectedDepto(carrera.departamento_id);
+      if (carrera.departamento_id) {
+        setSelectedDepto(carrera.departamento_id);
+      }
     }
-  }
-}, []);
+  }, []);
 
-  return (
-    <div className="container py-4">
-      <div className="card shadow">
-        <div className="card-header bg-primary text-white">
-          <h2 className="h4 mb-0">Informe Sintético — Cabecera</h2>
-        </div>
+return (
+  <div className="container py-4 mt-5">
 
-        <div className="card-body">
+    <div className="card shadow" style={{ maxWidth: "900px", margin: "0 auto" }}>
+      <div className="card-header bg-primary text-white text-center">
+        <h2 className="h4 mb-0">Informe Sintético — Cabecera</h2>
+      </div>
 
-          {/* Departamento */}
-          <div className="mb-3">
-            <label className="form-label fw-bold">Comisión Asesora de Carrera o Departamental correspondiente a:</label>
-            <select
-              className="form-control"
-              value={selectedDepto ?? ""}
-              onChange={(e) => setSelectedDepto(Number(e.target.value))}
-            >
-              <option value="">Seleccione un departamento</option>
-              {departamentos.map((d) => (
-                <option key={d.id} value={d.id}>
-                  {d.nombre}
-                </option>
-              ))}
-            </select>
-          </div>
+      <div className="card-body" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+
+
+        <div
+          style={{
+            border: "1px solid black",
+            padding: "20px",
+            width: "100%",
+            maxWidth: "750px",
+          }}
+        >
+          {/* Ciclo */}
+          <p style={{ textDecoration: "underline", fontWeight: "bold" }}>
+            Ciclo Lectivo y/o cuatrimestre evaluado:
+          </p>
+          <select
+            className="form-control mb-3"
+            value={selectedDuracion}
+            onChange={(e) => setSelectedDuracion(e.target.value)}
+          >
+            <option value="">Seleccione duración</option>
+            {DURACIONES.map((d) => (
+              <option key={d.value} value={d.value}>{d.label}</option>
+            ))}
+          </select>
+
+          {/* Comisión */}
+          <p style={{ textDecoration: "underline", fontWeight: "bold" }}>
+            Comisión Asesora de Carrera o Departamental correspondiente a:
+          </p>
+          <select
+            className="form-control mb-3"
+            value={selectedDepto ?? ""}
+            onChange={(e) => setSelectedDepto(Number(e.target.value))}
+          >
+            <option value="">Seleccione un departamento</option>
+            {departamentos.map((d) => (
+              <option key={d.id} value={d.id}>{d.nombre}</option>
+            ))}
+          </select>
 
           {/* Carrera */}
-          <div className="mb-3">
-            <label className="form-label fw-bold">Carrera</label>
-            <select
-              className="form-control"
-              value={selectedCarrera ?? ""}
-              onChange={(e) => setSelectedCarrera(Number(e.target.value))}
-              disabled={!selectedDepto}
-            >
-              <option value="">Seleccione una carrera</option>
-              {carreras.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.nombre}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Año */}
-          <div className="mb-3">
-            <label className="form-label fw-bold">Año del Informe</label>
-            <input
-              type="number"
-              className="form-control"
-              placeholder="Ejemplo 2024"
-              value={anio}
-              onChange={(e) => setAnio(e.target.value)}
-            />
-          </div>
-
-          {/* Duración */}
-          <div className="mb-3">
-            <label className="form-label fw-bold">Ciclo Lectivo y/o cuatrimestre evaluado</label>
-            <select
-              className="form-control"
-              value={selectedDuracion}
-              onChange={(e) => setSelectedDuracion(e.target.value)}
-            >
-              <option value="">Seleccione duración</option>
-              {DURACIONES.map((d) => (
-                <option key={d.value} value={d.value}>
-                  {d.label}
-                </option>
-              ))}
-            </select>
-          </div>
+          <p style={{ textDecoration: "underline", fontWeight: "bold" }}>Carrera:</p>
+          <select
+            className="form-control mb-3"
+            value={selectedCarrera ?? ""}
+            onChange={(e) => setSelectedCarrera(Number(e.target.value))}
+            disabled={!selectedDepto}
+          >
+            <option value="">Seleccione una carrera</option>
+            {carreras.map((c) => (
+              <option key={c.id} value={c.id}>{c.nombre}</option>
+            ))}
+          </select>
 
           {/* Sede */}
-          <div className="mb-3">
-            <label className="form-label fw-bold">Sede</label>
-            <select
-              className="form-control"
-              value={selectedSede}
-              onChange={(e) => setSelectedSede(e.target.value)}
-            >
-              <option value="">Seleccione sede</option>
-              {SEDES.map((sede) => (
-                <option key={sede} value={sede}>
-                  {sede}
-                </option>
-              ))}
-            </select>
-          </div>
+          <p style={{ textDecoration: "underline", fontWeight: "bold" }}>Sede:</p>
+          <select
+            className="form-control mb-3"
+            value={selectedSede}
+            onChange={(e) => setSelectedSede(e.target.value)}
+          >
+            <option value="">Seleccione sede</option>
+            {SEDES.map((sede) => (
+              <option key={sede} value={sede}>{sede}</option>
+            ))}
+          </select>
 
-          {/*integrantes */}
-          <div className="mb-3">
-            <label className="form-label fw-bold">Integrantes</label>
-            <textarea
-              className="form-control"
-              rows={3}
-              placeholder="Integrantes..."
-              value={integrantes}
-              onChange={(e) => setIntegrantes(e.target.value)}
-            />
-          </div>
-
-          {/* boton de continuar continuar */}
-          <div className="d-flex justify-content-end mt-4">
-            <button className="btn btn-primary" onClick={handleContinuar}>
-              Continuar
-            </button>
-          </div>
-
+          {/* Integrantes */}
+          <p style={{ textDecoration: "underline", fontWeight: "bold" }}>Integrantes:</p>
+          <textarea
+            className="form-control"
+            rows={3}
+            placeholder="Integrantes..."
+            value={integrantes}
+            onChange={(e) => setIntegrantes(e.target.value)}
+          />
         </div>
+
+        {/* Leyenda */}
+        <p
+          className="text-muted mt-4"
+          style={{
+            maxWidth: "750px",
+            textAlign: "justify",
+            fontSize: "0.9rem",
+          }}
+        >
+          El Informe anual Sintético muestra en forma resumida el detalle de las actividades
+          curriculares. Tiene como propósito el ofrecer información de las actividades curriculares
+          dependientes de cada departamento, Delegación de Facultad o Secretaría Académica, que
+          permita analizar la evolución de cada espacio curricular dentro de cada dependencia y por
+          Sede de Facultad con el fin de realizar un seguimiento y acompañamiento de las propuestas
+          de mejora realizadas por cada equipo docente.
+        </p>
+
+        {/* Botón */}
+        <button className="btn btn-primary mt-3" onClick={handleContinuar}>
+          Continuar
+        </button>
+
       </div>
     </div>
-  );
+  </div>
+);
+
+
 }
