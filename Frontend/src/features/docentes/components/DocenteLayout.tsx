@@ -17,7 +17,8 @@ export const DocenteLayout = () => {
   const docenteNavLinks = [
     { to: "/docente", label: "Panel Principal" },
     { to: "/docente/reportes", label: "Reportes" },
-    { to: "/docente/mis-asignaturas", label: "Mis Asignaturas"},
+    { to: "/docente/informes-finalizados", label: "Informes Finalizados" },
+    { to: "/docente/mis-asignaturas", label: "Mis Asignaturas" },
   ];
 
   const metricas = [

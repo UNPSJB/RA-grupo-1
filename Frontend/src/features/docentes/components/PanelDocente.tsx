@@ -1,11 +1,42 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { getDocenteById, Docente, docenteService, DocenteStats } from '../services/docenteService'; 
+import { getInformesPendientesCabecera, InformePendienteCabecera } from "../services/informeService";
+import '../styles/PanelDocente.css'; 
 import { Link } from 'react-router-dom';
-import { docenteService, DocenteStats } from '../services/docenteService';
-import { useEffect, useState } from 'react';
-import { getInformes, Informe } from "../services/informesService";
+
+export const DocenteId: number = 1; // Simulación de ID de docente logueado
 
 export const PanelDocente: React.FC = () => {
   // DATOS HARCODEADOS (Idealmente vendrían de una API)
+
+  const [pendientes, setPendientes] = useState<InformePendienteCabecera[]>([]);
+  useEffect(() => {
+    const fetchPendientes = async () => {
+      try {
+        const data = await getInformesPendientesCabecera(DocenteId);
+        setPendientes(data);
+      } catch (error) {
+        console.error("Error al obtener informes pendientes:", error);
+      }
+    };
+
+    fetchPendientes();
+  }, []);
+
+
+  const [docente, setDocente] = useState<Docente | null>(null);
+  useEffect(() => {
+    const fetchDocente = async () => {
+      try {
+        const data = await getDocenteById(DocenteId);
+        setDocente(data);
+      } catch (error) {
+        console.error("Error al obtener datos del docente:", error);
+      }
+    };
+    fetchDocente();
+  }, []); 
+
   const docenteData = {
     asignaturas: 3,
     semestre: "2025",
@@ -14,22 +45,17 @@ export const PanelDocente: React.FC = () => {
     evaluacionPromedio: 3.7
   };
 
-  const [informes, setInformes] = useState<Informe[]>([]);
+  const getStatusColor = (estado: string) => {
+    switch(estado.toLowerCase()) {
+      case 'aprobado': return 'bg-success bg-opacity-10 text-success';
+      case 'pendiente': return 'bg-warning bg-opacity-10 text-warning';
+      default: return 'bg-secondary bg-opacity-10 text-secondary';
+    }
+  };
 
-  useEffect(() => {
-    const fetchInformes = async () => {
-      try{
-        const data = await getInformes();
-        setInformes(data);
-      } catch (error) {
-        console.error("Error al obtener informes:", error);
-      }
-    };
-    fetchInformes();
-  }, []);
-
-  return (
-    <div className="container-fluid">
+   return (
+    <div className="container-fluid py-4">
+      {/* Sección de Bienvenida Rápida */}
       <div className="row mb-4">
         <div className="col-12">
             <h3 className="text-dark fw-bold">Panel de Control</h3>
@@ -116,64 +142,53 @@ export const PanelDocente: React.FC = () => {
       </div>
 
       {/* Sección de Informes */}
-      <div className="row">
-        <div className="col-lg-12 mb-4">
-          <div className="card reports-card shadow-sm">
-            <div className="card-header reports-header">
-              <h5 className="card-title mb-0 d-flex align-items-center text-secondary">
-                <i className="bi bi-file-earmark-text me-2 text-primary"></i>
-                Informes y Actividades Recientes
-              </h5>
-            </div>
-            <div className="card-body p-0">
-              {informes.length > 0 ? (
-                <div className="list-group list-group-flush">
-                  {informes.map((inf) => (
-                    <div key={inf.id} className="list-group-item report-item px-4 py-3 d-flex justify-content-between align-items-center">
-                      <div>
-                        <h6 className="mb-1 fw-bold text-dark">{inf.codigo_actividad_curricular}</h6>
-                        <small className="text-muted">
-                          <i className="bi bi-person-circle me-1"></i>
-                          {inf.docente_responsable}
-                        </small>
-                      </div>
-                      <span className={`status-badge ${getStatusColor(inf.estado || 'default')}`}>
-                        {inf.estado}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-5">
-                    <i className="bi bi-inbox text-muted fs-1 mb-2"></i>
-                    <p className="text-muted">No hay informes registrados.</p>
-                </div>
-              )}
-            </div>
+      <div className="col-lg-12 mb-4">
+        <div className="card border-0 shadow-sm h-100">
+          <div className="card-header bg-white border-0">
+            <h5 className="card-title mb-0">
+              <i className="bi bi-journal-text me-2 text-primary"></i>
+              Informes Pendientes
+            </h5>
           </div>
-        </div>
-        <div className="col-lg-12 mb-4">
-          <div className="card border-0 shadow-sm h-100">
-            <div className="card-header bg-white border-0">
-              <h5 className="card-title mb-0">
-                <i className="bi bi-journal-text me-2 text-primary"></i>
-                Informes del Docente
-              </h5>
-            </div>
-            <div className="card-body">
-              {informes.length > 0 ? (
-                <ul className="list-group list-group-flush">
-                  {informes.map((inf) => (
-                    <li key={inf.id} className="list-group-item border-0 px-0 py-2">
-                      <strong>{inf.codigo_actividad_curricular}</strong> —{" "}
-                      {inf.docente_responsable} ({inf.estado})
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-muted">No hay informes registrados.</p>
-              )}
-            </div>
+
+          <div className="card-body">
+            {pendientes.length > 0 ? (
+              <ul className="list-group list-group-flush">
+                {pendientes.map((inf) => (
+                  <li
+                    key={inf.id}
+                    className="list-group-item border-0 px-0 py-3 d-flex justify-content-between align-items-center"
+                  >
+                    <div>
+                      <strong className="text-dark">
+                        {inf.titulo || "Sin título"}
+                      </strong>
+                      <br />
+                      <small className="text-muted">
+                        <i className="bi bi-book me-1"></i>
+                        {inf.asignaturaNombre} ({inf.asignaturaCodigo})
+                      </small>
+                    </div>
+
+                    <div className="d-flex align-items-center gap-3">
+                      <span className="badge bg-warning text-dark px-3 py-2">
+                        Pendiente
+                      </span>
+
+                      <Link
+                        to={`/docente/informes-catedra/completar/${inf.id}/${inf.informe_catedra_id}`}
+                        className="btn btn-sm btn-outline-primary"
+                        title="Completar informe"
+                      >
+                          Completar
+                      </Link>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-muted">No hay informes pendientes.</p>
+            )}
           </div>
         </div>
       </div>

@@ -8,11 +8,11 @@ class RespuestaInformeBase(BaseModel):
     texto_respuesta: Optional[str] = None
 
 class RespuestaInformeCreate(RespuestaInformeBase):
-    informe_catedra_completado_id: int
+    informe_catedra_finalizado_id: int
     
 class RespuestaInforme(RespuestaInformeBase):
     id: int
-    informe_catedra_completado_id: int 
+    informe_catedra_finalizado_id: int 
 
     class Config:
         from_attributes = True

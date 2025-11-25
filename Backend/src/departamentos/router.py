@@ -16,3 +16,7 @@ def crear_departamento(dep: schemas.DepartamentoBase, db: Session = Depends(get_
 @router.get("/{departamento_id}", response_model=schemas.Departamento)
 def leer_departamento(departamento_id: int, db: Session = Depends(get_db)):
     return services.leer_departamento(db, departamento_id)
+
+@router.post("/", response_model=schemas.Departamento)
+def create_departamento(departamento: schemas.DepartamentoBase, db: Session = Depends(get_db)):
+    return services.crear_departamento(db, departamento)

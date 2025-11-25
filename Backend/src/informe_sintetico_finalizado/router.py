@@ -255,10 +255,6 @@ def get_desempeno_auxiliares(
             detail=f"Error al obtener desempeño de auxiliares: {str(e)}",
         )
 
-# ==========================================================
-#   PDF DEL INFORME SINTÉTICO (DESACTIVADO TEMPORALMENTE)
-# ==========================================================
-
 # @router.get("/{informe_id}/pdf")
 # def generar_pdf_informe(informe_id: int, db: Session = Depends(get_db)):
 #

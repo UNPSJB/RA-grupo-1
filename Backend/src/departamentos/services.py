@@ -15,13 +15,10 @@ def leer_departamento(db: Session, departamento_id: int) -> schemas.Departamento
 def listar_departamentos(db: Session) -> List[schemas.Departamento]:
     return db.scalars(select(Departamento)).all()
 
-def crear_departamento(db: Session, dep: schemas.DepartamentoBase) -> Departamento:
-    nuevo = Departamento(
-        nombre=dep.nombre,
-        sede=dep.sede,                        
-        profesor_a_cargo=dep.profesor_a_cargo  
-    )
-    db.add(nuevo)
+def crear_departamento(db: Session, departamento: schemas.DepartamentoBase) -> schemas.Departamento:
+    # Crea un nuevo departamento
+    departamento_db = Departamento(**departamento.model_dump())
+    db.add(departamento_db)
     db.commit()
-    db.refresh(nuevo)
-    return nuevo
+    db.refresh(departamento_db)
+    return departamento_db
