@@ -1,20 +1,79 @@
 from pydantic import BaseModel, EmailStr
-from typing import List
+from typing import Optional, List
+from datetime import datetime
 
 class AlumnoBase(BaseModel):
-    nombre: str
-    email: EmailStr
-
+    CUIL: str
+    usuario: str
 
 class AlumnoCreate(AlumnoBase):
-    pass
+    persona_id: int
+    clave: str
 
+class AlumnoUpdate(BaseModel):
+    CUIL: Optional[str] = None
+    usuario: Optional[str] = None
+    clave: Optional[str] = None
 
-class AlumnoUpdate(AlumnoBase):
-    pass
-
-
-class Alumno(AlumnoBase):
+class AlumnoResponse(AlumnoBase):
     id: int
-
+    persona_id: int
+    fecha_creacion: datetime
+    fecha_actualizacion: Optional[datetime] = None
+    
     model_config = {"from_attributes": True}
+
+class PersonaBase(BaseModel):
+    nombre: str
+    apellido: str
+    email: EmailStr
+
+class AsignaturaBase(BaseModel):
+    id: int
+    nombre: str
+    codigo: str
+    
+    model_config = {"from_attributes": True}
+
+class EncuestaBase(BaseModel):
+    id: int
+    nombre: str
+    descripcion: Optional[str] = None
+    
+    model_config = {"from_attributes": True}
+
+class AlumnoConRelaciones(AlumnoResponse):
+    persona: PersonaBase
+    asignaturas: List[AsignaturaBase] = []
+    encuestas: List[EncuestaBase] = []
+
+class EncuestaDisponible(BaseModel):
+    id: int
+    nombre: str
+    descripcion: Optional[str] = None
+    fecha_disponible: datetime
+    fecha_limite: Optional[datetime] = None
+    
+    model_config = {"from_attributes": True}
+
+class AlumnoEncuestasDisponibles(BaseModel):
+    alumno_id: int
+    encuestas: List[EncuestaDisponible] = []
+
+class AsignaturaConDetalles(BaseModel):
+
+    id: int
+    nombre: str
+    matricula: str
+    
+    # Datos de la inscripción (desde asignatura_alumno)
+    nota_cursada: Optional[int] = None
+    anio: Optional[int] = None
+    duracion: Optional[str] = None
+    
+    class Config:
+        from_attributes = True
+
+class AlumnoDeleteResponse(BaseModel):
+    message: str
+    id: int

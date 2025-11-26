@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Frontend/src/features/encuestasCompletadas/components/VerEncuestaCompleta.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1762783281638,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1762783281638,
+            "name": "Commit-0",
+            "content": "import { useEffect, useState } from \"react\";\r\nimport { useParams } from \"react-router-dom\";\r\nimport api from \"../../../services/api\";\r\n\r\ninterface Respuesta {\r\n  id: number;\r\n  pregunta_id: number;\r\n  opcion_id: number | null;\r\n  respuesta_texto?: string;\r\n  pregunta_texto: string;\r\n  opciones?: { id: number; contenido: string }[];\r\n}\r\n\r\nexport default function VerEncuestaCompleta() {\r\n  const { idEncuesta, idAlumno } = useParams();\r\n  const [respuestas, setRespuestas] = useState<Respuesta[]>([]);\r\n\r\n  useEffect(() => {\r\n    api\r\n      .get(`/respuestas/${idEncuesta}/${idAlumno}`)\r\n      .then((res) => setRespuestas(res.data))\r\n      .catch(() => console.error(\"Error obteniendo respuestas de encuesta finalizada.\"));\r\n  }, [idEncuesta, idAlumno]);\r\n\r\n  return (\r\n    <div className=\"container mt-4\">\r\n      <h2 className=\"mb-4\">Respuestas Registradas</h2>\r\n\r\n      {respuestas.length === 0 ? (\r\n        <div className=\"alert alert-info\">No se encontraron respuestas para esta encuesta.</div>\r\n      ) : (\r\n        respuestas.map((r) => (\r\n          <div key={r.id} className=\"card mb-3 p-3\">\r\n            <p className=\"fw-bold\">{r.pregunta_texto}</p>\r\n\r\n            {/* Pregunta abierta (texto libre) */}\r\n            {r.respuesta_texto !== null && r.respuesta_texto !== \"\" && (\r\n              <input\r\n                type=\"text\"\r\n                value={r.respuesta_texto}\r\n                readOnly\r\n                disabled\r\n                className=\"form-control\"\r\n              />\r\n            )}\r\n\r\n            {/* Pregunta cerrada (opción seleccionada) */}\r\n            {r.opcion_id !== null && (\r\n              <div>\r\n                <input\r\n                  type=\"radio\"\r\n                  checked={true}\r\n                  disabled\r\n                  className=\"form-check-input me-2\"\r\n                />\r\n                <label className=\"form-check-label\">\r\n                  {r.opciones?.find((o) => o.id === r.opcion_id)?.contenido ?? \"Opción seleccionada\"}\r\n                </label>\r\n              </div>\r\n            )}\r\n          </div>\r\n        ))\r\n      )}\r\n    </div>\r\n  );\r\n}"
+        }
+    ]
+}
