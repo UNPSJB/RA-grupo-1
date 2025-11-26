@@ -1,5 +1,5 @@
 import { useEffect, useState, Fragment } from "react";
-import { ANIO_ACTUAL, PERIODO_ACTUAL } from "../../../constants";
+import { ANIO_ACTUAL, duracion_ACTUAL } from "../../../constants";
 
 interface DatosAbiertosPregunta {
   id_pregunta: number;
@@ -17,7 +17,7 @@ interface RelacionDocenteasignaturas {
   docente_id: number;
   asignaturas_id: number;
   anio: number | null;
-  periodo: string | number | null;
+  duracion: string | number | null;
 }
 
 interface Props {
@@ -43,10 +43,10 @@ export default function RespuestasAbiertas({ docenteasignaturasId }: Props) {
         const relacion: RelacionDocenteasignaturas = await relacionRes.json();
         const asignaturasId = relacion.asignaturas_id;
         const anio = relacion.anio ?? ANIO_ACTUAL;
-        const periodo = relacion.periodo ?? PERIODO_ACTUAL;
+        const duracion = relacion.duracion ?? duracion_ACTUAL;
 
         const respuestasRes = await fetch(
-          `http://127.0.0.1:8000/datos_estadisticos/respuestas_abiertas?id_asignaturas=${asignaturasId}&anio=${anio}&periodo=${periodo}`
+          `http://127.0.0.1:8000/datos_estadisticos/respuestas_abiertas?id_asignaturas=${asignaturasId}&anio=${anio}&duracion=${duracion}`
         );
         if (!respuestasRes.ok)
           throw new Error("Error al obtener respuestas abiertas");

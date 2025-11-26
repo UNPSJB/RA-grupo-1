@@ -15,7 +15,6 @@ type Pregunta = {
   id: number;
   texto: string;
   tipo: TipoPregunta;
-  nro_pregunta: number;
   opciones: Opcion[];
 };
 type Categoria = {
@@ -102,46 +101,43 @@ export default function InformeCatedraDetalle() {
   const [categoriaIndex, setCategoriaIndex] = useState(0);
 
   useEffect(() => {
-    let alive = true;
-    (async () => {
-      try {
-        setError(null);
-        setLoading(true);
+  let alive = true;
+  (async () => {
+    try {
+      setError(null);
+      setLoading(true);
 
-        const [cab, catsRaw] = await Promise.all([
-          getInformeById(finalId),          // trae cabecera del INF FINALIZADO
-          fetchInformeCatedraConPreguntas(baseId), // trae la PLANTILLA con preguntas
-        ]);
+      const [cab, catsRaw] = await Promise.all([
+        getInformeById(finalId),
+        fetchInformeCatedraConPreguntas(baseId),
+      ]);
 
-        if (!alive) return;
+      if (!alive) return;
 
-        setCabecera(cab);
+      setCabecera(cab);
 
-        const cats: Categoria[] = (catsRaw ?? [])
-          .slice()
-          .sort((a: Categoria, b: Categoria) => (a.id ?? 0) - (b.id ?? 0))
-          .map((c: Categoria) => ({
-            ...c,
-            preguntas: (c.preguntas ?? [])
-              .slice()
-              .sort((p1, p2) => (p1.nro_pregunta ?? 0) - (p2.nro_pregunta ?? 0)
-              ),
-          }));
+      const cats: Categoria[] = (catsRaw ?? [])
+        .slice()
+        .sort((a: Categoria, b: Categoria) => (a.id ?? 0) - (b.id ?? 0))
+        .map((c: Categoria) => ({
+          ...c,
+          preguntas: (c.preguntas ?? []).slice(), 
+        }));
 
-        setCategorias(cats);
-        setCategoriaIndex(0);
-        
-      } catch (e: any) {
-        setError(e?.message ?? "No se pudo cargar el informe");
-      } finally {
-        alive && setLoading(false);
-      }
-    })();
+      setCategorias(cats);
+      setCategoriaIndex(0);
+      
+    } catch (e: any) {
+      setError(e?.message ?? "No se pudo cargar el informe");
+    } finally {
+      alive && setLoading(false);
+    }
+  })();
 
-    return () => {
-      alive = false;
-    };
-  }, [finalId, baseId]);
+  return () => {
+    alive = false;
+  };
+}, [finalId, baseId]);
 
   const setAbierta = (preguntaId: number, texto: string) =>
     setRespuestas((r) => ({ ...r, [preguntaId]: { tipo: "abierta", texto } }));
@@ -188,7 +184,6 @@ export default function InformeCatedraDetalle() {
   if (!cabecera) return null;
 
   const todasOrdenadas: Pregunta[] = categorias.flatMap((c) => c.preguntas);
-  const preguntasHeader = todasOrdenadas.filter((p) =>[1, 2].includes(Number(p.nro_pregunta)));
   const headerIds = new Set(preguntasHeader.map((q) => q.id));
 
   const totalCategorias = categorias.length;
@@ -431,17 +426,6 @@ export default function InformeCatedraDetalle() {
                       </p>
                     );
                   }
-
-                  return (
-                    <ol className="mb-0 ps-3">
-                      {preguntasResto.map((p) => (
-                        <li key={p.nro_pregunta} className="mb-3">
-                          <div className="mb-2 fw-semibold">{p.texto}</div>
-                          {renderControl(p)}
-                        </li>
-                      ))}
-                    </ol>
-                  );
                 })()}
               </div>
             </Card>

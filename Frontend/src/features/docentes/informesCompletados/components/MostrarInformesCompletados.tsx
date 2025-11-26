@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { PERIODO_ACTUAL } from "../../../constants";
+import { duracion_ACTUAL } from "../../../constants";
 import type { Docente } from "../../../types/types";
 import ROUTES from "../../../paths";
 
@@ -8,7 +8,7 @@ interface InformeCatedraCompletado {
   id: number;
   titulo: string;
   anio: number;
-  periodo: string;
+  duracion: string;
 }
 
 export default function InformeCatedraCompletadoDocente() {
@@ -59,7 +59,7 @@ export default function InformeCatedraCompletadoDocente() {
                       <div>
                         <span className="text-muted me-3">{i + 1}.</span>
                         <span className="fw-bold">
-                          {inf.titulo} – {inf.anio} ({PERIODO_ACTUAL})
+                          {inf.titulo} – {inf.anio} ({duracion_ACTUAL})
                         </span>
                       </div>
                       <Link

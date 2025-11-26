@@ -29,7 +29,7 @@ interface InformeCompletadoDetalle {
   titulo: string | null;
   contenido: string | null;
   anio: number | null;
-  periodo: string | null;
+  duracion: string | null;
   respuestas_informe: RespuestaConPregunta[];
   cantidadAlumnos: number;
   cantidadComisionesTeoricas: number;
@@ -58,8 +58,8 @@ type RespuestaValor = {
   texto_respuesta: string | null;
 };
 
-export function mostrarPeriodo(periodo: string) {
-  switch (periodo) {
+export function mostrarduracion(duracion: string) {
+  switch (duracion) {
     case "PRIMER_CUATRI":
       return "Primer Cuatrimestre";
     case "SEGUNDO_CUATRI":
@@ -67,7 +67,7 @@ export function mostrarPeriodo(periodo: string) {
     case "ANUAL":
       return "Anual";
     default:
-      return periodo;
+      return duracion;
   }
 }
 
@@ -132,10 +132,10 @@ export default function InformeCatedraDetalle() {
           setGruposBase(dataOrdenada);
         }
 
-        const { asignaturasId, anio, periodo } = dataInforme;
+        const { asignaturasId, anio, duracion } = dataInforme;
 
         fetch(
-          `http://127.0.0.1:8000/datos_estadisticos/?id_asignaturas=${asignaturasId}&anio=${anio}&periodo=${periodo}`
+          `http://127.0.0.1:8000/datos_estadisticos/?id_asignaturas=${asignaturasId}&anio=${anio}&duracion=${duracion}`
         )
           .then((res) => res.json())
           .then((data) => {
@@ -153,7 +153,7 @@ export default function InformeCatedraDetalle() {
           );
 
         fetch(
-          `http://127.0.0.1:8000/datos_estadisticos/cantidad_encuestas_completadas?id_asignaturas=${asignaturasId}&anio=${anio}&periodo=${periodo}`
+          `http://127.0.0.1:8000/datos_estadisticos/cantidad_encuestas_completadas?id_asignaturas=${asignaturasId}&anio=${anio}&duracion=${duracion}`
         )
           .then((res) => res.json())
           .then((data) => setCantidad(data))
@@ -188,7 +188,7 @@ export default function InformeCatedraDetalle() {
     if (!informe) return {};
     return {
       cicloLectivo: informe.anio ?? undefined,
-      periodo: informe.periodo ?? undefined,
+      duracion: informe.duracion ?? undefined,
       cantidadAlumnos: informe.cantidadAlumnos,
       cantidadComisionesTeoricas: informe.cantidadComisionesTeoricas,
       cantidadComisionesPracticas: informe.cantidadComisionesPracticas,

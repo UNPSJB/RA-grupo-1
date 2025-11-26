@@ -13,4 +13,5 @@ class InformeSinteticoCreate(InformeSinteticoBase):
 class InformeSintetico(InformeSinteticoBase):
     id: int
 
-    model_config = {"from_attributes": True}
+    class Config:
+        orm_mode = True

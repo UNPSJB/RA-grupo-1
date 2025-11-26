@@ -8,7 +8,6 @@ import { EstadoEncuesta } from "../types/encuestaTypes";
 export const EncuestasCompletas = () => {
     const { encuestas, loading, error, refetch } = useEncuestas();
     
-    // ID del alumno logueado
     const alumnoId = localStorage.getItem("alumnoId");
 
     useEffect(() => {
@@ -29,11 +28,11 @@ export const EncuestasCompletas = () => {
 
     const getCursadoBadgeVariant = (cursado: string | undefined) => {
         switch (cursado) {
-            case Cursado.PrimerCuatrimestre:
+            case cursado.PrimerCuatrimestre:
                 return 'primary';
-            case Cursado.SegundoCuatrimestre:
+            case cursado.SegundoCuatrimestre:
                 return 'info';
-            case Cursado.Anual:
+            case cursado.Anual:
                 return 'warning';
             default:
                 return 'secondary';

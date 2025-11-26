@@ -1,60 +1,70 @@
 from typing import List, Optional
 from datetime import datetime
-from sqlalchemy import select, update, insert, exists
-from sqlalchemy.orm import Session, selectinload, joinedload
+from sqlalchemy import select, update, join
+from sqlalchemy.orm import Session, selectinload
 from src.encuestas.models import Encuesta, EstadoEncuesta
 from src.encuestas import schemas, exceptions
 from src.respuestas.schemas import RespuestaCreate
 from src.respuestas.models import Respuesta
 from src.preguntas.models import Pregunta
-from src.categorias.models import Categoria
-from src.encuesta_finalizada.models import EncuestaFinalizada
-from src.vinculaciones.models import asignatura_alumno, Duracion, alumno_encuesta
-from src.asignaturas.models import Asignatura
 from src.categorias import schemas as categoria_schemas
+from src.categorias.models import Categoria
 from src.preguntas import schemas as pregunta_schemas
+from src.encuesta_finalizada.models import EncuestaFinalizada
 from src.encuestas.schemas import EncuestaParaCompletar
+from src.asignaturas.models import Asignatura 
 
 def listar_encuestas_activas(db: Session) -> List[schemas.Encuesta]:
-    ahora = datetime.utcnow()
+    # Obtiene solo encuestas activas
     stmt = select(Encuesta).where(
         Encuesta.activa == True,
         Encuesta.estado == EstadoEncuesta.abierta,
-        Encuesta.fecha_inicio <= ahora,
-        (Encuesta.fecha_fin == None) | (Encuesta.fecha_fin >= ahora)
-    ).options(selectinload(Encuesta.asignatura))
+        Encuesta.fecha_inicio <= datetime.utcnow(),
+        Encuesta.fecha_fin >= datetime.utcnow()
+    )
     return db.scalars(stmt).all()
 
 def crear_encuesta(db: Session, encuesta: schemas.EncuestaCreate) -> schemas.Encuesta:
-    if encuesta.fecha_fin and encuesta.fecha_inicio >= encuesta.fecha_fin:
+    # Crea una nueva encuesta 
+    if encuesta.fecha_inicio >= encuesta.fecha_fin:
         raise exceptions.FechasEncuestaInvalidas()
+    
     _encuesta = Encuesta(**encuesta.model_dump())
     db.add(_encuesta)
     db.commit()
     db.refresh(_encuesta)
     return _encuesta
 
-def leer_encuesta(db: Session, encuesta_id: int, cargar_relaciones: bool = False) -> Encuesta:
+def leer_encuesta(db: Session, encuesta_id: int, cargar_relaciones: bool = False) -> schemas.Encuesta:
+    # Obtiene una encuesta por ID
     stmt = select(Encuesta).where(Encuesta.id == encuesta_id)
+    
+    # Carga optimizada de relaciones
     if cargar_relaciones:
         stmt = stmt.options(
-            selectinload(Encuesta.categorias),
-            selectinload(Encuesta.preguntas),
             selectinload(Encuesta.asignatura),
         )
+    
     db_encuesta = db.scalar(stmt)
     if db_encuesta is None:
         raise exceptions.EncuestaNoEncontrada()
     return db_encuesta
 
-def modificar_encuesta(db: Session, encuesta_id: int, encuesta: schemas.EncuestaUpdate) -> Encuesta:
+def modificar_encuesta(
+    db: Session, encuesta_id: int, encuesta: schemas.EncuestaUpdate
+) -> Encuesta:
+    # Actualiza una encuesta existente
     db_encuesta = leer_encuesta(db, encuesta_id)
+    
     update_data = encuesta.model_dump(exclude_unset=True)
+    
     if not update_data:
-        return db_encuesta
+        return db_encuesta  
+    
     if 'fecha_inicio' in update_data and 'fecha_fin' in update_data:
-        if update_data['fecha_inicio'] and update_data['fecha_fin'] and update_data['fecha_inicio'] >= update_data['fecha_fin']:
+        if update_data['fecha_inicio'] >= update_data['fecha_fin']:
             raise exceptions.FechasEncuestaInvalidas()
+    
     db.execute(
         update(Encuesta)
         .where(Encuesta.id == encuesta_id)
@@ -76,17 +86,23 @@ def eliminar_encuesta(db: Session, encuesta_id: int) -> dict:
     
     return {"message": f"Encuesta '{db_encuesta.titulo}' desactivada correctamente"}
 
-def listar_categorias_encuesta(db: Session, encuesta_id: int):
-    db_encuesta = leer_encuesta(db, encuesta_id, cargar_relaciones=True)
+def listar_categorias_encuesta(db: Session, encuesta_id: int) -> List[categoria_schemas.Categoria]:
+    # Obtiene categorías de una encuesta específica
+    db_encuesta = leer_encuesta(db, encuesta_id)
     return db_encuesta.categorias if hasattr(db_encuesta, 'categorias') else []
 
-def listar_preguntas_encuesta(db: Session, encuesta_id: int) -> List[Pregunta]:
-    db_encuesta = leer_encuesta(db, encuesta_id, cargar_relaciones=True)
-    preguntas = []
+def listar_encuestas_pregunta_cerrada(db: Session, encuesta_id: int) -> List[pregunta_schemas.Pregunta]:
+    db_encuesta = db.scalar(select(Encuesta).where(Encuesta.id == encuesta_id))
+    if db_encuesta is None:
+        raise exceptions.EncuestaNoEncontrada()
+    
+    respuestas=[]
     for categoria in db_encuesta.categorias:
-        if hasattr(categoria, 'preguntas'):
-            preguntas.extend(categoria.preguntas)
-    return preguntas
+        for pregunta in categoria.preguntas:
+            if pregunta.tipo == "cerrada":
+                respuestas.append(pregunta)
+
+    return respuestas
 
 def vincular_alumno_encuesta(db: Session, encuesta_id: int, alumno_id: int) -> schemas.Encuesta:
     # Vincula un alumno a una encuesta
@@ -158,40 +174,53 @@ def listar_preguntas_encuesta(db: Session, encuesta_id: int) -> List[pregunta_sc
     return preguntas
 
 def obtener_respuestas_por_encuesta(db: Session, encuesta_id: int):
-    # devuelve preguntas con sus respuestas agrupadas
-    from src.respuestas.models import Respuesta
+    """
+    Obtiene todas las respuestas asociadas a una encuesta específica.
+    """
+    # Verificar que la encuesta exista
     from src.preguntas.models import Pregunta
+    encuesta = leer_encuesta(db, encuesta_id)
+    if encuesta is None:
+        raise exceptions.EncuestaNoEncontrada()
+    
     stmt = (
         select(Respuesta, Pregunta.texto)
+        .join(Respuesta.encuesta_finalizada)  
         .join(Pregunta, Respuesta.pregunta_id == Pregunta.id)
-        .where(Respuesta.encuesta_id == encuesta_id)
+        .where(EncuestaFinalizada.encuesta_id == encuesta_id)
     )
+
     resultados = db.execute(stmt).all()
+
     preguntas_con_respuestas = []
+    preguntas_con_respuestas = []
+    
     for respuesta, pregunta_texto in resultados:
-        pregunta_existente = next((p for p in preguntas_con_respuestas if p["pregunta_id"] == respuesta.pregunta_id), None)
+        pregunta_existente = next(
+            (p for p in preguntas_con_respuestas if p["pregunta_id"] == respuesta.pregunta_id), 
+            None
+        )
+        
         respuesta_data = {
             "id": respuesta.id,
             "alumno_id": respuesta.alumno_id,
-            "respuesta_texto": getattr(respuesta, "respuesta_texto", None),
-            "opcion_multiple": getattr(respuesta, "opcion_multiple", None),
-            "progreso": getattr(respuesta, "progreso", 100)
+            "respuesta_texto": respuesta.respuesta_texto,
+            "opcion_multiple": getattr(respuesta, 'opcion_multiple', None),
+            "progreso": getattr(respuesta, 'progreso', 100)
         }
+        
         if pregunta_existente:
             pregunta_existente["respuestas"].append(respuesta_data)
         else:
             preguntas_con_respuestas.append({
                 "pregunta_id": respuesta.pregunta_id,
-                "pregunta_texto": pregunta_texto,
+                "pregunta_texto": pregunta_texto,  
                 "respuestas": [respuesta_data]
             })
+    
     return preguntas_con_respuestas
 
 def listar_encuestas_para_alumno(db: Session, alumno_id: int):
-    """
-    Lista las encuestas disponibles para un alumno específico
-    """
-
     from src.asignaturas.models import Asignatura
     from src.vinculaciones.models import asignatura_alumno
     from src.encuesta_finalizada.models import EncuestaFinalizada
@@ -266,30 +295,69 @@ def listar_encuestas_para_alumno(db: Session, alumno_id: int):
     return resultado
 
 def obtener_encuesta_para_completar(db: Session, encuesta_id: int) -> dict:
-    encuesta = leer_encuesta(db, encuesta_id)
-    if not (encuesta.activa and encuesta.estado == EstadoEncuesta.abierta):
+    
+    # 1. Obtener encuesta con validaciones
+    encuesta = db.query(Encuesta).filter(Encuesta.id == encuesta_id).first()
+    
+    if not encuesta:
+        raise exceptions.EncuestaNoEncontrada()
+    
+    # Verificar que esté activa y disponible
+    if not encuesta.activa or encuesta.estado != EstadoEncuesta.abierta:
         raise exceptions.EncuestaNoDisponible()
-    asignatura = None
-    if encuesta.asignatura_id:
-        asignatura = db.scalar(select(Asignatura).where(Asignatura.id == encuesta.asignatura_id))
-    if not asignatura and encuesta.asignatura is None:
+    
+    # 2. Obtener asignatura
+    asignatura = db.query(Asignatura).filter(
+        Asignatura.id == encuesta.asignatura_id
+    ).first()
+    
+    if not asignatura:
         raise exceptions.EncuestaNoEncontrada("Asignatura no encontrada")
+    
+    # 3. Obtener docente
     docente = None
-    if asignatura and getattr(asignatura, "docente", None):
-        docente = asignatura.docente
-    categorias = db.scalars(select(Categoria).where(Categoria.encuesta_id == encuesta_id).order_by(Categoria.orden)).all()
+    if hasattr(asignatura, 'docente_id') and asignatura.docente_id:
+        docente = db.query(Docente).filter(
+            Docente.id == asignatura.docente_id
+        ).first()
+    
+    # 4. Obtener categorías ordenadas
+    categorias = db.query(Categoria).filter(
+        Categoria.encuesta_id == encuesta_id
+    ).order_by(Categoria.orden).all()
+    
+    # 5. Construir estructura de categorías con preguntas
     categorias_data = []
+    
     for categoria in categorias:
-        preguntas = db.scalars(select(Pregunta).where(Pregunta.categoria_id == categoria.id, Pregunta.encuesta_id == encuesta_id).order_by(Pregunta.id)).all()
+        # Obtener preguntas de esta categoría
+        preguntas = db.query(Pregunta).filter(
+            Pregunta.categoria_id == categoria.id,
+            Pregunta.encuesta_id == encuesta_id
+        ).order_by(Pregunta.id).all()
+        
         preguntas_data = []
         for pregunta in preguntas:
-            opciones = [{"id": o.id, "texto": o.contenido} for o in getattr(pregunta, "opciones", [])]
-            preguntas_data.append({
+            pregunta_dict = {
                 "id": pregunta.id,
                 "texto": pregunta.texto,
                 "tipo": pregunta.tipo,
-                "opciones": opciones
-            })
+                "orden": getattr(pregunta, 'orden', None)
+            }
+        
+            if pregunta.tipo in ['opcion_multiple', 'unica_opcion', 'cerrada']:
+                pregunta_dict["opciones"] = [
+                    {
+                        "id": opcion.id,
+                        "texto": opcion.contenido  
+                    }
+                    for opcion in pregunta.opciones
+                ]
+            else:
+                pregunta_dict["opciones"] = []
+            
+            preguntas_data.append(pregunta_dict)
+        
         categorias_data.append({
             "id": categoria.id,
             "codigo": categoria.codigo,
@@ -297,55 +365,66 @@ def obtener_encuesta_para_completar(db: Session, encuesta_id: int) -> dict:
             "orden": categoria.orden,
             "preguntas": preguntas_data
         })
+    
+    # 6. Construir respuesta final
     return {
         "id": encuesta.id,
         "titulo": encuesta.titulo,
-        "asignatura": asignatura.nombre if asignatura else getattr(encuesta.asignatura, "nombre", "Sin asignatura"),
-        "codigo_asignatura": getattr(asignatura, "matricula", getattr(encuesta.asignatura, "matricula", None)),
+        "asignatura": asignatura.nombre,
+        "codigo_asignatura": getattr(asignatura, 'codigo', 'N/A'),
         "docente": f"{docente.nombre} {docente.apellido}" if docente else "No asignado",
-        "ciclo_lectivo": f"{encuesta.año}",
+        "ciclo_lectivo": str(encuesta.año),
         "carrera": encuesta.carrera,
-        "fecha_inicio": encuesta.fecha_inicio.isoformat() if encuesta.fecha_inicio else None,
+        "fecha_inicio": encuesta.fecha_inicio.isoformat(),
         "fecha_fin": encuesta.fecha_fin.isoformat() if encuesta.fecha_fin else None,
         "categorias": categorias_data
     }
 
 
 def guardar_respuestas_encuesta(db: Session, respuestas_data: schemas.RespuestaEncuesta):
+    """
+    Guarda las respuestas de una encuesta finalizada por un alumno
+    """
+    from src.encuesta_finalizada.models import EncuestaFinalizada
+    from src.respuestas.models import Respuesta
+    
+    # Verificar que la encuesta existe y está activa
     encuesta = leer_encuesta(db, respuestas_data.encuesta_id)
-    ahora = datetime.utcnow()
-    if not (encuesta.activa and encuesta.estado == EstadoEncuesta.abierta and encuesta.fecha_inicio <= ahora <= (encuesta.fecha_fin or ahora)):
+    if not (encuesta.activa and encuesta.estado == EstadoEncuesta.abierta
+        and encuesta.fecha_inicio <= datetime.utcnow() <= encuesta.fecha_fin):
         raise exceptions.EncuestaNoDisponible()
-    existe = db.scalar(
-        select(EncuestaFinalizada)
-        .where(EncuestaFinalizada.encuesta_id == respuestas_data.encuesta_id)
-        .where(EncuestaFinalizada.alumno_id == respuestas_data.alumno_id)
+    
+    # Verificar que el alumno no haya ya completado esta encuesta
+    encuesta_finalizada_existente = db.scalar(
+        select(EncuestaFinalizada).where(
+            EncuestaFinalizada.encuesta_id == respuestas_data.encuesta_id,
+            EncuestaFinalizada.alumno_id == respuestas_data.alumno_id
+        )
     )
-    if existe:
+    
+    if encuesta_finalizada_existente:
         raise exceptions.EncuestaYaRespondida()
+    
+    # Crear registro de encuesta finalizada
     encuesta_finalizada = EncuestaFinalizada(
-        alumno_id=respuestas_data.alumno_id,
         encuesta_id=respuestas_data.encuesta_id,
-        asignatura_id=encuesta.asignatura_id or None,
-        fecha_finalizada=ahora,
-        anio=encuesta.año,
-        duracion=encuesta.cursado
+        alumno_id=respuestas_data.alumno_id,
+        fecha_finalizada=datetime.utcnow(),
+        finalizada=True
     )
     db.add(encuesta_finalizada)
-    db.flush()  
-    try:
-        from src.respuestas import services as respuestas_services
-        respuestas_services.crear_respuestas_lote(db, encuesta_finalizada.id, respuestas_data.respuestas)
-    except Exception:
-        for r in respuestas_data.respuestas:
-            db_respuesta = Respuesta(
-                encuesta_finalizada_id=encuesta_finalizada.id,
-                pregunta_id=r.pregunta_id,
-                opcion_id=getattr(r, "opcion_id", None),
-                texto_respuesta=getattr(r, "texto", None),
-                alumno_id=respuestas_data.alumno_id,
-                encuesta_id=respuestas_data.encuesta_id,
-            )
-            db.add(db_respuesta)
+    db.flush()  # Para obtener el ID
+    
+    # Guardar cada respuesta
+    for respuesta in respuestas_data.respuestas:
+        db_respuesta = Respuesta(
+            encuesta_finalizada_id=encuesta_finalizada.id,
+            pregunta_id=respuesta.pregunta_id,
+            opcion_id=respuesta.get('opcion_id'),
+            texto_respuesta=respuesta.get('texto')
+        )
+        db.add(db_respuesta)
+    
     db.commit()
+    
     return {"message": "Encuesta finalizada exitosamente"}

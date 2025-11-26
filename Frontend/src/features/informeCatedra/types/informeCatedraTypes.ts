@@ -5,8 +5,7 @@ export interface CategoriaTemp {
 
 export interface PreguntaTemp {
   enunciado: string;
-  categoria_codigo: string;            // clave consistente
+  categoria_codigo: string;            
   tipo: 'abierta' | 'cerrada';
-  nro_pregunta: number
   opcion_ids: number[];
 }

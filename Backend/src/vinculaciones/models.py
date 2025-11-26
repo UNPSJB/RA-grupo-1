@@ -8,9 +8,9 @@ class Estado(StrEnum):
     finalizado = "finalizado"
 
 class Duracion(StrEnum):
-    anual = "anual"
-    cuatrimestre_1 = "cuatrimestre_1"
-    cuatrimestre_2 = "cuatrimestre_2"
+    anual = "ANUAL"
+    PRIMER_CUATRIMESTRE = "PRIMER CUATRIMESTRE"
+    SEGUNDO_CUATRIMESTRE = "SEGUNDO CUATRIMESTRE"
 
 asignatura_alumno = Table(
     "asignatura_alumno",

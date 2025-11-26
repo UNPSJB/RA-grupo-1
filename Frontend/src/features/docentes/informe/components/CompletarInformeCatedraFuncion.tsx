@@ -58,7 +58,7 @@ export default function CompletarInformeCatedra() {
   const [aux2, SetAux2] = useState("");
   
   
-  const { docenteasignaturasId, asignaturasId, asignaturasNombre, anio, periodo, informeBaseId = 3 } = location.state || {};
+  const { docenteasignaturasId, asignaturasId, asignaturasNombre, anio, duracion, informeBaseId = 3 } = location.state || {};
 
   const [currentStep, setCurrentStep] = useState(1);
   
@@ -101,7 +101,7 @@ export default function CompletarInformeCatedra() {
 
   useEffect(() => {
     setDatosEstadisticos([]);
-    fetch(`http://127.0.0.1:8000/datos_estadisticos/?id_asignaturas=${asignaturasId}&anio=${anio}&periodo=${periodo}`)
+    fetch(`http://127.0.0.1:8000/datos_estadisticos/?id_asignaturas=${asignaturasId}&anio=${anio}&duracion=${duracion}`)
       .then((res) => { if (!res.ok) throw new Error("Error al obtener los datos"); return res.json(); })
       .then((data) => {
         if (data.length != 0) {
@@ -111,14 +111,14 @@ export default function CompletarInformeCatedra() {
       })
       .catch((error) => { console.error(error); setMensaje("Error al obtener los datos estadísticos."); })
       .finally(() => setLoading(false));
-  }, [asignaturasId, anio, periodo]);
+  }, [asignaturasId, anio, duracion]);
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/datos_estadisticos/cantidad_encuestas_completadas?id_asignaturas=${asignaturasId}&anio=${anio}&periodo=${periodo}`)
+    fetch(`http://127.0.0.1:8000/datos_estadisticos/cantidad_encuestas_completadas?id_asignaturas=${asignaturasId}&anio=${anio}&duracion=${duracion}`)
       .then((res) => { if (!res.ok) throw new Error("Error al obtener la cantidad de encuestas"); return res.json(); })
       .then((data) => { setCantidad(data); })
       .catch((error) => { console.error(error); });
-  }, [anio, asignaturasId, periodo]);
+  }, [anio, asignaturasId, duracion]);
 
   
   const manejarCambio = (preguntaId: number, valor: RespuestaValor) => {
@@ -148,10 +148,10 @@ export default function CompletarInformeCatedra() {
       docente_asignaturas_id: docenteasignaturasId,
       informe_catedra_base_id: informeBaseId,
       titulo: `Informe ${asignaturasNombre} ${anio}`,
-      contenido: `Informe para ${asignaturasNombre} (${periodo} ${anio})`,
+      contenido: `Informe para ${asignaturasNombre} (${duracion} ${anio})`,
       cantidadAlumnos: cantidadInscriptos,
       anio: ANIO_ACTUAL,
-      periodo: periodo,
+      duracion: duracion,
       cantidadComisionesTeoricas,
       cantidadComisionesPracticas,
       JTP: JTP.trim()? JTP: null,

@@ -31,7 +31,7 @@ def informes_sinteticos_pendientes(db: Session, departamento_id: int) -> List[sc
     descarte=(
         select(InformeSinteticoFinalizado.carrera_id)
         .where(InformeSinteticoFinalizado.anio == ANIO_ACTUAL)
-        .where(InformeSinteticoFinalizado.periodo == DURACION_ACTUAL)
+        .where(InformeSinteticoFinalizado.duracion == DURACION_ACTUAL)
     )
     stmt=(
         select(Carrera)

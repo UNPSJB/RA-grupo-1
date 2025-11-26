@@ -15,7 +15,7 @@ class AlumnoAsignatura(ModeloBase):
     asignatura_id: Mapped[int] = mapped_column(ForeignKey("asignaturas.id"))
     nota_cursada: Mapped[Optional[int]] = mapped_column(Integer)
     anio: Mapped[int] = mapped_column(Integer)
-    periodo: Mapped[str] = mapped_column(String)
+    duracion: Mapped[str] = mapped_column(String)
     
     alumno: Mapped["Alumno"] = relationship("Alumno", back_populates="asignaturas")
     asignatura: Mapped["Asignatura"] = relationship("Asignatura", back_populates="alumnos")

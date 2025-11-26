@@ -15,7 +15,6 @@ type Pregunta = {
   id: number;
   texto: string;
   tipo: TipoPregunta;
-  nro_pregunta: number;
   opciones: Opcion[];
 };
 
@@ -57,7 +56,7 @@ export default function InformeCatedraVerDetalle() {
       try {
         setLoading(true);
 
-        // 1) Detalle finalizado (trae respuestas)
+        // 1) Detalle finalizado (respuestas)
         const detalle = await getInformeFinalizadoDetalle(finalId);
         if (!alive) return;
 
@@ -77,20 +76,19 @@ export default function InformeCatedraVerDetalle() {
 
         const cats: Categoria[] = (catsRaw ?? [])
           .slice()
-          .sort((a: Categoria, b: Categoria) => (a.id ?? 0) - (b.id ?? 0))
-          .map((c: Categoria) => ({
+          .sort((a, b) => (a.id ?? 0) - (b.id ?? 0))
+          .map((c) => ({
             ...c,
             preguntas: (c.preguntas ?? [])
               .slice()
-              .sort((p1, p2) => (p1.nro_pregunta ?? 0) - (p2.nro_pregunta ?? 0)
-              ),
+              .sort((p1, p2) => (p1.id ?? 0) - (p2.id ?? 0)), // ← ORDEN POR ID
           }));
 
         setCategorias(cats);
 
-        // 3 primeras preguntas de la plantilla
+        // 3 primeras preguntas (por ID)
         const todas = cats.flatMap((c) => c.preguntas);
-        const primeras = todas.filter((p) => p.nro_pregunta <= 2);
+        const primeras = todas.slice(0, 3); // ← YA NO USA nro_pregunta
         setPreguntasHeader(primeras);
       } finally {
         alive && setLoading(false);
@@ -102,7 +100,7 @@ export default function InformeCatedraVerDetalle() {
     };
   }, [finalId, baseId]);
 
-  // Función para obtener la respuesta de una pregunta
+  // Buscar respuesta
   const buscarRespuesta = (p: Pregunta) => {
     const resps = respuestas.filter((r) => r.pregunta_id === p.id);
 
@@ -173,7 +171,6 @@ export default function InformeCatedraVerDetalle() {
       {/* CONTENIDO */}
       <div className="container pb-5">
         <div className="mx-auto" style={{ maxWidth: 900 }}>
-
           {/* CABECERA */}
           <Card className="mb-4 shadow-sm">
             <Card.Header className="bg-light border-bottom">
@@ -200,7 +197,7 @@ export default function InformeCatedraVerDetalle() {
                     <td>{cabecera.docente}</td>
                   </tr>
 
-                  {/* 3 primeras preguntas */}
+                  {/* PRIMERAS PREGUNTAS */}
                   {preguntasHeader.map((p) => (
                     <tr key={p.id}>
                       <th>{p.texto}</th>
@@ -212,7 +209,7 @@ export default function InformeCatedraVerDetalle() {
             </Card.Body>
           </Card>
 
-          {/* CATEGORÍAS — SIN LA PRIMERA */}
+          {/* CATEGORÍAS */}
           {categorias
             .filter((c) => c.id !== categorias[0]?.id)
             .map((cat) => (
@@ -254,7 +251,6 @@ export default function InformeCatedraVerDetalle() {
               Volver
             </button>
           </div>
-
         </div>
       </div>
     </div>

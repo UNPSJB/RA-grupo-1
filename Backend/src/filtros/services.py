@@ -3,7 +3,7 @@ from sqlalchemy import select
 from typing import List
 from src.encuestaCompletada.models import EncuestaCompletada
 from src.informe_catedra_completado.models import InformeCatedraCompletado
-from src.asociaciones.models import Periodo
+from src.asociaciones.models import duracion
 
 def get_anios_disponibles(db: Session) -> List[int]:
     stmt_encuestas = select(EncuestaCompletada.anio).distinct()
@@ -17,5 +17,5 @@ def get_anios_disponibles(db: Session) -> List[int]:
     return sorted(list(anios_set), reverse=True)
 
 
-def get_periodos_disponibles(db: Session) -> List[str]:
-    return [p.value for p in Periodo]
+def get_duracions_disponibles(db: Session) -> List[str]:
+    return [p.value for p in duracion]

@@ -15,7 +15,7 @@ type EncuestaFinalizada = {
   encuesta_id: number;
   asignatura_id: number;
   anio: number;
-  periodo: string;
+  duracion: string;
   respuestas: Respuesta[];
 };
 

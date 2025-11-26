@@ -11,6 +11,6 @@ def get_anios(db: Session = Depends(get_db)):
     return filtros_services.get_anios_disponibles(db)
 
 
-@router.get("/periodos", response_model=List[str])
-def get_periodos(db: Session = Depends(get_db)):
-    return filtros_services.get_periodos_disponibles(db)
+@router.get("/duracions", response_model=List[str])
+def get_duracions(db: Session = Depends(get_db)):
+    return filtros_services.get_duracions_disponibles(db)

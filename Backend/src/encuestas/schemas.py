@@ -5,6 +5,15 @@ from src.encuestas.models import EstadoEncuesta
 from src.vinculaciones.models import Duracion
 from src.categorias import schemas as categoria_schemas
 
+class PreguntaAbiertaEstudiante(BaseModel):
+    """Preguntas abiertas predefinidas"""
+    id: str
+    texto: str
+    tipo: str = "abierta"
+    seccion: str
+    
+    model_config = ConfigDict(from_attributes=True)
+
 class OpcionParaEstudiante(BaseModel):
     """Opciones de respuesta para el estudiante"""
     id: int
@@ -19,7 +28,7 @@ class PreguntaParaEstudiante(BaseModel):
     id: int
     texto: str
     tipo: str
-    opciones: List[OpcionParaEstudiante] = Field(default_factory=list)  
+    opciones: List[OpcionParaEstudiante] = []  
     
     model_config = ConfigDict(from_attributes=True)
 
@@ -28,7 +37,7 @@ class CategoriaConPreguntas(BaseModel):
     id: int
     nombre: str
     codigo: str
-    preguntas: List[PreguntaParaEstudiante] = Field(default_factory=list)  
+    preguntas: List[PreguntaParaEstudiante]  
     
     model_config = ConfigDict(from_attributes=True)
 
@@ -70,8 +79,6 @@ class Encuesta(EncuestaBase):
     estado: EstadoEncuesta
     activa: bool
     created_at: datetime
-    
-    model_config = ConfigDict(from_attributes=True)
 
 class RespuestaBase(BaseModel):
     id: int
@@ -82,25 +89,28 @@ class RespuestaBase(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-class RespuestaIndividual(BaseModel):
-    pregunta_id: int
-    opcion_id: Optional[int] = None
-    texto: Optional[str] = None
-    valor: Optional[str] = None
-    model_config = ConfigDict(from_attributes=True)
-
-class RespuestaEncuesta(BaseModel):
-    encuesta_id: int
-    alumno_id: int
-    respuestas: List[RespuestaIndividual] = Field(default_factory=list)
-    model_config = ConfigDict(from_attributes=True)
-
 class PreguntaConRespuestas(BaseModel):
     pregunta_id: int
     pregunta_texto: str
-    respuestas: List[Dict] = Field(default_factory=list)
-    model_config = ConfigDict(from_attributes=True)
+    respuestas: List[RespuestaBase] = []
 
+    model_config = ConfigDict(
+        from_attributes=True,
+        json_schema_extra={
+            "example": {
+                "pregunta_id": 1,
+                "pregunta_texto": "¿Cómo calificarías el curso?",
+                "respuestas": [
+                    {
+                        "id": 1,
+                        "alumno_id": 123,
+                        "respuesta_texto": "Excelente",
+                        "progreso": 100
+                    }
+                ]
+            }
+        }
+    )
 
 class EncuestaDisponible(BaseModel):
     id: int
@@ -120,7 +130,7 @@ class EncuestaResumen(BaseModel):
     cursado: Duracion
     estado: EstadoEncuesta
     fecha_inicio: datetime
-    fecha_fin: Optional[datetime]
+    fecha_fin: datetime
     activa: bool
     
     model_config = ConfigDict(from_attributes=True)
@@ -146,8 +156,8 @@ class EncuestaParaCompletar(BaseModel):
     ciclo_lectivo: str
     codigo_asignatura: Optional[str] = None  
     carrera: Optional[str] = None  
-    categorias: List[categoria_schemas.CategoriaConPreguntas] = Field(default_factory=list) 
-    preguntas_abiertas: List[Dict] = Field(default_factory=list)
+    categorias: List[categoria_schemas.CategoriaConPreguntas] 
+    preguntas_abiertas: List[PreguntaAbiertaEstudiante] = []
     
     model_config = ConfigDict(from_attributes=True)
 

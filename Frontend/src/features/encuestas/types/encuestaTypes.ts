@@ -4,9 +4,9 @@ export enum EstadoEncuesta {
 }
 
 export enum Cursado {
-  PrimerCuatrimestre = "cuatrimestre 1",
-  SegundoCuatrimestre = "cuatrimestre 2",
-  Anual = "Anual"
+    Anual = "ANUAL",
+    PrimerCuatrimestre = "primer_cuatrimestre",
+    SegundoCuatrimestre = "segundo_cuatrimestre"
 }
 
 export interface Encuesta {
@@ -138,7 +138,7 @@ export interface EncuestaAlumnoInfo {
   fecha_inicio?: string;
   fecha_fin?: string;
   estado?: string;
-  cursado?: string;
+  cursado?: Cursado;
 }
 
 
