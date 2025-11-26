@@ -25,6 +25,3 @@ class AlumnoNoEncontrado(RespuestaException):
 
 class RespuestaInvalida(RespuestaException):
     pass
-
-class RespuestaNoEncontrada(RespuestaException):
-    pass

@@ -15,6 +15,6 @@ class Persona(ModeloBase):
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
     rol_id: Mapped[int] = mapped_column(ForeignKey("roles.id"))
 
-    rol: Mapped["Rol"] = relationship("Rol", back_populates="personas")
-    alumno: Mapped[Optional["Alumno"]] = relationship("Alumno")
-    docente: Mapped[Optional["Docente"]] = relationship("Docente")
+    rol = relationship("Rol", back_populates="personas")
+    alumno = relationship("Alumno", back_populates="persona", uselist=False)
+    docente = relationship("Docente", back_populates="persona", uselist=False)

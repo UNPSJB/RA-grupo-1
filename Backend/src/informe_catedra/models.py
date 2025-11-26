@@ -1,10 +1,6 @@
-from sqlalchemy import Column, Integer, String, Text, Date,Enum,ForeignKey
-from src.models import ModeloBase  
+from sqlalchemy import Integer, String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from src.vinculaciones.models import informe_catedra_asignatura
-from src.informe_catedra_finalizado.models import InformeCatedraFinalizado 
-from src.asignaturas.models import Asignatura 
-from src.categorias.models import Categoria
+from src.models import ModeloBase  
 from typing import Optional, List, TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -20,16 +16,16 @@ class InformeCatedra(ModeloBase):
 
     asignatura_id: Mapped[int] = mapped_column(Integer, ForeignKey("asignaturas.id"), nullable=False) 
 
-    informes_finalizados: Mapped[List["InformeCatedraFinalizado"]] = relationship(
-    "InformeCatedraFinalizado",
-    back_populates="informe_catedra"
-    )   
-
     asignatura: Mapped["Asignatura"] = relationship(
         "Asignatura",
         back_populates="informes_catedra"  
     )
 
+    informes_finalizados: Mapped[List["InformeCatedraFinalizado"]] = relationship(
+    "InformeCatedraFinalizado",
+    back_populates="informe_catedra"
+    )   
+
     categorias: Mapped[Optional[List["Categoria"]]] = relationship(
     "Categoria",
-    back_populates="informe_catedra") 
+    back_populates="informe_catedra")

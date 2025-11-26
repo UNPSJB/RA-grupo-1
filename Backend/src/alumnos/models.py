@@ -15,8 +15,8 @@ class Alumno(ModeloBase):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     persona_id: Mapped[int] = mapped_column(ForeignKey("personas.id"), unique=True)
-    CUIL: Mapped[str] = mapped_column(String, index=True)
-    usuario: Mapped[str] = mapped_column(String, index=True)
+    CUIL: Mapped[str] = mapped_column(String, unique=True, index=True)
+    usuario: Mapped[str] = mapped_column(String, unique=True, index=True)
     clave: Mapped[str] = mapped_column(String, index=True)
 
     persona: Mapped["src.personas.models.Persona"] = relationship(

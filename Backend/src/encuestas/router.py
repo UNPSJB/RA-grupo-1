@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from sqlalchemy import select
+from typing import List
 from src.database import get_db
 from src.encuestas import schemas, services
 from src.categorias import schemas as categoria_schemas
@@ -12,22 +12,13 @@ from src.docentes.models import Docente
 from src.encuestas.models import Encuesta
 from src.encuesta_finalizada.models import EncuestaFinalizada
 
-from typing import List
+
 from src.encuestas.exceptions import (
     EncuestaNoEncontrada,
     FechasEncuestaInvalidas, 
     EncuestaNoDisponible,
     EncuestaYaRespondida
 )
-
-from src.encuestas.schemas import (
-    EncuestaParaCompletar,
-    EncuestaAlumnoInfo,
-    PreguntaParaEstudiante,
-    CategoriaConPreguntas,
-    PreguntaAbiertaEstudiante
-)
-
 
 router = APIRouter(prefix="/encuestas", tags=["encuestas"])
 
@@ -153,9 +144,6 @@ def obtener_respuestas_alumno(encuesta_id: int, alumno_id: int, db: Session = De
            response_model=List[schemas.EncuestaAlumnoInfo],
            summary="Obtener encuestas disponibles para alumno")
 def obtener_encuestas_alumno(alumno_id: int, db: Session = Depends(get_db)):
-    """
-    Obtiene la lista de encuestas disponibles para que un alumno complete
-    """
     try:
         encuestas = services.listar_encuestas_para_alumno(db, alumno_id)
         return encuestas
@@ -169,9 +157,6 @@ def obtener_encuestas_alumno(alumno_id: int, db: Session = Depends(get_db)):
            response_model=schemas.EncuestaParaCompletar,  
            summary="Obtener encuesta para completar")
 def obtener_encuesta_completar(encuesta_id: int, db: Session = Depends(get_db)):
-    """
-    Obtiene toda la información de una encuesta específica para que el alumno la complete
-    """
     try:
         encuesta = services.obtener_encuesta_para_completar(db, encuesta_id)  
         return encuesta

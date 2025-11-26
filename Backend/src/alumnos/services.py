@@ -144,3 +144,6 @@ def obtener_alumnos_por_asignatura_y_duracion(db: Session, asignatura_id: int, a
         .distinct()
     )
     return db.scalars(stmt).all()
+
+def obtener_encuestas_disponibles(db: Session, alumno_id: int):
+    return listar_encuestas_disponibles(db, alumno_id)

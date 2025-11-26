@@ -63,7 +63,7 @@ export function mostrarPeriodo(periodo: string) {
     case "PRIMER_CUATRI":
       return "Primer Cuatrimestre";
     case "SEGUNDO_CUATRI":
-      return "Segundo Cuatrimestre";
+      return "SegundoCuatrimestre";
     case "ANUAL":
       return "Anual";
     default:

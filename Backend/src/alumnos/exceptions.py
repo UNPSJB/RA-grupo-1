@@ -4,22 +4,17 @@ from src.exceptions import NotFound, BadRequest
 class AlumnoNoEncontrado(NotFound):
     DETAIL = ErrorCode.ALUMNO_NO_ENCONTRADO
 
-
 class NombreDuplicado(BadRequest):
     DETAIL = ErrorCode.NOMBRE_DUPLICADO
 
-class AlumnoNoEncontrado(Exception):
-    pass
+class PersonaNoEncontrada(NotFound):
+    DETAIL = "La persona asociada no existe."
 
-class PersonaNoEncontrada(Exception):
-    pass
+class CUILDuplicado(BadRequest):
+    DETAIL = "El CUIL ya está registrado."
 
-class CUILDuplicado(Exception):
-    pass
+class AsignaturaNoEncontrada(NotFound):
+    DETAIL = "La asignatura indicada no existe."
 
-class AsignaturaNoEncontrada(Exception):
-    pass
-
-class AlumnoYaInscrito(Exception):
-    pass
-
+class AlumnoYaInscrito(BadRequest):
+    DETAIL = "El alumno ya está inscripto en esta asignatura."

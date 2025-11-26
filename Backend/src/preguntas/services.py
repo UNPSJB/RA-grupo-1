@@ -68,7 +68,7 @@ def cambiar_pregunta(db: Session, pregunta_id: int, pregunta: schemas.PreguntaUp
 def actualizar_opciones_pregunta(db: Session, pregunta_id: int, opciones_ids: List[int]) -> Pregunta:
     db_pregunta = recibir_pregunta(db, pregunta_id)
     
-    if db_pregunta.tipo != "cerrada":
+    if db_pregunta.tipo != TipoPreguntaEnum.OPCION_MULTIPLE:
         raise exceptions.OperacionNoPermitida("Solo preguntas cerradas pueden tener opciones")
     
     opciones_validas = db.scalars(

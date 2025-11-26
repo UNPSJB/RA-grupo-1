@@ -14,11 +14,12 @@ router = APIRouter(prefix="/alumnos", tags=["alumnos"])
 def create_alumno(alumno: schemas.AlumnoCreate, db: Session = Depends(get_db)):
     try:
         return services.crear_alumno(db, alumno)
+    except exceptions.PersonaNoEncontrada as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except exceptions.CUILDuplicado as e:
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Error al crear alumno: {str(e)}"
-        )
+        raise HTTPException(400, f"Error al crear alumno: {str(e)}")
 
 @router.get("/", 
             response_model=List[schemas.AlumnoResponse],

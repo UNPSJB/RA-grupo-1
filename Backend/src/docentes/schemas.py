@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict ,field_validator, EmailStr
+from pydantic import BaseModel, ConfigDict ,Field, EmailStr
 from typing import List, Optional
 from datetime import datetime
 from enum import StrEnum
@@ -41,7 +41,7 @@ class Docente(DocenteBase):
 
 class DocenteConAsignaturas(Docente):
     """Extiende Docente con información de asignaturas"""
-    asignaturas_asociadas: List['AsignaturaInfo'] = []
+    asignaturas_asociadas: List['AsignaturaInfo'] = Field(default_factory=list)
     
     model_config = ConfigDict(from_attributes=True)
 
@@ -131,13 +131,3 @@ class DocenteListResponse(BaseModel):
     total: int
     
     model_config = ConfigDict(from_attributes=True)
-
-@field_validator('roles')
-def validar_roles(cls, v):
-    roles_permitidos = ['Alumno', 'Docente', 'Administrador']
-    if v:
-        roles = [r.strip() for r in v.split(',')]
-        for rol in roles:
-            if rol not in roles_permitidos:
-                raise ValueError(f'Rol no permitido: {rol}')
-    return v

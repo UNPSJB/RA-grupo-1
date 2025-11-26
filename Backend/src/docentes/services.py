@@ -78,7 +78,7 @@ def observar_asignaturas_docente(db: Session, docente_id: int) -> List[dict]:
             "id": r.asignatura.id,
             "nombre": r.asignatura.nombre,
             "matricula": r.asignatura.matricula,
-            "duracion": r.duracion.name if hasattr(r.duracion, 'name') else r.duracion
+            "duracion": r.duracion
         }
         for r in conexiones
     ]
@@ -120,18 +120,12 @@ def crear_docente_desde_persona(db: Session, persona_id: int) -> Optional[models
     db.commit()
     db.refresh(nuevo_docente)
 
-    persona.rol_id = 1
-    db.commit()
+    if persona.rol_id != 1:
+        persona.rol_id = 1
+        db.commit()
 
     return nuevo_docente
-    
-    # Actualiza roles de la persona
-    #roles_actuales = persona.roles.split(",") if persona.roles else []
-    #if "Docente" not in roles_actuales:
-     #   roles_actuales.append("Docente")
-     #   persona.roles = ",".join(roles_actuales)
-     #   db.commit()
-    
+     
 def buscar_docente_por_persona(db: Session, persona_id: int) -> Optional[models.Docente]:
     # Busca docente por ID de persona
     return db.scalar(

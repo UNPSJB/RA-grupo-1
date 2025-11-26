@@ -3,6 +3,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from src.departamentos.models import Departamento
 from src.departamentos import schemas, exceptions
+from src.carreras.models import Carrera
 
 def leer_departamento(db: Session, departamento_id: int) -> schemas.Departamento:
     db_departamento = db.scalar(
@@ -22,3 +23,11 @@ def crear_departamento(db: Session, departamento: schemas.DepartamentoBase) -> s
     db.commit()
     db.refresh(departamento_db)
     return departamento_db
+
+def get_carreras_por_departamento(db: Session, departamento_id: int):
+    stmt = (
+        select(Carrera)
+        .where(Carrera.departamento_id == departamento_id)
+        .order_by(Carrera.nombre)
+    )
+    return db.scalars(stmt).all()

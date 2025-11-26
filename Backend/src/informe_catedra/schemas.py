@@ -1,6 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Optional
-from src.asignaturas.schemas import Asignatura
+from typing import List
 from src.informe_catedra_finalizado.schemas import InformeCatedraFinalizado
 from src.categorias.schemas import Categoria as CategoriaBase
 from src.preguntas.schemas import PreguntaCerrada

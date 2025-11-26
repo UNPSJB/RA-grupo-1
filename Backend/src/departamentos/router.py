@@ -9,10 +9,6 @@ router = APIRouter(prefix="/departamentos", tags=["departamentos"])
 def leer_departamentos(db: Session = Depends(get_db)):
     return services.listar_departamentos(db)
 
-@router.post("/", response_model=schemas.Departamento)
-def crear_departamento(dep: schemas.DepartamentoBase, db: Session = Depends(get_db)):
-    return services.crear_departamento(db, dep)
-
 @router.get("/{departamento_id}", response_model=schemas.Departamento)
 def leer_departamento(departamento_id: int, db: Session = Depends(get_db)):
     return services.leer_departamento(db, departamento_id)
@@ -20,3 +16,7 @@ def leer_departamento(departamento_id: int, db: Session = Depends(get_db)):
 @router.post("/", response_model=schemas.Departamento)
 def create_departamento(departamento: schemas.DepartamentoBase, db: Session = Depends(get_db)):
     return services.crear_departamento(db, departamento)
+
+@router.get("/{departamento_id}/carreras")
+def carreras_por_departamento(departamento_id: int, db: Session = Depends(get_db)):
+    return services.get_carreras_por_departamento(db, departamento_id)

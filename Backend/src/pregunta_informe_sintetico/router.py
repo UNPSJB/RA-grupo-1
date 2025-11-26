@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from src.database import get_db
 from src.pregunta_informe_sintetico import schemas, services
+from src.pregunta_informe_sintetico.exceptions import PreguntaInformeSinteticoNoEncontrada
 from typing import List
 
 router = APIRouter(prefix="/preguntas_sintetico", tags=["preguntas_informe_sintetico"])
@@ -18,7 +19,7 @@ def create_pregunta_sintetico_route(
 def read_pregunta_sintetico_route(pregunta_id: int, db: Session = Depends(get_db)):
     try:
         return services.leer_pregunta_sintetico(db, pregunta_id)
-    except services.exceptions.PreguntaInformeSinteticoNoEncontrada:
+    except PreguntaInformeSinteticoNoEncontrada:
         raise HTTPException(status_code=404, detail="Pregunta no encontrada")
 
 @router.get("/base/{informe_base_id}", response_model=List[schemas.PreguntaInformeSintetico])

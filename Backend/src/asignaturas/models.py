@@ -79,6 +79,13 @@ class Asignatura(ModeloBase):
         cascade="all, delete-orphan"
     )
 
+    docentes_asociados: Mapped[List["AsignaturaDocente"]] = relationship(
+        "AsignaturaDocente",
+        back_populates="asignatura",
+        cascade="all, delete-orphan"
+    )
+
+
     # Propiedad para obtener el primer docente asociado a la asignatura
     @property
     def docente(self):

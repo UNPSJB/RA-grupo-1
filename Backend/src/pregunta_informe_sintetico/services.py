@@ -2,8 +2,14 @@ from typing import List
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from src.pregunta_informe_sintetico import models, schemas, exceptions
+from src.informe_sintetico.models import InformeSintetico
 
-def crear_pregunta_sintetico(db: Session, pregunta: schemas.PreguntaInformeSinteticoCreate, informe_base_id: int) -> models.PreguntaInformeSintetico:
+def crear_pregunta_sintetico(db: Session, pregunta: schemas.PreguntaInformeSinteticoCreate, informe_base_id: int):
+    # Validar que el informe base existe
+    informe = db.scalar(select(InformeSintetico).where(InformeSintetico.id == informe_base_id))
+    if informe is None:
+        raise exceptions.PreguntaInformeSinteticoNoEncontrada()
+
     db_pregunta = models.PreguntaInformeSintetico(
         **pregunta.model_dump(),
         informe_base_id=informe_base_id

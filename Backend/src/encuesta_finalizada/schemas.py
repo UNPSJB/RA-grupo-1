@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-#from datetime import datetime
+from datetime import datetime
 from typing import List
 from src.respuestas.schemas import Respuesta, RespuestaCreateEnEncuesta
 from src.vinculaciones.models import Duracion
@@ -19,7 +19,7 @@ class EncuestaFinalizadaConRespuestasCreate(EncuestaFinalizadaBase):
 
 class EncuestaFinalizada(EncuestaFinalizadaBase):
     id: int
-    #fecha_finalizada: datetime
+    fecha_finalizada: datetime
     respuestas: List[Respuesta]
 
     model_config = {"from_attributes": True}

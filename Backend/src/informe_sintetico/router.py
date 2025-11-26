@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
@@ -13,7 +13,7 @@ router = APIRouter(prefix="/informes_sinteticos", tags=["Informes Sintéticos"])
 def crear_informe(informe: schemas.InformeSinteticoCreate, db: Session = Depends(get_db)):
     return services.crear_informe_sintetico(db, informe)
 
-#istar informespor carreras
+
 @router.get("/", response_model=List[schemas.InformeSintetico])
 def listar_informes(carrera_id: Optional[int] = None, db: Session = Depends(get_db)):
     query = db.query(InformeSintetico)
@@ -21,14 +21,12 @@ def listar_informes(carrera_id: Optional[int] = None, db: Session = Depends(get_
         query = query.filter(InformeSintetico.carrera_id == carrera_id)
     return query.all()
 
-# informe por ID
 @router.get("/{informe_id}", response_model=schemas.InformeSintetico)
 def obtener_informe(informe_id: int, db: Session = Depends(get_db)):
     try:
         return services.get_informe_sintetico(db, informe_id)
     except exceptions.InformeSinteticoNoEncontrado:
         raise HTTPException(status_code=404, detail="Informe no encontrado")
-
 
 @router.get("/{informe_id}/preguntas", response_model=List[pregunta_schemas.PreguntaInformeSintetico])
 def preguntas_de_informe(informe_id: int, db: Session = Depends(get_db)):

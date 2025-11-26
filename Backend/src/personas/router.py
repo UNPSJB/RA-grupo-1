@@ -5,10 +5,8 @@ from src.database import get_db
 from src.personas import services, schemas
 from src.personas.exceptions import PersonaNoEncontrada, PersonaDuplicada
 
-
 from src.personas.models import Persona
 from src.alumnos.models import Alumno  
-from src.personas.exceptions import PersonaNoEncontrada, PersonaDuplicada
 
 router = APIRouter(prefix="/personas", tags=["personas"])
 
@@ -50,12 +48,7 @@ def delete_persona(persona_id: int, db: Session = Depends(get_db)):
 
 @router.post("/registro")
 def registrar_alumno(data: dict, db: Session = Depends(get_db)):
-    """
-    Endpoint para registrar un nuevo alumno.
-    Crea tanto la persona como el alumno en una sola operación.
-    """
-    
-    # 1) Validar usuario repetido
+
     existe_usuario = db.execute(
         select(Alumno).where(Alumno.usuario == data.get("usuario"))
     ).first()
@@ -63,7 +56,6 @@ def registrar_alumno(data: dict, db: Session = Depends(get_db)):
     if existe_usuario:
         raise HTTPException(status_code=400, detail="El nombre de usuario ya existe")
 
-    # 2) Validar email repetido
     existe_email = db.execute(
         select(Persona).where(Persona.email == data.get("email"))
     ).first()
@@ -71,7 +63,6 @@ def registrar_alumno(data: dict, db: Session = Depends(get_db)):
     if existe_email:
         raise HTTPException(status_code=400, detail="El email ya está registrado")
 
-    # 3) Validar DNI repetido
     existe_dni = db.execute(
         select(Persona).where(Persona.dni == data.get("dni"))
     ).first()
@@ -79,14 +70,13 @@ def registrar_alumno(data: dict, db: Session = Depends(get_db)):
     if existe_dni:
         raise HTTPException(status_code=400, detail="El DNI ya está registrado")
 
-    # 4) Crear usando el servicio existente
     try:
         persona_payload = schemas.PersonaCreate(
             nombre=data["nombre"],
             apellido=data["apellido"],
             email=data["email"],
             dni=data["dni"],
-            rol_id=2,  # 2 = alumno
+            rol_id=2,  
             legajo=int(data["legajo"]),
             CUIL=data["CUIL"],
             usuario=data["usuario"],
