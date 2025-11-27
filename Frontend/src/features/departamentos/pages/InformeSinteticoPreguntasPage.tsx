@@ -9,6 +9,30 @@ import TablaDinamica from "../components/TablaDinamica";
 
 const API = "http://localhost:8000";
 
+/**
+ * Leemos del localStorage la carrera seleccionada y el departamento.
+ * Lo hacemos fuera del componente porque:
+ * - No hay SSR en tu caso (Vite SPA).
+ * - Es info estática de contexto, no cambia mientras estás en esta pantalla.
+ */
+const carreraSeleccionada = (() => {
+  try {
+    const raw = localStorage.getItem("carreraSeleccionada");
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+})();
+
+const departamento = (() => {
+  try {
+    const raw = localStorage.getItem("departamento");
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+})();
+
 type CabeceraInformeSintetico = {
   departamento_id: number;
   carrera_id: number;
@@ -24,7 +48,9 @@ type RespuestasMapa = {
 export default function InformeSinteticoPreguntasPage() {
   const navigate = useNavigate();
 
-  const [cabecera, setCabecera] = useState<CabeceraInformeSintetico | null>(null);
+  const [cabecera, setCabecera] = useState<CabeceraInformeSintetico | null>(
+    null
+  );
   const [informeBaseId, setInformeBaseId] = useState<number | null>(null);
 
   const [respuestas, setRespuestas] = useState<RespuestasMapa>(() => {
@@ -53,7 +79,8 @@ export default function InformeSinteticoPreguntasPage() {
     }
   }, []);
 
-  const { preguntas, loading, error } = usePreguntasInformeSintetico(informeBaseId);
+  const { preguntas, loading, error } =
+    usePreguntasInformeSintetico(informeBaseId);
 
   const handleChangeRespuesta = (preguntaId: number, texto: string) => {
     const nuevas: RespuestasMapa = {
@@ -62,73 +89,93 @@ export default function InformeSinteticoPreguntasPage() {
     };
 
     setRespuestas(nuevas);
-    localStorage.setItem("respuestas_informe_sintetico", JSON.stringify(nuevas));
-  };
-
-const handleGuardarInforme = async () => {
-  if (!cabecera || !informeBaseId) {
-    alert("Faltan datos de cabecera o informe base. Volvé al paso anterior.");
-    return;
-  }
-
-  const { carrera_id, anio, duracion } = cabecera;
-
-  const cuerpo = {
-    titulo: `Informe Sintético ${anio}`,
-    contenido: "",
-    anio: Number(anio),
-    duracion,
-    informe_base_id: informeBaseId,
-    carrera_id,
-    respuestas: preguntas.map((p: PreguntaInformeSintetico) => ({
-      pregunta_id: p.id,
-      texto_respuesta: respuestas[p.id] || "",
-      asignatura_id: 0,
-    })),
-  };
-
-  try {
-    const res = await fetch(
-      `${API}/informes_sinteticos_finalizados/finalizados/`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(cuerpo),
-      }
+    localStorage.setItem(
+      "respuestas_informe_sintetico",
+      JSON.stringify(nuevas)
     );
+  };
 
-    if (!res.ok) {
-      const text = await res.text();
-      console.error("Error al guardar:", text);
-      alert("Error al guardar el informe sintético.");
+  const normalizarDuracion = (d: string) => {
+    switch (d) {
+      case "ANUAL":
+       return "anual";
+      case "PRIMER CUATRIMESTRE":
+        return "primer_cuatrimestre";
+      case "SEGUNDO CUATRIMESTRE":
+       return "segundo_cuatrimestre";
+     default:
+        return d.toLowerCase();
+    }
+  };
+
+
+  const handleGuardarInforme = async () => {
+    if (!cabecera || !informeBaseId) {
+      alert("Faltan datos de cabecera o informe base.");
       return;
     }
 
-    // ✔ INFORME CREADO
-    const data = await res.json();
+    try {
+      const { carrera_id, anio, duracion } = cabecera;
 
-    // ✔ PDF
-    window.open(
-      `${API}/informes_sinteticos_finalizados/${data.id}/pdf`,
-      "_blank"
-    );
+      const cuerpo = {
+        titulo: `Informe Sintético ${anio}`,
+        contenido: "",
+        anio: Number(anio),
+        duracion: normalizarDuracion(duracion),
+        informe_base_id: informeBaseId,
+        carrera_id,
+        respuestas: preguntas.map((p: PreguntaInformeSintetico) => ({
+          pregunta_id: p.id,
+          texto_respuesta: respuestas[p.id] || "",
+          asignatura_id: 0,
+        })),
+      };
 
-    // ✔ LIMPIAR TEMPORAL
-    localStorage.removeItem("respuestas_informe_sintetico");
-    localStorage.removeItem("cabecera_informe_sintetico");
-    localStorage.removeItem("informe_sintetico_base_id");
+      const resp = await fetch(
+        `${API}/informes_sinteticos_finalizados/finalizados/`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(cuerpo),
+        }
+      );
 
-    alert("Informe sintético guardado correctamente.");
+      if (!resp.ok) {
+        console.error(await resp.text());
+        alert("Error al guardar el informe sintético.");
+        return;
+      }
 
-    // ✔ NAVEGAR
-    navigate("/departamento");
+      const data = await resp.json(); // debería traer al menos { id: ... }
 
-  } catch (e) {
-    console.error("Error de red:", e);
-    alert("Error de red al guardar el informe sintético.");
-  }
-};
+      // Limpiar localStorage
+      localStorage.removeItem("respuestas_informe_sintetico");
+      localStorage.removeItem("cabecera_informe_sintetico");
+      localStorage.removeItem("informe_sintetico_base_id");
 
+      alert("Informe sintético guardado correctamente.");
+
+      // Ir a la página de “guardado” con todos los datos necesarios para el PDF
+      navigate(`/departamento/informe-sintetico/guardado/${data.id}`, {
+        state: {
+          informeId: data.id,
+          titulo: cuerpo.titulo,
+          cabecera: {
+            ...cabecera,
+            duracion: normalizarDuracion(duracion), // ya normalizada
+            departamento_nombre: departamento?.nombre || "Departamento",
+            carrera_nombre: carreraSeleccionada?.nombre || "Carrera",
+          },
+          preguntas,
+          respuestas,
+        },
+      });
+    } catch (e) {
+      console.error(e);
+      alert("Error inesperado al guardar el informe sintético.");
+    }
+  };
 
   if (!cabecera) {
     return (
@@ -154,17 +201,22 @@ const handleGuardarInforme = async () => {
         </div>
 
         <div className="card-body">
-
           {/* Cabecera resumida */}
           <div className="mb-4 p-3 border rounded bg-light">
             <p className="mb-1">
-              <strong>Ciclo lectivo / duración:</strong> {cabecera.anio} — {cabecera.duracion}
+              <strong>Ciclo lectivo / duración:</strong> {cabecera.anio} —{" "}
+              {cabecera.duracion}
             </p>
             <p className="mb-1">
               <strong>Sede:</strong> {cabecera.sede}
             </p>
             <p className="mb-1">
-              <strong>Carrera ID:</strong> {cabecera.carrera_id}
+              <strong>Departamento:</strong>{" "}
+              {departamento?.nombre || `ID ${cabecera.departamento_id}`}
+            </p>
+            <p className="mb-1">
+              <strong>Carrera:</strong>{" "}
+              {carreraSeleccionada?.nombre || `ID ${cabecera.carrera_id}`}
             </p>
           </div>
 
@@ -172,48 +224,95 @@ const handleGuardarInforme = async () => {
           {loading && <p>Cargando preguntas...</p>}
           {error && <p className="text-danger">Error: {error}</p>}
 
-          {!loading &&
-            preguntas.map((p) => {
-              // ----------------------------------------
-              // NUEVO: PARSE SEGURO DE ESTRUCTURA
-              // ----------------------------------------
-              let estructura = null;
-              try {
-                estructura = p.estructura ? JSON.parse(p.estructura) : null;
-              } catch {
-                estructura = null;
-              }
+          {!loading && (
+            <div className="d-flex flex-column gap-4">
+              {preguntas.map((p) => {
+                // PARSE SEGURO DE ESTRUCTURA
+                let estructura: any = null;
+                try {
+                  estructura = p.estructura ? JSON.parse(p.estructura) : null;
+                } catch {
+                  estructura = null;
+                }
 
-              // ----------------------------------------
-              // NUEVO: INICIALIZAR [] SI ES TABLA
-              // ----------------------------------------
-              if (estructura?.tipo === "tabla" && !respuestas[p.id]) {
-                handleChangeRespuesta(p.id, "[]");
-              }
+                // INICIALIZAR UNA FILA VACÍA SI ES TABLA Y NO HAY RESPUESTAS
+                if (estructura?.tipo === "tabla" && !respuestas[p.id]) {
+                  const primeraFila = [
+                    Object.fromEntries(
+                      estructura.columnas.map((c: any) => [c.id, ""])
+                    ),
+                  ];
+                  handleChangeRespuesta(p.id, JSON.stringify(primeraFila));
+                }
 
-              return (
-                <div key={p.id} className="mb-4 p-3 border rounded bg-white shadow-sm">
-                  <label className="form-label fw-bold mb-2">
-                    {p.codigo}) {p.oracion}
-                  </label>
+                // separar título y aclaración usando el mismo string de la pregunta
+                const lineas = (p.oracion || "").split("\n");
+                const textoPrincipal = lineas[0] || "";
+                const textoAclaracion =
+                  lineas.length > 1 ? lineas.slice(1).join("\n") : null;
 
-                  {estructura?.tipo === "tabla" ? (
-                    <TablaDinamica
-                      estructura={estructura}
-                      value={respuestas[p.id]}
-                      onChange={(val: string) => handleChangeRespuesta(p.id, val)}
-                    />
-                  ) : (
-                    <textarea
-                      className="form-control"
-                      rows={3}
-                      value={respuestas[p.id] || ""}
-                      onChange={(e) => handleChangeRespuesta(p.id, e.target.value)}
-                    />
-                  )}
-                </div>
-              );
-            })}
+                return (
+                  <div
+                    key={p.id}
+                    className="p-3 border rounded bg-white shadow-sm"
+                    style={{ width: "100%" }}
+                  >
+                    {/* X. PREGUNTA (mismo color que el resto, solo negrita y subrayado) */}
+                    <p
+                      style={{
+                        fontWeight: "bold",
+                        textDecoration: "underline",
+                        marginBottom: 4,
+                      }}
+                    >
+                      {p.codigo}.
+                    </p>
+
+                    {/* Texto principal (primera línea) */}
+                    <p
+                      className="mb-1"
+                      style={{ fontSize: 14, fontWeight: 600 }}
+                    >
+                      {textoPrincipal}
+                    </p>
+
+                    {/* Aclaración (segunda línea en adelante, si existe) */}
+                    {textoAclaracion && (
+                      <p
+                        className="mb-2"
+                        style={{
+                          fontSize: 13,
+                          whiteSpace: "pre-line",
+                        }}
+                      >
+                        {textoAclaracion}
+                      </p>
+                    )}
+
+                    {/* Campo de respuesta: tabla o textarea */}
+                    {estructura?.tipo === "tabla" ? (
+                      <TablaDinamica
+                        estructura={estructura}
+                        value={respuestas[p.id]}
+                        onChange={(val: string) =>
+                          handleChangeRespuesta(p.id, val)
+                        }
+                      />
+                    ) : (
+                      <textarea
+                        className="form-control"
+                        rows={3}
+                        value={respuestas[p.id] || ""}
+                        onChange={(e) =>
+                          handleChangeRespuesta(p.id, e.target.value)
+                        }
+                      />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
           {/* Guardar */}
           <div className="d-flex justify-content-end mt-4">
@@ -221,7 +320,6 @@ const handleGuardarInforme = async () => {
               Guardar Informe
             </button>
           </div>
-
         </div>
       </div>
     </div>

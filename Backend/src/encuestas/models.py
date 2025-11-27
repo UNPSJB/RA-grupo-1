@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, String, Boolean, DateTime, ForeignKey, Enum, Text, Enum as SQLEnum
+from sqlalchemy import Integer, String, Boolean, DateTime, ForeignKey, Enum, Column, Text, Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
 from src.models import ModeloBase
@@ -22,12 +22,10 @@ class Encuesta(ModeloBase):
     
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     carrera: Mapped[str] = mapped_column(String, index=True)
-    cursado: Mapped[Duracion] = mapped_column(
-        SQLEnum(Duracion, values_callable=lambda x: [e.value for e in x]),
-        nullable=False
-    )
+    duracion: Mapped[str] = mapped_column(String(20), nullable=False)
+
     año: Mapped[int] = mapped_column(Integer, index=True)
-    sede: Mapped[str] = mapped_column(String, index=True)    
+    sede_id = Column(Integer, ForeignKey("sedes.id"))   
     estado: Mapped[EstadoEncuesta] = mapped_column(Enum(EstadoEncuesta), nullable=False, default=EstadoEncuesta.abierta)
     titulo: Mapped[str] = mapped_column(String(255), nullable=False)
     fecha_inicio: Mapped[datetime] = mapped_column(DateTime, nullable=False)
@@ -59,6 +57,8 @@ class Encuesta(ModeloBase):
     )
 
     asignatura = relationship("Asignatura", lazy="joined")
+
+    
    
     # Verifica si la encuesta está activa
     @property

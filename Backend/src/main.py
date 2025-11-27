@@ -20,7 +20,6 @@ from src.encuestas.models import Encuesta
 #from src.informes.models import Informe
 
 
-# Tablas de vinculación van al final
 from src.vinculaciones.models import pregunta_opcion
 from src.vinculaciones.asignatura_docente.models import AsignaturaDocente
 from src.vinculaciones.models import asignatura_alumno
