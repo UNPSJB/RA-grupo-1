@@ -1,28 +1,34 @@
 from typing import List
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from src.departamentos.models import Departamento
-from src.departamentos import schemas, exceptions
-from src.carreras.models import Carrera
+from fastapi import HTTPException, status
 
-def leer_departamento(db: Session, departamento_id: int) -> schemas.Departamento:
-    db_departamento = db.scalar(
+from src.departamentos.models import Departamento
+from src.departamentos.schemas import DepartamentoBase
+from src.carreras.models import Carrera
+import src.departamentos.exceptions as exceptions
+
+
+def leer_departamento(db: Session, departamento_id: int):
+    departamento = db.scalar(
         select(Departamento).where(Departamento.id == departamento_id)
     )
-    if db_departamento is None:
+    if departamento is None:
         raise exceptions.DepartamentoNoEncontrado()
-    return db_departamento
+    return departamento
 
-def listar_departamentos(db: Session) -> List[schemas.Departamento]:
+
+def listar_departamentos(db: Session):
     return db.scalars(select(Departamento)).all()
 
-def crear_departamento(db: Session, departamento: schemas.DepartamentoBase) -> schemas.Departamento:
-    # Crea un nuevo departamento
-    departamento_db = Departamento(**departamento.model_dump())
-    db.add(departamento_db)
+
+def crear_departamento(db: Session, departamento: DepartamentoBase):
+    nuevo = Departamento(**departamento.model_dump())
+    db.add(nuevo)
     db.commit()
-    db.refresh(departamento_db)
-    return departamento_db
+    db.refresh(nuevo)
+    return nuevo
+
 
 def get_carreras_por_departamento(db: Session, departamento_id: int):
     stmt = (
