@@ -78,7 +78,7 @@ def modificar_persona(db: Session, persona_id: int, datos: schemas.PersonaUpdate
     return persona_db
 
 def eliminar_persona(db: Session, persona_id: int) -> dict:
-    persona_db = leer_persona(db, persona_id)l
+    persona_db = leer_persona(db, persona_id)
     if persona_db.rol_id == 2:
         alumno = db.scalar(select(Alumno).where(Alumno.persona_id == persona_id))
         if alumno:
