@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Image,
 } from "@react-pdf/renderer";
-import Logo from "../../assets/Unipat.png";
+import Logo from "../../../assets/Unipat.png";
 
 // ---- Tipos que va a recibir desde la página de "guardado" ----
 

@@ -20,9 +20,10 @@ import { GestionPreguntas } from '../features/secretaria/components/GestionPregu
 import { GestionEncuestas } from '../features/secretaria/components/GestionEncuestas';
 import { RegistroAlumno } from "../features/alumnos/components/RegistroAlumno";
 
-
 import InformeSinteticoCabeceraPage from '../features/departamentos/pages/InformeSinteticoCabeceraPage';
 import InformeSinteticoPreguntasPage from '../features/departamentos/pages/InformeSinteticoPreguntasPage';
+// 👇 NUEVO IMPORT
+import InformeSinteticoGuardadoPage from '../features/departamentos/pages/InformeSinteticoGuardadoPage';
 
 import { SecretariaLayout } from '../features/secretaria/components/SecretariaLayout';
 import { CrearEncuesta } from '../features/secretaria/components/CrearEncuesta';
@@ -35,7 +36,7 @@ import { NuevaEncuesta } from '../features/secretaria/components/NuevaEncuesta';
 import CompletarEncuesta from "../features/encuestas/components/CompletarEncuesta";
 
 //Import que agregamos
-import  VerEncuestaCompleta  from '../features/encuestasCompletadas/components/VerEncuestaCompleta';
+import VerEncuestaCompleta from '../features/encuestasCompletadas/components/VerEncuestaCompleta';
 
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -69,7 +70,10 @@ function App() {
         <Route path="encuesta/:id" element={<DetalleEncuesta />} />
 
         {/* NUEVA RUTA PARA VER RESPUESTAS SIN EDITAR */}
-        <Route path="/alumno/completada/:idEncuesta/:idAlumno" element={<VerEncuestaCompleta />} />
+        <Route
+          path="/alumno/completada/:idEncuesta/:idAlumno"
+          element={<VerEncuestaCompleta />}
+        />
       </Route>
       
       {/* Rutas de docente */}
@@ -78,10 +82,15 @@ function App() {
         <Route path="reportes" element={<ReporteDocente />} />
         <Route path="informes-finalizados" element={<InformesFinalizados />} />
         <Route path="mis-asignaturas" element={<MisAsignaturas />} />
-        <Route path="informes-catedra/completar/:finalizadoId/:plantillaId" element={<InformeCatedraDetalle />} />
-        <Route path="informes-catedra/ver/:finalizadoId/:plantillaId" element={<InformeFinalizadoDetalle />} />
+        <Route
+          path="informes-catedra/completar/:finalizadoId/:plantillaId"
+          element={<InformeCatedraDetalle />}
+        />
+        <Route
+          path="informes-catedra/ver/:finalizadoId/:plantillaId"
+          element={<InformeFinalizadoDetalle />}
+        />
       </Route>
-
 
       {/* Rutas de departamento */}
       <Route path="/departamento" element={<DepartamentoLayout />}>
@@ -96,6 +105,11 @@ function App() {
         <Route 
           path="informe-sintetico/preguntas" 
           element={<InformeSinteticoPreguntasPage />} 
+        />
+        {/* 👇 NUEVA RUTA DE PANTALLA DE GUARDADO */}
+        <Route
+          path="informe-sintetico/guardado/:id"
+          element={<InformeSinteticoGuardadoPage />}
         />
       </Route>
 
