@@ -289,7 +289,7 @@ def listar_encuestas_para_alumno(db: Session, alumno_id: int):
                 nombre=encuesta.titulo,
                 asignatura=encuesta.asignatura.nombre if encuesta.asignatura else "Sin asignatura",
                 docente=docente_nombre,
-                ciclo_lectivo=f"{encuesta.año}-{encuesta.cursado.value}"
+                ciclo_lectivo=f"{encuesta.año}-{encuesta.duracion}"
             )
         )
     return resultado

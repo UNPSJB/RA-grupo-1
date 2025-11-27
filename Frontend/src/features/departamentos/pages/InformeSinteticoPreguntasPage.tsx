@@ -98,15 +98,16 @@ export default function InformeSinteticoPreguntasPage() {
   const normalizarDuracion = (d: string) => {
     switch (d) {
       case "ANUAL":
-        return "anual";
+       return "anual";
       case "PRIMER CUATRIMESTRE":
-        return "cuatrimestre_1";
+        return "primer_cuatrimestre";
       case "SEGUNDO CUATRIMESTRE":
-        return "cuatrimestre_2";
-      default:
+       return "segundo_cuatrimestre";
+     default:
         return d.toLowerCase();
     }
   };
+
 
   const handleGuardarInforme = async () => {
     if (!cabecera || !informeBaseId) {

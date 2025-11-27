@@ -3,10 +3,21 @@ import axios from "axios";
 const API_URL = "http://127.0.0.1:8000/informe-catedra-finalizado";
 
 export enum Duracion {
-    anual = "anual",
-    cuatrimestre_1 = "primer cuatrimestre",
-    cuatrimestre_2 = "segundo cuatrimestre"
+  anual = "anual",
+  primer_cuat = "primer_cuat",
+  segundo_cuat = "segundo_cuat"
 }
+export const normalizarDuracion = (d: string): Duracion => {
+  if (!d) return d as Duracion;
+
+  const val = d.toLowerCase();
+
+  if (val.includes("primer")) return Duracion.primer_cuat;
+  if (val.includes("segundo")) return Duracion.segundo_cuat;
+  if (val.includes("anual")) return Duracion.anual;
+
+  return d as Duracion;
+};
 
 // cabecera informacion informe
 export interface InformePendienteCabecera {
@@ -83,9 +94,13 @@ export const getInformesFinalizadosCabecera = async (docenteId: number): Promise
   return res.data;
 };
 
-export const getInformesFinalizadosPorDocente = async (docenteId: number): Promise<InformeCatedraFinalizado[]> => {
+export const getInformesFinalizadosPorDocente = async (docenteId: number) => {
     const response = await axios.get(`${API_URL}/docente/${docenteId}/finalizados`);
-    return response.data;
+
+    return response.data.map((x: any) => ({
+        ...x,
+        duracion: normalizarDuracion(x.duracion),
+    }));
 };
 
 export const getInformesPendientesCabecera = async (docenteId: number): Promise<InformePendienteCabecera[]> => {

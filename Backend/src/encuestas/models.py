@@ -22,10 +22,8 @@ class Encuesta(ModeloBase):
     
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     carrera: Mapped[str] = mapped_column(String, index=True)
-    cursado: Mapped[Duracion] = mapped_column(
-        SQLEnum(Duracion, values_callable=lambda x: [e.value for e in x]),
-        nullable=False
-    )
+    duracion: Mapped[str] = mapped_column(String(20), nullable=False)
+
     año: Mapped[int] = mapped_column(Integer, index=True)
     sede_id = Column(Integer, ForeignKey("sedes.id"))   
     estado: Mapped[EstadoEncuesta] = mapped_column(Enum(EstadoEncuesta), nullable=False, default=EstadoEncuesta.abierta)
