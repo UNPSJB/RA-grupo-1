@@ -1,5 +1,4 @@
-// src/features/departamentos/pages/InformeSinteticoGuardadoPage.tsx
-
+// Frontend/src/features/departamentos/pages/InformeSinteticoGuardadoPage.tsx
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import InformeSinteticoPDFDocument, {
@@ -38,8 +37,7 @@ export default function InformeSinteticoGuardadoPage() {
         </p>
         <p>
           Para generar el PDF desde esta vista necesitás entrar nuevamente desde
-          el flujo de guardado (por ahora usamos datos en memoria del
-          navegador).
+          el flujo de guardado (por ahora usamos datos en memoria del navegador).
         </p>
         <button
           className="btn btn-primary mt-3"
@@ -53,13 +51,16 @@ export default function InformeSinteticoGuardadoPage() {
 
   const { informeId, titulo, cabecera, preguntas, respuestas } = state;
 
-  const cabeceraPdf: CabeceraPDF = {
-    departamentoId: cabecera.departamento_id,
-    carreraId: cabecera.carrera_id,
-    sede: cabecera.sede,
-    anio: Number(cabecera.anio),
-    duracion: cabecera.duracion,
-  };
+const cabeceraPdf: CabeceraPDF = {
+  departamentoId: cabecera.departamento_id,
+  departamentoNombre: cabecera.departamento_nombre,
+  carreraId: cabecera.carrera_id,
+  carreraNombre: cabecera.carrera_nombre,
+  sede: cabecera.sede,
+  anio: Number(cabecera.anio),
+  duracion: cabecera.duracion,
+};
+
 
   // Armamos respuestas para el PDF
   const respuestasPdf: RespuestaPDF[] = preguntas.map((p) => {
@@ -72,6 +73,7 @@ export default function InformeSinteticoGuardadoPage() {
 
     const raw = respuestas[p.id] ?? "";
 
+    // si la pregunta es tabla, raw es un JSON string con un array
     if (estructura?.tipo === "tabla") {
       let tabla: any[] = [];
       try {
@@ -90,6 +92,7 @@ export default function InformeSinteticoGuardadoPage() {
       };
     }
 
+    // texto
     return {
       preguntaId: p.id,
       codigo: p.codigo ?? undefined,

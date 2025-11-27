@@ -28,6 +28,8 @@ export interface RespuestaPDF {
 
 export interface CabeceraPDF {
   departamentoId: number;
+  departamentoNombre: string;
+  carreraNombre: string;
   carreraId: number;
   sede: string;
   anio: number;
@@ -190,12 +192,12 @@ export default function InformeSinteticoPDFDocument({
           </Text>
           <Image src={Logo} style={styles.headerImage} />
           <Text style={styles.subtitle}>
-            Departamento ID: {cabecera.departamentoId} – Carrera ID:{" "}
+            Departamento ID: {cabecera.carreraNombre} – Carrera ID:{" "}
             {cabecera.carreraId}
           </Text>
           <Text style={styles.subtitle}>Sede: {cabecera.sede}</Text>
           <Text style={styles.subtitle}>
-            Año: {cabecera.anio} – Duración: {formatDuracion(cabecera.duracion)}
+            Año: {cabecera.anio} – Ciclo Lectivo: {formatDuracion(cabecera.duracion)}
           </Text>
           <Text style={styles.subtitle}>Informe N.º {informeId}</Text>
         </View>

@@ -9,6 +9,30 @@ import TablaDinamica from "../components/TablaDinamica";
 
 const API = "http://localhost:8000";
 
+/**
+ * Leemos del localStorage la carrera seleccionada y el departamento.
+ * Lo hacemos fuera del componente porque:
+ * - No hay SSR en tu caso (Vite SPA).
+ * - Es info estática de contexto, no cambia mientras estás en esta pantalla.
+ */
+const carreraSeleccionada = (() => {
+  try {
+    const raw = localStorage.getItem("carreraSeleccionada");
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+})();
+
+const departamento = (() => {
+  try {
+    const raw = localStorage.getItem("departamento");
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+})();
+
 type CabeceraInformeSintetico = {
   departamento_id: number;
   carrera_id: number;
@@ -139,6 +163,8 @@ export default function InformeSinteticoPreguntasPage() {
           cabecera: {
             ...cabecera,
             duracion: normalizarDuracion(duracion), // ya normalizada
+            departamento_nombre: departamento?.nombre || "Departamento",
+            carrera_nombre: carreraSeleccionada?.nombre || "Carrera",
           },
           preguntas,
           respuestas,
@@ -184,7 +210,12 @@ export default function InformeSinteticoPreguntasPage() {
               <strong>Sede:</strong> {cabecera.sede}
             </p>
             <p className="mb-1">
-              <strong>Carrera ID:</strong> {cabecera.carrera_id}
+              <strong>Departamento:</strong>{" "}
+              {departamento?.nombre || `ID ${cabecera.departamento_id}`}
+            </p>
+            <p className="mb-1">
+              <strong>Carrera:</strong>{" "}
+              {carreraSeleccionada?.nombre || `ID ${cabecera.carrera_id}`}
             </p>
           </div>
 

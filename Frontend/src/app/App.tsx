@@ -34,6 +34,7 @@ import { InformesFinalizados } from '../features/docentes/components/InformesFin
 import DetalleEncuesta from '../features/encuestas/components/DetalleEncuesta';
 import { NuevaEncuesta } from '../features/secretaria/components/NuevaEncuesta';
 import CompletarEncuesta from "../features/encuestas/components/CompletarEncuesta";
+import InformeSinteticoHistoricosPage from "../features/departamentos/pages/InformeSinteticoHistoricosPage";
 
 //Import que agregamos
 import VerEncuestaCompleta from '../features/encuestasCompletadas/components/VerEncuestaCompleta';
@@ -94,6 +95,7 @@ function App() {
 
       {/* Rutas de departamento */}
       <Route path="/departamento" element={<DepartamentoLayout />}>
+        <Route path="historicos" element={<InformeSinteticoHistoricosPage />} />
         <Route path="informes/sinteticos" element={<PanelDepartamento />} />
         <Route path="informes/carreras" element={<PanelDepartamento />} />
         <Route path="gestion-preguntas" element={<GestionPreguntas />} />
@@ -106,7 +108,7 @@ function App() {
           path="informe-sintetico/preguntas" 
           element={<InformeSinteticoPreguntasPage />} 
         />
-        {/* 👇 NUEVA RUTA DE PANTALLA DE GUARDADO */}
+        {/* */}
         <Route
           path="informe-sintetico/guardado/:id"
           element={<InformeSinteticoGuardadoPage />}
