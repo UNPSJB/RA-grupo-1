@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Integer, ForeignKey, DateTime, Enum
+from sqlalchemy import Integer, ForeignKey, DateTime, Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.models import ModeloBase
@@ -46,8 +46,8 @@ class EncuestaFinalizada(ModeloBase):
     anio: Mapped[int] = mapped_column(Integer, nullable=False)
 
     duracion: Mapped[Duracion] = mapped_column(
-        Enum(Duracion),
-        nullable=False,
+    SQLEnum(Duracion, values_callable=lambda x: [e.value for e in x]),
+    nullable=False,
     )
 
     # Relaciones

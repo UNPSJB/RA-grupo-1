@@ -153,12 +153,16 @@ def obtener_respuestas_alumno(encuesta_id: int, alumno_id: int, db: Session = De
            response_model=List[schemas.EncuestaAlumnoInfo],
            summary="Obtener encuestas disponibles para alumno")
 def obtener_encuestas_alumno(alumno_id: int, db: Session = Depends(get_db)):
-    
     print(f"✅ ENDPOINT CORRECTO ALCANZADO - Alumno ID: {alumno_id}")
     try:
         encuestas = services.listar_encuestas_para_alumno(db, alumno_id)
         return encuestas
     except Exception as e:
+        # ✅ AGREGAR ESTO PARA VER EL ERROR COMPLETO
+        import traceback
+        print("❌ ERROR COMPLETO:")
+        print(traceback.format_exc())
+        
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error al obtener encuestas: {str(e)}"

@@ -19,7 +19,7 @@ asignatura_alumno = Table(
     Column("asignatura_id", ForeignKey("asignaturas.id")),
     Column("nota_cursada", Integer),
     Column("anio", Integer),
-    Column("duracion", SQLEnum(Duracion))
+    Column("duracion", SQLEnum(Duracion, values_callable=lambda x: [e.value for e in x]))
 )
 
 pregunta_opcion = Table(

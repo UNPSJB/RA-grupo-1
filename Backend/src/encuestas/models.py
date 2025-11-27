@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, String, Boolean, DateTime, ForeignKey, Enum, Text
+from sqlalchemy import Integer, String, Boolean, DateTime, ForeignKey, Enum, Text, Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
 from src.models import ModeloBase
@@ -22,7 +22,10 @@ class Encuesta(ModeloBase):
     
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     carrera: Mapped[str] = mapped_column(String, index=True)
-    cursado: Mapped[Duracion] = mapped_column(Enum(Duracion), nullable=False)
+    cursado: Mapped[Duracion] = mapped_column(
+        SQLEnum(Duracion, values_callable=lambda x: [e.value for e in x]),
+        nullable=False
+    )
     año: Mapped[int] = mapped_column(Integer, index=True)
     sede: Mapped[str] = mapped_column(String, index=True)    
     estado: Mapped[EstadoEncuesta] = mapped_column(Enum(EstadoEncuesta), nullable=False, default=EstadoEncuesta.abierta)
