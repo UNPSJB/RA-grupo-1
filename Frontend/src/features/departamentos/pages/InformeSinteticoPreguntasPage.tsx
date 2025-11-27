@@ -86,28 +86,28 @@ export default function InformeSinteticoPreguntasPage() {
 
   const handleGuardarInforme = async () => {
     if (!cabecera || !informeBaseId) {
-      alert("Faltan datos de cabecera o informe base. Volvé al paso anterior.");
+      alert("Faltan datos de cabecera o informe base.");
       return;
     }
 
-    const { carrera_id, anio, duracion } = cabecera;
-
-    const cuerpo = {
-      titulo: `Informe Sintético ${anio}`,
-      contenido: "",
-      anio: Number(anio),
-      duracion: normalizarDuracion(duracion),
-      informe_base_id: informeBaseId,
-      carrera_id,
-      respuestas: preguntas.map((p: PreguntaInformeSintetico) => ({
-        pregunta_id: p.id,
-        texto_respuesta: respuestas[p.id] || "",
-        asignatura_id: 0,
-      })),
-    };
-
     try {
-      const res = await fetch(
+      const { carrera_id, anio, duracion } = cabecera;
+
+      const cuerpo = {
+        titulo: `Informe Sintético ${anio}`,
+        contenido: "",
+        anio: Number(anio),
+        duracion: normalizarDuracion(duracion),
+        informe_base_id: informeBaseId,
+        carrera_id,
+        respuestas: preguntas.map((p: PreguntaInformeSintetico) => ({
+          pregunta_id: p.id,
+          texto_respuesta: respuestas[p.id] || "",
+          asignatura_id: 0,
+        })),
+      };
+
+      const resp = await fetch(
         `${API}/informes_sinteticos_finalizados/finalizados/`,
         {
           method: "POST",
@@ -116,25 +116,37 @@ export default function InformeSinteticoPreguntasPage() {
         }
       );
 
-      if (!res.ok) {
-        const text = await res.text();
-        console.error("Error al guardar:", text);
+      if (!resp.ok) {
+        console.error(await resp.text());
         alert("Error al guardar el informe sintético.");
         return;
       }
 
-      const data = await res.json();
-      console.log("Informe creado:", data);
+      const data = await resp.json(); // debería traer al menos { id: ... }
 
+      // Limpiar localStorage
       localStorage.removeItem("respuestas_informe_sintetico");
       localStorage.removeItem("cabecera_informe_sintetico");
       localStorage.removeItem("informe_sintetico_base_id");
 
       alert("Informe sintético guardado correctamente.");
-      navigate(-1);
+
+      // Ir a la página de “guardado” con todos los datos necesarios para el PDF
+      navigate(`/departamento/informe-sintetico/guardado/${data.id}`, {
+        state: {
+          informeId: data.id,
+          titulo: cuerpo.titulo,
+          cabecera: {
+            ...cabecera,
+            duracion: normalizarDuracion(duracion), // ya normalizada
+          },
+          preguntas,
+          respuestas,
+        },
+      });
     } catch (e) {
-      console.error("Error de red:", e);
-      alert("Error de red al guardar el informe sintético.");
+      console.error(e);
+      alert("Error inesperado al guardar el informe sintético.");
     }
   };
 
