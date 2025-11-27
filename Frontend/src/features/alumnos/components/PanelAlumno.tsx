@@ -8,21 +8,39 @@ export const PanelAlumno = () => {
     completadas: 0,
   });
 
-  useEffect(() => {
-    const alumno_id = localStorage.getItem("alumno_id");
+useEffect(() => {
+  const alumno_id = localStorage.getItem("alumno_id");
 
-    if (alumno_id) {
-      fetch(`http://127.0.0.1:8000/encuestas/alumno/${alumno_id}/stats`)
-        .then(res => res.json())
-        .then(data => {
-          setStats({
-            incompletas: data.incompletas || 0,
-            completadas: data.completadas || 0
-          });
-        })
-        .catch(err => console.error("Error trayendo métricas:", err));
-    }
-  }, []);
+  if (!alumno_id) return;
+
+  fetch(`http://127.0.0.1:8000/encuestas/alumno/${alumno_id}`)
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("No se pudieron cargar las encuestas del alumno");
+      }
+      return res.json();
+    })
+    .then((data: any[]) => {
+      // Ajustá estos nombres según lo que devuelva tu backend
+      const completadas = data.filter(
+        (e) =>
+          e.completada === true ||
+          e.estado === "completada" ||
+          e.estado === "respondida"
+      ).length;
+
+      const incompletas = data.length - completadas;
+
+      setStats({
+        incompletas,
+        completadas,
+      });
+    })
+    .catch((err) => {
+      console.error("Error trayendo encuestas:", err);
+      setStats({ incompletas: 0, completadas: 0 });
+    });
+}, []);
 
   // Definimos las métricas con sus tipos de visualización específicos
   const metricas = [

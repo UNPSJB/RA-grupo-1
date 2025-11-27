@@ -14,3 +14,5 @@ class Sede(ModeloBase):
     nombre: Mapped[str] = mapped_column(String, nullable=False, unique=True)
 
     departamentos: Mapped[List["Departamento"]] = relationship(back_populates="sede")
+
+    

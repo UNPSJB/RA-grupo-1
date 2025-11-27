@@ -3,7 +3,7 @@ from sqlalchemy.orm import Mapped, relationship, mapped_column
 from src.models import ModeloBase
 from typing import Optional
 from typing import TYPE_CHECKING
-
+#aca van las repsuesta del informe SINTENTICO
 if TYPE_CHECKING:
     from src.pregunta_informe_sintetico.models import PreguntaInformeSintetico
     from src.informe_sintetico_finalizado.models import InformeSinteticoFinalizado

@@ -17,6 +17,7 @@ from src.opciones.models import Opcion
 from src.preguntas.models import Pregunta
 from src.asignaturas.models import Asignatura
 from src.encuestas.models import Encuesta
+from src.sedes.models import Sede
 #from src.informes.models import Informe
 
 
@@ -50,6 +51,8 @@ from src.pregunta_informe_sintetico.router import router as pregunta_informe_sin
 from src.respuestas_informe.router import router as respuestas_informe_router
 from src.auth.router import router as auth_router
 from src.personas.router import router as personas_router
+from src.sedes.router import router as sedes_router
+
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -105,6 +108,7 @@ app.include_router(pregunta_informe_sintetico_router)
 app.include_router(respuestas_informe_router)
 app.include_router(auth_router)
 app.include_router(personas_router)
+app.include_router(sedes_router)
 
 @app.get("/")
 def read_root():

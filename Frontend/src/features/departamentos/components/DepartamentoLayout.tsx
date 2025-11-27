@@ -36,28 +36,19 @@ export const DepartamentoLayout: React.FC = () => {
       icon: <LayoutDashboard size={18} />
     },
     { 
-      label: "Informes", 
+      label: "Completar Informe Sintético", 
       icon: <FileText size={18} />,
-      isSelect: true,
-      options: [ 
+      to:"/departamento/informes/sinteticos",
+      isSelect: false,
+      /* options: [ 
         { to: "/departamento/informes/sinteticos", label: "Informe Sintético" },
         { to: "/departamento/informes/catedra", label: "Informe de Cátedra" }
-      ]
+      ]*/
     },
     { 
       to: "/departamento/carreras", 
-      label: "Carreras",
+      label: "Ver Carreras",
       icon: <GraduationCap size={18} />
-    },
-    { 
-      to: "/departamento/encuestas", 
-      label: "Encuestas",
-      icon: <ClipboardCheck size={18} />
-    },
-    { 
-      to: "/departamento/pendientes", 
-      label: "Formularios Pendientes",
-      icon: <Clock size={18} />
     },
     { 
       to: "/departamento/estadisticas", 
@@ -85,28 +76,28 @@ export const DepartamentoLayout: React.FC = () => {
       valor: metricasDepto.carrerasActivas,
       icono: "graduation-cap",
       type: "primary", 
-      descripcion: `${metricasDepto.carrerasActivas} carreras cargadas`
+      //descripcion: `${metricasDepto.carrerasActivas} carreras cargadas`
     },
     { 
       titulo: "Informes Pendientes", 
       valor: metricasDepto.informesPendientes,
       icono: "clock", 
       type: "secondary", 
-      descripcion: "Requieren atención inmediata"
+      //descripcion: "Requieren atención inmediata"
     },
-    { 
+    /*{ 
       titulo: "En Progreso", 
       valor: 1, 
       icono: "trending-up",
       type: "accent", 
       descripcion: "En desarrollo"
-    },
+    }*/,
     { 
-      titulo: "Completados", 
+      titulo: "Informes Sintenticos Completados", 
       valor: metricasDepto.informesCompletados,
       icono: "check-circle",
       type: "neutral", 
-      descripcion: "Este período académico"
+      //descripcion: "Este período académico"
     }
   ];
 
