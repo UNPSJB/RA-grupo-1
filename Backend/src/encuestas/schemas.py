@@ -35,7 +35,7 @@ class PreguntaParaEstudiante(BaseModel):
 class CategoriaConPreguntas(BaseModel):
     """Categoría con sus preguntas para el estudiante"""
     id: int
-    nombre: str
+    texto: str
     codigo: str
     preguntas: List[PreguntaParaEstudiante]  
     

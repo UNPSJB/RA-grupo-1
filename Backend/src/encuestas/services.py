@@ -358,13 +358,14 @@ def obtener_encuesta_para_completar(db: Session, encuesta_id: int) -> dict:
             
             preguntas_data.append(pregunta_dict)
         
-        categorias_data.append({
-            "id": categoria.id,
-            "codigo": categoria.codigo,
-            "nombre": categoria.nombre,
-            "orden": categoria.orden,
-            "preguntas": preguntas_data
-        })
+            categorias_data.append({
+                "id": categoria.id,
+                "codigo": categoria.codigo,
+                "texto": categoria.texto,   
+                "orden": categoria.orden,
+                "preguntas": preguntas_data
+            })
+
     
     # 6. Construir respuesta final
     return {

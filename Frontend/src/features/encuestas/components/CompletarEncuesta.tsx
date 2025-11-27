@@ -1,22 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 
-interface EncuestaCompletarProps {
-  encuestaId: number;
-  alumnoId: number;
-  onClose: () => void;
-}
+const EncuestaCompletar: React.FC = () => {
+  const { encuestaId } = useParams();   // <-- 🔥 ESTA ES LA CLAVE
 
-const EncuestaCompletar: React.FC<EncuestaCompletarProps> = ({
-  encuestaId,
-  alumnoId,
-  onClose,
-}) => {
+  const alumnoId = Number(localStorage.getItem("alumnoId")); // o de donde lo guardes
+
   const [encuesta, setEncuesta] = useState<any>(null);
   const [respuestas, setRespuestas] = useState<{ [key: number]: any }>({});
   const [cargando, setCargando] = useState(true);
-
-  // 🔹 1) Cargar encuesta desde FastAPI
-  React.useEffect(() => {
+  
+    useEffect(() => {
+      if (encuesta) {
+        console.log(
+          " ENCUESTA COMPLETA:",
+          JSON.stringify(encuesta, null, 2)
+        );
+      }
+    }, [encuesta]);
+  // 🔹 Cargar encuesta desde FastAPI
+  useEffect(() => {
     const cargarEncuesta = async () => {
       try {
         const res = await fetch(
@@ -31,7 +34,7 @@ const EncuestaCompletar: React.FC<EncuestaCompletarProps> = ({
       }
     };
 
-    cargarEncuesta();
+    if (encuestaId) cargarEncuesta();
   }, [encuestaId]);
 
   const guardarRespuesta = (
@@ -48,10 +51,10 @@ const EncuestaCompletar: React.FC<EncuestaCompletarProps> = ({
     }));
   };
 
-  // 🔹 3) Enviar respuestas al backend
+  // 🔹 Enviar respuestas
   const enviarRespuestas = async () => {
     const payload = {
-      encuesta_id: encuestaId,
+      encuesta_id: Number(encuestaId),
       alumno_id: alumnoId,
       respuestas: Object.keys(respuestas).map((pid) => ({
         pregunta_id: Number(pid),
@@ -70,7 +73,7 @@ const EncuestaCompletar: React.FC<EncuestaCompletarProps> = ({
       if (!res.ok) throw new Error("Error al enviar encuesta");
 
       alert("Encuesta enviada exitosamente 🎉");
-      onClose();
+      window.history.back();
     } catch (error) {
       console.error("Error:", error);
       alert("Hubo un problema al enviar la encuesta");
@@ -78,7 +81,6 @@ const EncuestaCompletar: React.FC<EncuestaCompletarProps> = ({
   };
 
   if (cargando) return <p>Cargando encuesta...</p>;
-
   if (!encuesta) return <p>Error cargando la encuesta</p>;
 
   return (
@@ -95,67 +97,53 @@ const EncuestaCompletar: React.FC<EncuestaCompletarProps> = ({
           </p>
         </header>
 
-        <div className="cuerpo-modal">
-          {/* 🔸 Render Categorías y Preguntas Cerradas */}
-          {encuesta.categorias.map((cat: any) => (
-            <div key={cat.id} className="categoria">
-              <h3>{cat.nombre}</h3>
+          <div className="cuerpo-modal">
+            {!encuesta ? (
+              <p>Cargando encuesta...</p>
+            ) : !encuesta.categorias ? (
+              <p>No hay categorías disponibles.</p>
+            ) : (
+              encuesta.categorias.map((cat: any) => (
+                <div key={cat.id} className="categoria">
+                  <h3>{cat.texto}</h3>
 
-              {cat.preguntas.map((preg: any) => (
-                <div key={preg.id} className="pregunta">
-                  <p>{preg.texto}</p>
+                  {cat.preguntas?.map((preg: any) => (
+                    <div key={preg.id} className="pregunta">
+                      <p>{preg.texto}</p>
 
-                  {/* 🔸 Pregunta de opción múltiple */}
-                  {preg.opciones.length > 0 &&
-                    preg.opciones.map((op: any) => (
-                      <label key={op.id} className="opcion">
-                        <input
-                          type="radio"
-                          name={`pregunta-${preg.id}`}
-                          value={op.id}
-                          onChange={() =>
-                            guardarRespuesta(preg.id, op.id, null)
+                      {preg.opciones?.length > 0 &&
+                        preg.opciones.map((op: any) => (
+                          <label key={op.id} className="opcion">
+                            <input
+                              type="radio"
+                              name={`pregunta-${preg.id}`}
+                              value={op.id}
+                              onChange={() =>
+                                guardarRespuesta(preg.id, op.id, null)
+                              }
+                            />
+                            {op.texto}
+                          </label>
+                        ))}
+
+                      {preg.tipo === "abierta" && (
+                        <textarea
+                          placeholder="Escribí tu respuesta..."
+                          onChange={(e) =>
+                            guardarRespuesta(preg.id, null, e.target.value)
                           }
                         />
-                        {op.texto}
-                      </label>
-                    ))}
-
-                  {/* 🔸 Pregunta abierta */}
-                  {preg.tipo === "abierta" && (
-                    <textarea
-                      placeholder="Escribí tu respuesta..."
-                      onChange={(e) =>
-                        guardarRespuesta(preg.id, null, e.target.value)
-                      }
-                    />
-                  )}
+                      )}
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          ))}
+              ))
+            )}
+          </div>
 
-          {/* 🔹 Preguntas Abiertas Extra */}
-          {encuesta.preguntas_abiertas.length > 0 && (
-            <>
-              <h3>Preguntas adicionales</h3>
-              {encuesta.preguntas_abiertas.map((preg: any) => (
-                <div key={preg.id} className="pregunta">
-                  <p>{preg.texto}</p>
-                  <textarea
-                    placeholder="Escribí tu respuesta..."
-                    onChange={(e) =>
-                      guardarRespuesta(Number(preg.id), null, e.target.value)
-                    }
-                  />
-                </div>
-              ))}
-            </>
-          )}
-        </div>
 
         <footer>
-          <button onClick={onClose} className="boton boton-cancelar">
+          <button onClick={() => window.history.back()} className="boton boton-cancelar">
             Cancelar
           </button>
 
