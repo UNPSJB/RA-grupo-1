@@ -36,7 +36,7 @@ def read_alumnos(
             summary="Obtener alumno por ID",
             description="Retorna los detalles de un alumno específico")
 def read_alumno(alumno_id: int, db: Session = Depends(get_db)):
-    alumno = services.leer_alumno(db, alumno_id)  
+    alumno = services.leer_alumno(db, alumno_id)
     if not alumno:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
