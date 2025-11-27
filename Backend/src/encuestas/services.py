@@ -295,84 +295,94 @@ def listar_encuestas_para_alumno(db: Session, alumno_id: int):
     return resultado
 
 def obtener_encuesta_para_completar(db: Session, encuesta_id: int) -> dict:
-    
-    # 1. Obtener encuesta con validaciones
+    from src.docentes.models import Docente
+    from src.categorias.models import Categoria
+    from src.preguntas.models import Pregunta
+
+    # 1. Obtener encuesta
     encuesta = db.query(Encuesta).filter(Encuesta.id == encuesta_id).first()
-    
     if not encuesta:
         raise exceptions.EncuestaNoEncontrada()
-    
-    # Verificar que esté activa y disponible
+
+    # Verificar que esté activa
     if not encuesta.activa or encuesta.estado != EstadoEncuesta.abierta:
         raise exceptions.EncuestaNoDisponible()
-    
+
     # 2. Obtener asignatura
     asignatura = db.query(Asignatura).filter(
         Asignatura.id == encuesta.asignatura_id
     ).first()
-    
+
     if not asignatura:
         raise exceptions.EncuestaNoEncontrada("Asignatura no encontrada")
-    
+
     # 3. Obtener docente
     docente = None
-    if hasattr(asignatura, 'docente_id') and asignatura.docente_id:
+    if getattr(asignatura, "docente_id", None):
         docente = db.query(Docente).filter(
             Docente.id == asignatura.docente_id
         ).first()
-    
+
     # 4. Obtener categorías ordenadas
-    categorias = db.query(Categoria).filter(
-        Categoria.encuesta_id == encuesta_id
-    ).order_by(Categoria.orden).all()
-    
-    # 5. Construir estructura de categorías con preguntas
+    categorias = (
+        db.query(Categoria)
+        .filter(Categoria.encuesta_id == encuesta_id)
+        .order_by(Categoria.orden)
+        .all()
+    )
+
+    # 5. Construir estructura final (ARREGLADO → sin duplicados)
     categorias_data = []
-    
+
     for categoria in categorias:
-        # Obtener preguntas de esta categoría
-        preguntas = db.query(Pregunta).filter(
-            Pregunta.categoria_id == categoria.id,
-            Pregunta.encuesta_id == encuesta_id
-        ).order_by(Pregunta.id).all()
-        
+
+        # Obtener preguntas reales de esta categoría
+        preguntas = (
+            db.query(Pregunta)
+            .filter(
+                Pregunta.categoria_id == categoria.id,
+                Pregunta.encuesta_id == encuesta_id
+            )
+            .order_by(Pregunta.id)
+            .all()
+        )
+
         preguntas_data = []
         for pregunta in preguntas:
+
             pregunta_dict = {
                 "id": pregunta.id,
                 "texto": pregunta.texto,
                 "tipo": pregunta.tipo,
-                "orden": getattr(pregunta, 'orden', None)
+                "orden": getattr(pregunta, "orden", None)
             }
-        
-            if pregunta.tipo in ['opcion_multiple', 'unica_opcion', 'cerrada']:
+
+            # Opciones si corresponde
+            if pregunta.tipo in ["opcion_multiple", "unica_opcion", "cerrada"]:
                 pregunta_dict["opciones"] = [
-                    {
-                        "id": opcion.id,
-                        "texto": opcion.contenido  
-                    }
+                    {"id": opcion.id, "texto": opcion.contenido}
                     for opcion in pregunta.opciones
                 ]
             else:
                 pregunta_dict["opciones"] = []
-            
-            preguntas_data.append(pregunta_dict)
-        
-            categorias_data.append({
-                "id": categoria.id,
-                "codigo": categoria.codigo,
-                "texto": categoria.texto,   
-                "orden": categoria.orden,
-                "preguntas": preguntas_data
-            })
 
-    
+            preguntas_data.append(pregunta_dict)
+
+        # AGREGAR CATEGORÍA UNA SOLA VEZ (antes estaba dentro del loop → duplicaba)
+        categorias_data.append({
+            "id": categoria.id,
+            "codigo": categoria.codigo,
+            "texto": categoria.texto,
+            "orden": categoria.orden,
+            "preguntas": preguntas_data
+        })
+
     # 6. Construir respuesta final
     return {
         "id": encuesta.id,
         "titulo": encuesta.titulo,
         "asignatura": asignatura.nombre,
-        "codigo_asignatura": getattr(asignatura, 'codigo', 'N/A'),
+        "codigo_asignatura": getattr(asignatura, "codigo", "N/A"),
         "docente": f"{docente.nombre} {docente.apellido}" if docente else "No asignado",
         "ciclo_lectivo": str(encuesta.año),
         "carrera": encuesta.carrera,
@@ -380,6 +390,7 @@ def obtener_encuesta_para_completar(db: Session, encuesta_id: int) -> dict:
         "fecha_fin": encuesta.fecha_fin.isoformat() if encuesta.fecha_fin else None,
         "categorias": categorias_data
     }
+
 
 
 def guardar_respuestas_encuesta(db: Session, respuestas_data: schemas.RespuestaEncuesta):
