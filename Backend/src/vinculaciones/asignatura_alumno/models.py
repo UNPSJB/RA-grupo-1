@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from src.asignaturas.models import Asignatura
 
 class AlumnoAsignatura(ModeloBase):
-    __tablename__ = "alumno_asignatura"
+    __tablename__ = "asignatura_alumno"
     
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     alumno_id: Mapped[int] = mapped_column(ForeignKey("alumnos.id"))

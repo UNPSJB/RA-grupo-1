@@ -1,16 +1,15 @@
-from ast import For
-from sqlalchemy import Integer, String, ForeignKey, Table, Column, Enum
+from sqlalchemy import Integer, String, ForeignKey, Table, Column, Enum as SQLEnum
 from src.models import ModeloBase
-from enum import auto, StrEnum
+from enum import StrEnum
 
 class Estado(StrEnum):
     pendiente = "pendiente"
     finalizado = "finalizado"
 
 class Duracion(StrEnum):
-    anual = "ANUAL"
-    PRIMER_CUATRIMESTRE = "PRIMER CUATRIMESTRE"
-    SEGUNDO_CUATRIMESTRE = "SEGUNDO CUATRIMESTRE"
+    ANUAL = "anual"
+    PRIMER_CUATRIMESTRE = "primer_cuatrimestre"
+    SEGUNDO_CUATRIMESTRE = "segundo_cuatrimestre"
 
 asignatura_alumno = Table(
     "asignatura_alumno",
@@ -20,7 +19,7 @@ asignatura_alumno = Table(
     Column("asignatura_id", ForeignKey("asignaturas.id")),
     Column("nota_cursada", Integer),
     Column("anio", Integer),
-    Column("duracion", String)
+    Column("duracion", SQLEnum(Duracion))
 )
 
 pregunta_opcion = Table(

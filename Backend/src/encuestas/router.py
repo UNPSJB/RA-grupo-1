@@ -153,9 +153,8 @@ def obtener_respuestas_alumno(encuesta_id: int, alumno_id: int, db: Session = De
            response_model=List[schemas.EncuestaAlumnoInfo],
            summary="Obtener encuestas disponibles para alumno")
 def obtener_encuestas_alumno(alumno_id: int, db: Session = Depends(get_db)):
-    """
-    Obtiene la lista de encuestas disponibles para que un alumno complete
-    """
+    
+    print(f"✅ ENDPOINT CORRECTO ALCANZADO - Alumno ID: {alumno_id}")
     try:
         encuestas = services.listar_encuestas_para_alumno(db, alumno_id)
         return encuestas
