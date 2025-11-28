@@ -1,8 +1,6 @@
 from typing import Optional, TYPE_CHECKING
-
 from sqlalchemy import Integer, ForeignKey, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
 from src.models import ModeloBase
 
 if TYPE_CHECKING:

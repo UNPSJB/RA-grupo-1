@@ -13,7 +13,7 @@ useEffect(() => {
 
   if (!alumno_id) return;
 
-  fetch(`http://127.0.0.1:8000/encuestas/alumno/${alumno_id}`)
+  fetch(`http://127.0.0.1:8000/encuestas/alumno/${alumno_id}/disponibles`)
     .then((res) => {
       if (!res.ok) {
         throw new Error("No se pudieron cargar las encuestas del alumno");

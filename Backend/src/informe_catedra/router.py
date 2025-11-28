@@ -5,6 +5,7 @@ from src.categorias import schemas as categoria_schemas
 from src.database import get_db
 from typing import List
 
+
 router = APIRouter(prefix="/informes_catedra",tags=["informes_catedra"]
 )
 

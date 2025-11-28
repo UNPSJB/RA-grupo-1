@@ -4,6 +4,8 @@ from src.database import get_db
 from src.informe_catedra_finalizado import schemas, services, models
 from typing import List
 from src.vinculaciones.models import Duracion
+#from src.users import schemas as user_schemas
+#from src.auth.dependencies import tiene_rol_docente, tiene_rol_departamento
 
 router = APIRouter(prefix="/informe-catedra-finalizado", tags=["informe-catedra-finalizados"])
 
@@ -35,10 +37,9 @@ def obtener_informe_catedra_finalizado(informe_id: int, db: Session = Depends(ge
 def obtener_informes_por_departamento(departamento_id: int, db: Session = Depends(get_db)):
     return services.obtener_informes_por_departamento(db, departamento_id)
 
-
-#@router.put("/{informe_id}", response_model=schemas.InformeCatedraFinalizadoDetalle)
-#def actualizar_informe_catedra_finalizado(informe_id: int, data: schemas.InformeCatedraFinalizadoUpdate, db: Session = Depends(get_db)):
-#    return services.actualizar_informe_finalizado(db, informe_id, data)
+@router.get("/departamento/{departamento_id}/progreso", response_model=dict)
+def get_progreso_departamento_route(departamento_id: int, anio: int, duracion: Duracion, db: Session = Depends(get_db)):
+    return services.get_progreso_departamento(db, departamento_id, anio, duracion)
 
 @router.get("/docente/{docente_id}/pendientes-cabecera", response_model=List[schemas.InformeCatedraCabecera])
 def listar_informes_pendientes_cabecera(docente_id: int, db: Session = Depends(get_db)):

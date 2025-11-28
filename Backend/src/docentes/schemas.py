@@ -2,6 +2,7 @@ from pydantic import BaseModel, ConfigDict ,Field, EmailStr
 from typing import List, Optional
 from datetime import datetime
 from enum import StrEnum
+from src.indicadores.schemas import IndicadoresCategoria, OpcionPorcentaje
 
 class PersonaBase(BaseModel):
     nombre: str
@@ -35,12 +36,11 @@ class DocenteCreate(DocenteBase):
 
 class Docente(DocenteBase):
     id: int
-    persona: Persona  # Incluye datos de la persona
+    persona: Persona  
     
     model_config = ConfigDict(from_attributes=True)
 
 class DocenteConAsignaturas(Docente):
-    """Extiende Docente con información de asignaturas"""
     asignaturas_asociadas: List['AsignaturaInfo'] = Field(default_factory=list)
     
     model_config = ConfigDict(from_attributes=True)
@@ -48,13 +48,32 @@ class DocenteConAsignaturas(Docente):
 class AsignaturaInfo(BaseModel):
     id: int
     nombre: str
-    matricula: str
-    duracion: str
+    codigo: str
     
     model_config = ConfigDict(from_attributes=True)
 
+class EstadisticasDocenteResponse(BaseModel):
+    promedio_por_categoria: List[IndicadoresCategoria]
+    promedio_general: List[OpcionPorcentaje]
+
+class ProgresoData(BaseModel):
+    completados: int
+    pendientes: int
+
+class InformePendienteInfo(BaseModel):
+    asignatura: str
+    docente_responsable: str
+
+class DashboardDocenteResponse(BaseModel):
+    total_encuestas_completadas: int
+    estadisticas_general: List[OpcionPorcentaje] 
+    estadisticas_basico: Optional[EstadisticasDocenteResponse] = None
+    estadisticas_superior: Optional[EstadisticasDocenteResponse] = None
+    materias_del_ciclo: List[AsignaturaInfo]
+    progreso: ProgresoData
+    pendientes: List[InformePendienteInfo] 
+
 class AsignaturaDocenteInfo(BaseModel):
-    """Información de asignatura con detalles de la relación"""
     asignatura: AsignaturaInfo
     duracion: str
     

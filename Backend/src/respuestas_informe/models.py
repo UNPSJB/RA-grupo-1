@@ -1,6 +1,12 @@
 from sqlalchemy import Integer, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.models import ModeloBase
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from src.preguntas.models import Pregunta
+    from src.informe_catedra_finalizado.models import InformeCatedraFinalizado
+    from src.opciones.models import Opcion
 
 class RespuestaInforme(ModeloBase):
     __tablename__ = "respuestas_informe"
@@ -9,8 +15,7 @@ class RespuestaInforme(ModeloBase):
     pregunta_id: Mapped[int] = mapped_column(ForeignKey("preguntas.id"))
     opcion_id: Mapped[int] = mapped_column(ForeignKey("opciones.id"), nullable=True)
     informe_catedra_finalizado_id: Mapped[int] = mapped_column(ForeignKey("informe_catedra_finalizado.id")) 
-    asignatura_id: Mapped[int] = mapped_column(ForeignKey("asignaturas.id"))
-
+   
     texto_respuesta: Mapped[str | None] = mapped_column(String(150), nullable=True)
     
     pregunta: Mapped["Pregunta"] = relationship("Pregunta")

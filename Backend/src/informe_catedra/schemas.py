@@ -17,8 +17,7 @@ class InformeCatedra(InformeCatedraBase):
         from_attributes = True
 
 class InformeCatedraCreate(InformeCatedraBase):
-    titulo: str
-    asignatura_id: int
+    pass
 
 # Obtiene una lista de preguntas
 class CategoriaConPreguntas(CategoriaBase):
