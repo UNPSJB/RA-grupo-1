@@ -107,7 +107,6 @@ app.include_router(informe_sintetico_finalizado_router)
 app.include_router(pregunta_informe_sintetico_router)
 app.include_router(respuestas_informe_router)
 app.include_router(auth_router)
-app.include_router(personas_router)
 app.include_router(sedes_router)
 
 @app.get("/")

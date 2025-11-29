@@ -1,8 +1,9 @@
-from sqlalchemy import Integer, String, ForeignKey
+from sqlalchemy import Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.models import ModeloBase
 from typing import Optional, List, TYPE_CHECKING
 from src.vinculaciones.models import asignatura_alumno, alumno_encuesta
+from datetime import datetime
 
 if TYPE_CHECKING:
     from src.respuestas.models import Respuesta
@@ -16,8 +17,8 @@ class Alumno(ModeloBase):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     persona_id: Mapped[int] = mapped_column(ForeignKey("personas.id"), unique=True)
     CUIL: Mapped[str] = mapped_column(String, index=True)
-    usuario: Mapped[str] = mapped_column(String, index=True)
-    clave: Mapped[str] = mapped_column(String, index=True)
+    fecha_creacion: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
+    fecha_actualizacion: Mapped[datetime] = mapped_column(DateTime, nullable=True, onupdate=datetime.now)
 
     persona: Mapped["src.personas.models.Persona"] = relationship(
         "src.personas.models.Persona",

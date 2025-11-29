@@ -1,25 +1,30 @@
-import React from "react";
-import { Navigate } from "react-router-dom";
-import { useAuth } from "../../../context/AuthContext"
+import React from 'react';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../../../context/AuthContext';
 
-interface Props {
-  children: JSX.Element;
-  allowedRoles?: string[]; // si no se pasa, cualquier usuario autenticado
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+  allowedRoles: string[];
 }
 
-export const ProtectedRoute: React.FC<Props> = ({ children, allowedRoles }) => {
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles }) => {
   const { user, isAuthenticated } = useAuth();
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
-  if (allowedRoles && user?.role && !allowedRoles.includes(user.role)) {
-    // Opcional: redirigir a su panel por rol
-    if (user.role === "alumno") return <Navigate to="/alumno/panel" replace />;
-    if (user.role === "docente") return <Navigate to="/docente/panel" replace />;
-    return <Navigate to="/" replace />;
+  if (!allowedRoles.includes(user!.role)) {
+    // Redirigir al panel correspondiente según el rol
+    const roleRoutes: Record<string, string> = {
+      'alumno': '/alumno/panel',
+      'docente': '/docente',
+      'departamento': '/departamento/informes/sinteticos',
+      'secretaria_academica': '/secretaria/gestion-encuestas'
+    };
+    
+    return <Navigate to={roleRoutes[user!.role] || '/login'} replace />;
   }
 
-  return children;
+  return <>{children}</>;
 };

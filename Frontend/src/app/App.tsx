@@ -2,8 +2,10 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { Login } from '../features/inicio/components/Login';
 import { ProtectedRoute } from '../features/alumnos/components/ProtectedRoute';
 
+// REGISTRO GENÉRICO (NUEVO)
+import Register from '../features/inicio/components/RegisterUser';
+
 // ALUMNOS
-import { LoginAlumno } from '../features/alumnos/components/LoginAlumno';
 import { PanelAlumno } from '../features/alumnos/components/PanelAlumno';
 import { AlumnoLayout } from '../features/alumnos/components/AlumnoLayout';
 import { AsignaturasCursadas } from '../features/alumnos/components/AsignaturasCursadas';
@@ -13,7 +15,6 @@ import { EncuestasCompletas } from '../features/encuestas/components/EncuestasCo
 import DetalleEncuesta from '../features/encuestas/components/DetalleEncuesta';
 import CompletarEncuesta from '../features/encuestas/components/CompletarEncuesta';
 import VerEncuestaCompleta from '../features/encuestasCompletadas/components/VerEncuestaCompleta';
-import { RegistroAlumno } from '../features/alumnos/components/RegistroAlumno';
 
 // DOCENTES
 import { DocenteLayout } from '../features/docentes/components/dashboardDocente/DocenteLayout';
@@ -47,9 +48,12 @@ import 'bootstrap/dist/js/bootstrap.bundle.min';
 function App() {
   return (
     <Routes>
+      {/* RUTAS PÚBLICAS */}
       <Route path="/login" element={<Login />} />
+      <Route path="/registro" element={<Register />} /> {/* NUEVO: Registro genérico único */}
       <Route path="/" element={<Navigate to="/login" replace />} />
-      <Route path="/registro" element={<RegistroAlumno />} />
+
+      {/* RUTAS PROTEGIDAS - ALUMNO */}
       <Route
         path="/alumno"
         element={
@@ -65,14 +69,10 @@ function App() {
         <Route path="completadas" element={<EncuestasCompletas />} />
         <Route path="encuestas/:encuestaId/completar" element={<CompletarEncuesta />} />
         <Route path="encuesta/:id" element={<DetalleEncuesta />} />
-
-        <Route
-          path="completada/:idEncuesta/:idAlumno"
-          element={<VerEncuestaCompleta />}
-        />
+        <Route path="completada/:idEncuesta/:idAlumno" element={<VerEncuestaCompleta />} />
       </Route>
 
-
+      {/* RUTAS PROTEGIDAS - DOCENTE */}
       <Route
         path="/docente"
         element={
@@ -89,6 +89,7 @@ function App() {
         <Route path="informes-catedra/ver/:finalizadoId/:plantillaId" element={<InformeFinalizadoDetalle />} />
       </Route>
 
+      {/* RUTAS PROTEGIDAS - DEPARTAMENTO */}
       <Route
         path="/departamento"
         element={
@@ -107,10 +108,11 @@ function App() {
         <Route path="informe-sintetico/guardado/:id" element={<InformeSinteticoGuardadoPage />} />
       </Route>
 
+      {/* RUTAS PROTEGIDAS - SECRETARÍA ACADÉMICA */}
       <Route
         path="/secretaria"
         element={
-          <ProtectedRoute allowedRoles={["secretaria"]}>
+          <ProtectedRoute allowedRoles={["secretaria_academica"]}>
             <SecretariaLayout />
           </ProtectedRoute>
         }
@@ -122,8 +124,8 @@ function App() {
         <Route path="nueva-encuesta" element={<NuevaEncuesta />} />
       </Route>
 
+      {/* REDIRECCIÓN POR DEFECTO */}
       <Route path="*" element={<Navigate to="/login" replace />} />
-
     </Routes>
   );
 }

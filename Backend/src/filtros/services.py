@@ -2,8 +2,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select
 from typing import List
 from src.encuestaCompletada.models import EncuestaCompletada
-from src.informe_catedra_completado.models import InformeCatedraCompletado
-from src.asociaciones.models import duracion
+from src.informe_catedra_finalizado.models import InformeCatedraCompletado
+from src.vinculaciones.models import duracion
 
 def get_anios_disponibles(db: Session) -> List[int]:
     stmt_encuestas = select(EncuestaCompletada.anio).distinct()
