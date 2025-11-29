@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 class InformeSinteticoFinalizado(ModeloBase):
-    __tablename__ = "informe_sintetico_finalizado" 
+    __tablename__ = "informe_sintetico_finalizado"
 
     id = Column(Integer, primary_key=True, index=True)
     titulo = Column(String(255), nullable=False)
@@ -20,20 +20,11 @@ class InformeSinteticoFinalizado(ModeloBase):
     duracion: Mapped[Duracion] = mapped_column(Enum(Duracion), nullable=False)
 
     informe_base_id = Column(Integer, ForeignKey("informes_sinteticos.id"), nullable=False)
+    informe_base = relationship("InformeSintetico", back_populates="informes_finalizados")
 
-    informe_base: Mapped["InformeSintetico"] = relationship(
-        "InformeSintetico", 
-        back_populates="informes_finalizados"
-    )
-
-    respuestas: Mapped[List["ResultadoInforme"]] = relationship(
-        "ResultadoInforme", 
-        back_populates="informe_finalizado"
-    )
+    respuestas = relationship("ResultadoInforme", back_populates="informe_finalizado")
 
     carrera_id: Mapped[int] = mapped_column(Integer, ForeignKey("carreras.id"), nullable=False)
+    carrera = relationship("src.carreras.models.Carrera", back_populates="informes_finalizados")
 
-    carrera: Mapped["Carrera"] = relationship(
-        "src.carreras.models.Carrera",
-        back_populates="informes_finalizados"
-    )
+    sede: Mapped[str] = mapped_column(String, nullable=True)

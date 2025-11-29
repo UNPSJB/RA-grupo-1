@@ -9,12 +9,9 @@ import TablaDinamica from "../components/TablaDinamica";
 
 const API = "http://localhost:8000";
 
-/**
- * Leemos del localStorage la carrera seleccionada y el departamento.
- * Lo hacemos fuera del componente porque:
- * - No hay SSR en tu caso (Vite SPA).
- * - Es info estática de contexto, no cambia mientras estás en esta pantalla.
- */
+// -----------------------------------------------
+// leer carreraSeleccionada
+// -----------------------------------------------
 const carreraSeleccionada = (() => {
   try {
     const raw = localStorage.getItem("carreraSeleccionada");
@@ -24,9 +21,12 @@ const carreraSeleccionada = (() => {
   }
 })();
 
+// -----------------------------------------------
+// leer departamentoSeleccionado
+// -----------------------------------------------
 const departamento = (() => {
   try {
-    const raw = localStorage.getItem("departamento");
+    const raw = localStorage.getItem("departamentoSeleccionado");
     return raw ? JSON.parse(raw) : null;
   } catch {
     return null;
@@ -63,6 +63,36 @@ export default function InformeSinteticoPreguntasPage() {
     }
   });
 
+  // -----------------------------------------------
+  // NUEVO: nombre real del depto obtenido del backend
+  // -----------------------------------------------
+  const [nombreDeptoReal, setNombreDeptoReal] = useState("");
+
+  useEffect(() => {
+    if (!cabecera) return;
+
+    fetch(`${API}/departamentos/${cabecera.departamento_id}`)
+      .then((res) => res.json())
+      .then((d) => setNombreDeptoReal(d.nombre))
+      .catch(() => {});
+  }, [cabecera]);
+
+  // -----------------------------------------------
+  // NOMBRES DINÁMICOS — SOLUCIÓN CORRECTA
+  // -----------------------------------------------
+  const nombreDepartamento =
+    nombreDeptoReal ||
+    departamento?.nombre ||
+    carreraSeleccionada?.departamento_nombre ||
+    (cabecera ? `ID ${cabecera.departamento_id}` : "");
+
+  const nombreCarrera =
+    carreraSeleccionada?.nombre ||
+    (cabecera?.carrera_id ? `ID ${cabecera.carrera_id}` : "");
+
+  // -----------------------------------------------
+  // cargar cabecera e informeBaseId desde localStorage
+  // -----------------------------------------------
   useEffect(() => {
     const rawCabecera = localStorage.getItem("cabecera_informe_sintetico");
     if (rawCabecera) {
@@ -73,7 +103,9 @@ export default function InformeSinteticoPreguntasPage() {
       }
     }
 
-    const rawInformeBaseId = localStorage.getItem("informe_sintetico_base_id");
+    const rawInformeBaseId = localStorage.getItem(
+      "informe_sintetico_base_id"
+    );
     if (rawInformeBaseId) {
       setInformeBaseId(Number(rawInformeBaseId));
     }
@@ -95,20 +127,36 @@ export default function InformeSinteticoPreguntasPage() {
     );
   };
 
+  // normalizar
   const normalizarDuracion = (d: string) => {
     switch (d) {
       case "ANUAL":
-       return "anual";
+        return "anual";
       case "PRIMER CUATRIMESTRE":
         return "primer_cuatrimestre";
       case "SEGUNDO CUATRIMESTRE":
-       return "segundo_cuatrimestre";
-     default:
+        return "segundo_cuatrimestre";
+      default:
         return d.toLowerCase();
     }
   };
 
+  const formatearDuracionCabecera = (d: string) => {
+    switch (d) {
+      case "ANUAL":
+        return "Anual";
+      case "PRIMER CUATRIMESTRE":
+        return "1er Cuatrimestre";
+      case "SEGUNDO CUATRIMESTRE":
+        return "2do Cuatrimestre";
+      default:
+        return d;
+    }
+  };
 
+  // -----------------------------------------------
+  // GUARDAR INFORME
+  // -----------------------------------------------
   const handleGuardarInforme = async () => {
     if (!cabecera || !informeBaseId) {
       alert("Faltan datos de cabecera o informe base.");
@@ -147,25 +195,25 @@ export default function InformeSinteticoPreguntasPage() {
         return;
       }
 
-      const data = await resp.json(); // debería traer al menos { id: ... }
+      const data = await resp.json();
 
-      // Limpiar localStorage
+      // limpiar localStorage
       localStorage.removeItem("respuestas_informe_sintetico");
       localStorage.removeItem("cabecera_informe_sintetico");
       localStorage.removeItem("informe_sintetico_base_id");
 
       alert("Informe sintético guardado correctamente.");
 
-      // Ir a la página de “guardado” con todos los datos necesarios para el PDF
+      // navegar a pantalla de éxito
       navigate(`/departamento/informe-sintetico/guardado/${data.id}`, {
         state: {
           informeId: data.id,
           titulo: cuerpo.titulo,
           cabecera: {
             ...cabecera,
-            duracion: normalizarDuracion(duracion), // ya normalizada
-            departamento_nombre: departamento?.nombre || "Departamento",
-            carrera_nombre: carreraSeleccionada?.nombre || "Carrera",
+            duracion: normalizarDuracion(duracion),
+            departamento_nombre: nombreDepartamento,
+            carrera_nombre: nombreCarrera,
           },
           preguntas,
           respuestas,
@@ -177,6 +225,9 @@ export default function InformeSinteticoPreguntasPage() {
     }
   };
 
+  // -----------------------------------------------
+  // si falta cabecera
+  // -----------------------------------------------
   if (!cabecera) {
     return (
       <div className="container py-4">
@@ -185,7 +236,9 @@ export default function InformeSinteticoPreguntasPage() {
         </div>
         <button
           className="btn btn-secondary mt-2"
-          onClick={() => navigate("/departamento/informe-sintetico/cabecera")}
+          onClick={() =>
+            navigate("/departamento/informe-sintetico/cabecera")
+          }
         >
           Volver a cabecera
         </button>
@@ -193,6 +246,9 @@ export default function InformeSinteticoPreguntasPage() {
     );
   }
 
+  // -----------------------------------------------
+  // render
+  // -----------------------------------------------
   return (
     <div className="container py-4">
       <div className="card shadow">
@@ -204,30 +260,26 @@ export default function InformeSinteticoPreguntasPage() {
           {/* Cabecera resumida */}
           <div className="mb-4 p-3 border rounded bg-light">
             <p className="mb-1">
-              <strong>Ciclo lectivo / duración:</strong> {cabecera.anio} —{" "}
-              {cabecera.duracion}
+              <strong>Año - Ciclo lectivo:</strong> {cabecera.anio} —{" "}
+              {formatearDuracionCabecera(String(cabecera.duracion))}
             </p>
             <p className="mb-1">
               <strong>Sede:</strong> {cabecera.sede}
             </p>
             <p className="mb-1">
-              <strong>Departamento:</strong>{" "}
-              {departamento?.nombre || `ID ${cabecera.departamento_id}`}
+              <strong>Departamento:</strong> {nombreDepartamento}
             </p>
             <p className="mb-1">
-              <strong>Carrera:</strong>{" "}
-              {carreraSeleccionada?.nombre || `ID ${cabecera.carrera_id}`}
+              <strong>Carrera:</strong> {nombreCarrera}
             </p>
           </div>
 
-          {/* Preguntas */}
           {loading && <p>Cargando preguntas...</p>}
           {error && <p className="text-danger">Error: {error}</p>}
 
           {!loading && (
             <div className="d-flex flex-column gap-4">
               {preguntas.map((p) => {
-                // PARSE SEGURO DE ESTRUCTURA
                 let estructura: any = null;
                 try {
                   estructura = p.estructura ? JSON.parse(p.estructura) : null;
@@ -235,7 +287,6 @@ export default function InformeSinteticoPreguntasPage() {
                   estructura = null;
                 }
 
-                // INICIALIZAR UNA FILA VACÍA SI ES TABLA Y NO HAY RESPUESTAS
                 if (estructura?.tipo === "tabla" && !respuestas[p.id]) {
                   const primeraFila = [
                     Object.fromEntries(
@@ -245,7 +296,6 @@ export default function InformeSinteticoPreguntasPage() {
                   handleChangeRespuesta(p.id, JSON.stringify(primeraFila));
                 }
 
-                // separar título y aclaración usando el mismo string de la pregunta
                 const lineas = (p.oracion || "").split("\n");
                 const textoPrincipal = lineas[0] || "";
                 const textoAclaracion =
@@ -257,7 +307,6 @@ export default function InformeSinteticoPreguntasPage() {
                     className="p-3 border rounded bg-white shadow-sm"
                     style={{ width: "100%" }}
                   >
-                    {/* X. PREGUNTA (mismo color que el resto, solo negrita y subrayado) */}
                     <p
                       style={{
                         fontWeight: "bold",
@@ -268,7 +317,6 @@ export default function InformeSinteticoPreguntasPage() {
                       {p.codigo}.
                     </p>
 
-                    {/* Texto principal (primera línea) */}
                     <p
                       className="mb-1"
                       style={{ fontSize: 14, fontWeight: 600 }}
@@ -276,7 +324,6 @@ export default function InformeSinteticoPreguntasPage() {
                       {textoPrincipal}
                     </p>
 
-                    {/* Aclaración (segunda línea en adelante, si existe) */}
                     {textoAclaracion && (
                       <p
                         className="mb-2"
@@ -289,7 +336,6 @@ export default function InformeSinteticoPreguntasPage() {
                       </p>
                     )}
 
-                    {/* Campo de respuesta: tabla o textarea */}
                     {estructura?.tipo === "tabla" ? (
                       <TablaDinamica
                         estructura={estructura}
@@ -314,7 +360,6 @@ export default function InformeSinteticoPreguntasPage() {
             </div>
           )}
 
-          {/* Guardar */}
           <div className="d-flex justify-content-end mt-4">
             <button className="btn btn-success" onClick={handleGuardarInforme}>
               Guardar Informe

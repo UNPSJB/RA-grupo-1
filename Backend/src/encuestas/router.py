@@ -220,9 +220,9 @@ def guardar_respuestas(respuestas: schemas.RespuestaEncuesta, db: Session = Depe
             detail="Ya has completado esta encuesta"
         )
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error al guardar respuestas: {str(e)}"
+        import traceback
+        print("🔥 ERROR COMPLETO EN BACKEND:")
+        traceback.print_exc(
         )
 @router.get("/alumno/{alumno_id}/finalizadas", response_model=list[schemas.EncuestaAlumnoInfo])
 def listar_encuestas_finalizadas(alumno_id: int, db: Session = Depends(get_db)):

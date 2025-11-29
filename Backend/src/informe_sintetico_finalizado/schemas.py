@@ -21,13 +21,14 @@ class InformeSinteticoFinalizadoBase(BaseModel):
     carrera_id: int
 
 
-# 🔵 ESTE ES EL CAMBIO IMPORTANTE
+#  ESTE ES EL CAMBIO IMPORTANTE
 class InformeSinteticoFinalizadoCreate(InformeSinteticoFinalizadoBase):
     respuestas: List[RespuestaInformeSinteticoEntrada]
 
 
 class InformeSinteticoFinalizado(InformeSinteticoFinalizadoBase):
     id: int
+    sede: Optional[str] = None 
     respuestas: List[RespuestaInformeSintetico]
 
     class Config:

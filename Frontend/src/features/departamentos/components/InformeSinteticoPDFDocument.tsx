@@ -164,17 +164,18 @@ const styles = StyleSheet.create({
 });
 
 const formatDuracion = (d: string) => {
-  switch (d) {
+  switch (d.toLowerCase()) {
     case "anual":
       return "Anual";
-    case "cuatrimestre_1":
-      return "Primer cuatrimestre";
-    case "cuatrimestre_2":
-      return "Segundo cuatrimestre";
+    case "primer_cuatrimestre":
+      return "1er Cuatrimestre";
+    case "segundo_cuatrimestre":
+      return "2do Cuatrimestre";
     default:
       return d;
   }
 };
+
 
 export default function InformeSinteticoPDFDocument({
   informeId,
@@ -192,8 +193,10 @@ export default function InformeSinteticoPDFDocument({
           </Text>
           <Image src={Logo} style={styles.headerImage} />
           <Text style={styles.subtitle}>
-            Departamento ID: {cabecera.carreraNombre} – Carrera ID:{" "}
-            {cabecera.carreraId}
+            Departamento: {cabecera.departamentoNombre}
+          </Text>
+          <Text style={styles.subtitle}>
+            Carrera: {cabecera.carreraNombre}
           </Text>
           <Text style={styles.subtitle}>Sede: {cabecera.sede}</Text>
           <Text style={styles.subtitle}>

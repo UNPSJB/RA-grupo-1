@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session, selectinload
 from sqlalchemy import select, func, or_
 from src.informe_sintetico_finalizado import models, schemas
 
-# 👇 además del alias de services, importamos los schemas específicos
+#  además del alias de services, importamos los schemas específicos
 from src.resultado_informe import services as respuestas_services
 from src.resultado_informe.schemas import RespuestaInformeSinteticoCreate
 
@@ -17,6 +17,7 @@ from src.vinculaciones.models import Duracion
 from src.vinculaciones.asignatura_docente.models import AsignaturaDocente
 from src.docentes.models import Docente
 from src.categorias.models import Categoria
+from src.carreras.models import Carrera
 
 
 def get_informes_finalizados(db: Session):
@@ -27,38 +28,44 @@ def get_informe_finalizado(db: Session, informe_id: int):
     return db.query(models.InformeSinteticoFinalizado).filter(models.InformeSinteticoFinalizado.id == informe_id).first()
 
 
+
 def create_informe_finalizado(
     db: Session,
     informe_data: schemas.InformeSinteticoFinalizadoCreate,
 ) -> models.InformeSinteticoFinalizado:
-    # cabecera sin respuestas
+
     informe_dict = informe_data.model_dump(exclude={"respuestas"})
     respuestas_data = informe_data.respuestas
 
-    # crea  el InformeSinteticoFinalizado
+    # Obtener sede real del departamento
+    carrera = db.query(Carrera).filter(Carrera.id == informe_data.carrera_id).first()
+
+    if carrera and carrera.departamento and carrera.departamento.sede:
+        sede_real = carrera.departamento.sede.nombre
+    else:
+        sede_real = "-"
+
+    informe_dict["sede"] = sede_real
+
     db_informe = models.InformeSinteticoFinalizado(**informe_dict)
     db.add(db_informe)
     db.flush()
 
-    # crea respuestas si hay
     if respuestas_data:
-        respuestas_a_guardar: list[RespuestaInformeSinteticoCreate] = []
+        respuestas_a_guardar = []
 
         for respuesta in respuestas_data:
-            # respuesta viene como RespuestaInformeSinteticoEntrada
             respuesta_create = RespuestaInformeSinteticoCreate(
                 **respuesta.model_dump(),
                 informe_sintetico_finalizado_id=db_informe.id,
             )
             respuestas_a_guardar.append(respuesta_create)
 
-        # Usamos la nueva funcion para sintético
         respuestas_services.guardar_respuestas_lote_sintetico(db, respuestas_a_guardar)
 
     db.commit()
     db.refresh(db_informe)
     return db_informe
-
 
 def get_elementos_pregunta2B(db: Session, id_dpto: int, id_carrera: int, anio: int, duracion: str)-> List[schemas.TablaPregunta2BItem]:
     asignaturas: list[schemas.Asignatura] = db.scalars(

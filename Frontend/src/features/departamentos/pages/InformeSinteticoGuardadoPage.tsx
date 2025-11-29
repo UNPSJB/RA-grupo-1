@@ -16,6 +16,9 @@ interface LocationState {
     sede: string;
     anio: number | string;
     duracion: string; // "anual" / "cuatrimestre_1" / etc (normalizado)
+    departamento_nombre: string;
+    carrera_nombre: string;
+
   };
   preguntas: PreguntaInformeSintetico[];
   respuestas: { [preguntaId: string]: string };
@@ -26,7 +29,15 @@ export default function InformeSinteticoGuardadoPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as LocationState | null;
+  //ver si state trae algo, borrar despues que ande
+  console.log("=== STATE COMPLETO (desde Guardado) ===");
+  console.log(state);
 
+  if (state) {
+    console.log("=== CABECERA RECIBIDA ===");
+    console.log(state.cabecera);
+  }
+   // 
   // Si recargan la página perdemos el state.
   if (!state) {
     return (

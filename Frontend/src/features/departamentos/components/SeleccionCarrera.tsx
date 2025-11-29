@@ -27,7 +27,7 @@ export default function SeleccionCarrera() {
   useEffect(() => {
     const tryFetch = async () => {
       try {
-        const res = await fetch(`${apiBase}/carreras`);
+        const res = await fetch(`${apiBase}/carreras/con_informe_sintetico`);
         if (!res.ok) throw new Error("Error al obtener carreras");
         const data = await res.json();
         setCarreras(data);

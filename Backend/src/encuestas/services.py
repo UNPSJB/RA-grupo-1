@@ -422,7 +422,6 @@ def guardar_respuestas_encuesta(db: Session, respuestas_data: schemas.RespuestaE
         encuesta_id=respuestas_data.encuesta_id,
         alumno_id=respuestas_data.alumno_id,
         fecha_finalizada=datetime.utcnow(),
-        finalizada=True
     )
     db.add(encuesta_finalizada)
     db.flush()  # Para obtener el ID
