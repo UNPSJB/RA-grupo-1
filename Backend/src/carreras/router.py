@@ -33,6 +33,38 @@ def carreras_con_informe_sintetico(db: Session = Depends(get_db)):
         for c in carreras
     ]
 
+@router.get("/informes_pendientes_global")
+def informes_pendientes_global(db: Session = Depends(get_db)):
+    from src.carreras.models import Carrera
+    from src.informe_sintetico.models import InformeSintetico
+    from src.informe_sintetico_finalizado.models import InformeSinteticoFinalizado
+
+    carreras_con_base = (
+        db.query(Carrera)
+        .join(InformeSintetico, InformeSintetico.carrera_id == Carrera.id)
+        .all()
+    )
+
+    resultado = []
+
+    for carrera in carreras_con_base:
+        # buscar si ya tiene finalizado
+        ya_finalizado = (
+            db.query(InformeSinteticoFinalizado)
+            .filter(InformeSinteticoFinalizado.carrera_id == carrera.id)
+            .first()
+        )
+
+        if not ya_finalizado:
+            resultado.append({
+                "id": carrera.id,
+                "nombre": carrera.nombre,
+                "departamento_id": carrera.departamento_id
+            })
+
+    return resultado
+
+
 @router.get("/{carrera_id}", response_model=schemas.Carrera)
 def leer_carrera(carrera_id: int, db: Session = Depends(get_db)):
     return services.leer_carrera(db, carrera_id)
