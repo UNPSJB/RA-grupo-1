@@ -22,3 +22,4 @@ class Message:
 
     Hola, haz click aquí para recuperar tu contraseña: $recovery_url"""
     )
+    

@@ -1,26 +1,31 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { DOCENTE_ID } from "../../../constants";
 import DetalleDocente from "./Docentes";
 import type { Docente } from "../types/docenteTypes";
 
 export default function DocentePage() {
-  const { id } = useParams<{ id: string }>();
+  const docenteId = DOCENTE_ID;
   const [docente, setDocente] = useState<Docente>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
 
   useEffect(() => {
-    if (!id) return;
+    if (!docenteId) return;
 
-    fetch(`http://127.0.0.1:8000/docentes/${id}/asignaturas`)
+    fetch(`http://127.0.0.1:8000/docentes/${docenteId}/asignaturas`)
       .then((res) => {
         if (!res.ok) throw new Error("Error al obtener el docente");
         return res.json();
       })
       .then((data) => setDocente(data))
-      .catch((err) => setError(err.message))
+      .catch((err) => {
+        console.error("Error al obtener el docente:", err);
+        const errorMsg =
+          err.message || "Error al obtener el docente";
+        setError(errorMsg);
+      })
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [docenteId]);
 
   if (loading) {
     return (
@@ -37,12 +42,13 @@ export default function DocentePage() {
     );
   }
 
-  if (error){
+  if (error) {
     return (
       <div className="container py-4">
         <div className="alert alert-danger text-center">{error}</div>
       </div>
     );
   }
+
   return <DetalleDocente docente={docente} />;
 }

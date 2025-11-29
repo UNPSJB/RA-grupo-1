@@ -44,3 +44,5 @@ class Alumno(ModeloBase):
         back_populates="alumno",
         cascade="all, delete-orphan"
     )
+
+    user = relationship("User", back_populates="alumno", uselist=False)

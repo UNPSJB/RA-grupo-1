@@ -1,9 +1,9 @@
 import React from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card } from 'react-bootstrap';
-import { Navbar } from "../../../components/layout/Navbar/Navbar";
-import { Footer } from "../../../components/layout/Footer/Footer";
-import '../styles/DocenteLayout.css';
+import { Navbar } from "../../../../components/layout/Navbar/Navbar";
+import { Footer } from "../../../../components/layout/Footer/Footer";
+import '../../styles/DocenteLayout.css';
 
 export const DocenteLayout = () => {
   const navigate = useNavigate();
@@ -16,16 +16,16 @@ export const DocenteLayout = () => {
 
   const docenteNavLinks = [
     { to: "/docente", label: "Panel Principal" },
-    { to: "/docente/reportes", label: "Reportes" },
-    { to: "/docente/informes-finalizados", label: "Informes Finalizados" },
+    { to: "/docente/reportes", label: "Completar Informe Catedra" },
+    { to: "/docente/informes-finalizados", label: "Informes Catedra Finalizados" },
     { to: "/docente/mis-asignaturas", label: "Mis Asignaturas" },
   ];
 
   const metricas = [
-    { titulo: 'Mis Asignaturas', valor: 3, icono: 'bi-journal-text', type: 'primary', descripcion: 'Dictadas este ciclo' },
-    { titulo: 'Total Alumnos', valor: 105, icono: 'bi-people', type: 'secondary', descripcion: 'Inscriptos activos' },
-    { titulo: 'Encuestas Listas', valor: 85, icono: 'bi-check2-all', type: 'accent', descripcion: 'Respuestas recibidas' },
-    { titulo: 'Promedio', valor: '4.2', icono: 'bi-star', type: 'neutral', descripcion: 'Calificación general' }
+    { titulo: 'Mis Asignaturas', valor: 0, icono: 'bi-journal-text', type: 'primary', descripcion: 'Dictadas este ciclo' },
+    { titulo: 'Total Alumnos', valor: 0, icono: 'bi-people', type: 'secondary', descripcion: 'Inscriptos activos' },
+    { titulo: 'Encuestas Listas', valor: 0, icono: 'bi-check2-all', type: 'accent', descripcion: 'Respuestas recibidas' },
+    { titulo: 'Promedio', valor: '0', icono: 'bi-star', type: 'neutral', descripcion: 'Calificación general' }
   ];
 
   return (
@@ -58,7 +58,6 @@ export const DocenteLayout = () => {
             </Container>
           </div>
 
-          {/* Resumen de Métricas - FIJO */}
           <div className="metricas-section">
             <Container>
               <Row className="g-3">

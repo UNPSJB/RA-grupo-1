@@ -105,10 +105,10 @@ export const RegistroAlumno = () => {
           email: formData.email,
           dni: formData.dni,
           legajo: formData.legajo,
-          CUIL: formData.CUIL,
+          cuil: formData.CUIL,
           usuario: formData.usuario,
           clave: formData.clave,
-          rol_id: 2
+          rol_id: 1
         }),
       });
 

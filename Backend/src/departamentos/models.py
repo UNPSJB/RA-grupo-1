@@ -28,3 +28,4 @@ class Departamento(ModeloBase):
     )
 
     sede = relationship("Sede", back_populates="departamentos")
+    user = relationship("User", back_populates="departamento", uselist=False)

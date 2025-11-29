@@ -1,43 +1,44 @@
-import { Routes, Route } from 'react-router-dom';
-import { RoleSelection } from '../features/inicio/components/RoleSelection';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { Login } from '../features/inicio/components/Login';
+import { ProtectedRoute } from '../features/alumnos/components/ProtectedRoute';
+
+// ALUMNOS
 import { LoginAlumno } from '../features/alumnos/components/LoginAlumno';
 import { PanelAlumno } from '../features/alumnos/components/PanelAlumno';
-import { ProtectedRoute } from '../features/alumnos/components/ProtectedRoute';
 import { AlumnoLayout } from '../features/alumnos/components/AlumnoLayout';
 import { AsignaturasCursadas } from '../features/alumnos/components/AsignaturasCursadas';
 import { AsignaturaDetalle } from '../features/alumnos/components/AsignaturaDetalle';
-import { DocenteLayout } from '../features/docentes/components/DocenteLayout';
-import { ReporteDocente }  from '../features/docentes/components/ReporteDocente';
 import { EncuestasIncompletas } from '../features/encuestas/components/EncuestasIncompletas';
 import { EncuestasCompletas } from '../features/encuestas/components/EncuestasCompletas';
+import DetalleEncuesta from '../features/encuestas/components/DetalleEncuesta';
+import CompletarEncuesta from '../features/encuestas/components/CompletarEncuesta';
+import VerEncuestaCompleta from '../features/encuestasCompletadas/components/VerEncuestaCompleta';
+import { RegistroAlumno } from '../features/alumnos/components/RegistroAlumno';
+
+// DOCENTES
+import { DocenteLayout } from '../features/docentes/components/dashboardDocente/DocenteLayout';
 import { PanelDocente } from '../features/docentes/components/PanelDocente';
+import { ReporteDocente } from '../features/docentes/components/ReporteDocente';
+import { MisAsignaturas } from '../features/docentes/components/MisAsignaturas';
+import { InformesFinalizados } from '../features/docentes/components/InformesFinalizados';
 import InformeCatedraDetalle from "../features/informeCatedra/components/InformeCatedraDetalle";
 import InformeFinalizadoDetalle from "../features/informeCatedra/informeCatedraTerminado/components/InformeFinalizadoDetalle";
-import { MisAsignaturas } from '../features/docentes/components/MisAsignaturas';
+
+// DEPARTAMENTO
 import { DepartamentoLayout } from '../features/departamentos/components/DepartamentoLayout';
 import { PanelDepartamento } from '../features/departamentos/components/PanelDepartamento';
-import { GestionPreguntas } from '../features/secretaria/components/GestionPreguntas';
-import { GestionEncuestas } from '../features/secretaria/components/GestionEncuestas';
-import { RegistroAlumno } from "../features/alumnos/components/RegistroAlumno";
-
 import InformeSinteticoCabeceraPage from '../features/departamentos/pages/InformeSinteticoCabeceraPage';
 import InformeSinteticoPreguntasPage from '../features/departamentos/pages/InformeSinteticoPreguntasPage';
-// 👇 NUEVO IMPORT
 import InformeSinteticoGuardadoPage from '../features/departamentos/pages/InformeSinteticoGuardadoPage';
-
-import { SecretariaLayout } from '../features/secretaria/components/SecretariaLayout';
-import { CrearEncuesta } from '../features/secretaria/components/CrearEncuesta';
-import { PanelEncuestas } from '../features/secretaria/components/PanelEncuestas';
-import { EstadisticasEncuesta } from '../features/secretaria/components/EstadisticasEncuesta';
-import { CiclosPage } from "../features/ciclos/components/CiclosPage";
-import { InformesFinalizados } from '../features/docentes/components/InformesFinalizados';
-import DetalleEncuesta from '../features/encuestas/components/DetalleEncuesta';
-import { NuevaEncuesta } from '../features/secretaria/components/NuevaEncuesta';
-import CompletarEncuesta from "../features/encuestas/components/CompletarEncuesta";
 import InformeSinteticoHistoricosPage from "../features/departamentos/pages/InformeSinteticoHistoricosPage";
 
-//Import que agregamos
-import VerEncuestaCompleta from '../features/encuestasCompletadas/components/VerEncuestaCompleta';
+// SECRETARÍA
+import { SecretariaLayout } from '../features/secretaria/components/SecretariaLayout';
+import { GestionPreguntas } from '../features/secretaria/components/GestionPreguntas';
+import { GestionEncuestas } from '../features/secretaria/components/GestionEncuestas';
+import { EstadisticasEncuesta } from '../features/secretaria/components/EstadisticasEncuesta';
+import { CiclosPage } from "../features/ciclos/components/CiclosPage";
+import { NuevaEncuesta } from '../features/secretaria/components/NuevaEncuesta';
 
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -46,83 +47,83 @@ import 'bootstrap/dist/js/bootstrap.bundle.min';
 function App() {
   return (
     <Routes>
-      {/* Ruta principal */}
-      <Route index element={<RoleSelection />} />
-
-      {/* Login alumno */}
-      <Route path="/alumno/login" element={<LoginAlumno />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/registro" element={<RegistroAlumno />} />
-      
-      {/* Rutas de alumno (PROTEGIDAS) */}
-      <Route 
-        path="/alumno" 
+      <Route
+        path="/alumno"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={["alumno"]}>
             <AlumnoLayout />
           </ProtectedRoute>
         }
-      > 
+      >
         <Route path="panel" element={<PanelAlumno />} />
         <Route path="asignaturas" element={<AsignaturasCursadas />} />
         <Route path="asignatura/:id" element={<AsignaturaDetalle />} />
         <Route path="incompletas" element={<EncuestasIncompletas />} />
-        <Route path="encuestas/:encuestaId/completar" element={<CompletarEncuesta />} />
         <Route path="completadas" element={<EncuestasCompletas />} />
+        <Route path="encuestas/:encuestaId/completar" element={<CompletarEncuesta />} />
         <Route path="encuesta/:id" element={<DetalleEncuesta />} />
 
-        {/* NUEVA RUTA PARA VER RESPUESTAS SIN EDITAR */}
         <Route
-          path="/alumno/completada/:idEncuesta/:idAlumno"
+          path="completada/:idEncuesta/:idAlumno"
           element={<VerEncuestaCompleta />}
         />
       </Route>
-      
-      {/* Rutas de docente */}
-      <Route path="/docente" element={<DocenteLayout />}>
+
+
+      <Route
+        path="/docente"
+        element={
+          <ProtectedRoute allowedRoles={["docente"]}>
+            <DocenteLayout />
+          </ProtectedRoute>
+        }
+      >
         <Route index element={<PanelDocente />} />
         <Route path="reportes" element={<ReporteDocente />} />
         <Route path="informes-finalizados" element={<InformesFinalizados />} />
         <Route path="mis-asignaturas" element={<MisAsignaturas />} />
-        <Route
-          path="informes-catedra/completar/:finalizadoId/:plantillaId"
-          element={<InformeCatedraDetalle />}
-        />
-        <Route
-          path="informes-catedra/ver/:finalizadoId/:plantillaId"
-          element={<InformeFinalizadoDetalle />}
-        />
+        <Route path="informes-catedra/completar/:finalizadoId/:plantillaId" element={<InformeCatedraDetalle />} />
+        <Route path="informes-catedra/ver/:finalizadoId/:plantillaId" element={<InformeFinalizadoDetalle />} />
       </Route>
 
-      {/* Rutas de departamento */}
-      <Route path="/departamento" element={<DepartamentoLayout />}>
+      <Route
+        path="/departamento"
+        element={
+          <ProtectedRoute allowedRoles={["departamento"]}>
+            <DepartamentoLayout />
+          </ProtectedRoute>
+        }
+      >
         <Route path="historicos" element={<InformeSinteticoHistoricosPage />} />
         <Route path="informes/sinteticos" element={<PanelDepartamento />} />
         <Route path="informes/carreras" element={<PanelDepartamento />} />
         <Route path="gestion-preguntas" element={<GestionPreguntas />} />
         <Route path="gestion-encuestas" element={<GestionEncuestas />} />
-        <Route 
-          path="informe-sintetico/cabecera" 
-          element={<InformeSinteticoCabeceraPage />} 
-        />
-        <Route 
-          path="informe-sintetico/preguntas" 
-          element={<InformeSinteticoPreguntasPage />} 
-        />
-        {/* */}
-        <Route
-          path="informe-sintetico/guardado/:id"
-          element={<InformeSinteticoGuardadoPage />}
-        />
+        <Route path="informe-sintetico/cabecera" element={<InformeSinteticoCabeceraPage />} />
+        <Route path="informe-sintetico/preguntas" element={<InformeSinteticoPreguntasPage />} />
+        <Route path="informe-sintetico/guardado/:id" element={<InformeSinteticoGuardadoPage />} />
       </Route>
 
-      {/* Rutas secretaría */}
-      <Route path="/secretaria" element={<SecretariaLayout />}>
+      <Route
+        path="/secretaria"
+        element={
+          <ProtectedRoute allowedRoles={["secretaria"]}>
+            <SecretariaLayout />
+          </ProtectedRoute>
+        }
+      >
         <Route path="gestion-preguntas" element={<GestionPreguntas />} />
         <Route path="gestion-encuestas" element={<GestionEncuestas />} />
         <Route path="estadisticas/:encuestaId" element={<EstadisticasEncuesta />} />
         <Route path="ciclos" element={<CiclosPage />} />
-        <Route path="/secretaria/nueva-encuesta" element={<NuevaEncuesta />} />
+        <Route path="nueva-encuesta" element={<NuevaEncuesta />} />
       </Route>
+
+      <Route path="*" element={<Navigate to="/login" replace />} />
+
     </Routes>
   );
 }

@@ -18,3 +18,4 @@ class Docente(ModeloBase):
     persona: Mapped["Persona"] = relationship("Persona", back_populates="docente")
     asignaturas_asociadas: Mapped[List["AsignaturaDocente"]] =  relationship("AsignaturaDocente", back_populates="docente")
     
+    user = relationship("User", back_populates="docente", uselist=False)

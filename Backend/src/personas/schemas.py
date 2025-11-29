@@ -8,6 +8,7 @@ class PersonaBase(BaseModel):
     dni: str
     rol_id: int
     legajo: int
+    cuil: str
 
     @field_validator("dni")
     def validar_dni(cls, v):

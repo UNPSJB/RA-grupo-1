@@ -1,15 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { getDocenteById, Docente, docenteService, DocenteStats } from '../services/docenteService'; 
-import { getInformesPendientesCabecera, InformePendienteCabecera } from "../services/informeService";
-import '../styles/PanelDocente.css'; 
-import { Link } from 'react-router-dom';
+import { 
+  getDocenteById, 
+  Docente, 
+  docenteService, 
+  DocenteStats 
+} from '../services/docenteService';
 
-export const DocenteId: number = 1; // Simulación de ID de docente logueado
+import { 
+  getInformesPendientesCabecera, 
+  InformePendienteCabecera 
+} from "../services/informeService";
+
+import '../styles/PanelDocente.css';
+import { Link } from 'react-router-dom';
+export const DocenteId: number = 1;
 
 export const PanelDocente: React.FC = () => {
-  // DATOS HARCODEADOS (Idealmente vendrían de una API)
+
 
   const [pendientes, setPendientes] = useState<InformePendienteCabecera[]>([]);
+
   useEffect(() => {
     const fetchPendientes = async () => {
       try {
@@ -23,8 +33,8 @@ export const PanelDocente: React.FC = () => {
     fetchPendientes();
   }, []);
 
-
   const [docente, setDocente] = useState<Docente | null>(null);
+
   useEffect(() => {
     const fetchDocente = async () => {
       try {
@@ -35,28 +45,31 @@ export const PanelDocente: React.FC = () => {
       }
     };
     fetchDocente();
-  }, []); 
+  }, []);
 
   const docenteData = {
-    asignaturas: 3,
+    asignaturas: 0,
     semestre: "2025",
-    alumnos: 105,
-    encuestasFinalizadas: 85,
-    evaluacionPromedio: 3.7
+    alumnos: 0,
+    encuestasFinalizadas: 0,
+    evaluacionPromedio: 0
   };
 
+
   const getStatusColor = (estado: string) => {
-    switch(estado.toLowerCase()) {
-      case 'aprobado': return 'bg-success bg-opacity-10 text-success';
-      case 'pendiente': return 'bg-warning bg-opacity-10 text-warning';
-      default: return 'bg-secondary bg-opacity-10 text-secondary';
+    switch (estado.toLowerCase()) {
+      case 'aprobado':
+        return 'bg-success bg-opacity-10 text-success';
+      case 'pendiente':
+        return 'bg-warning bg-opacity-10 text-warning';
+      default:
+        return 'bg-secondary bg-opacity-10 text-secondary';
     }
   };
 
-   return (
+  return (
     <div className="container-fluid py-4">
-      {/* Sección de Bienvenida Rápida */}  
-      {/* Sección de Informes */}
+
       <div className="col-lg-12 mb-4">
         <div className="card border-0 shadow-sm h-100">
           <div className="card-header bg-white border-0">
@@ -95,7 +108,7 @@ export const PanelDocente: React.FC = () => {
                         className="btn btn-sm btn-outline-primary"
                         title="Completar informe"
                       >
-                          Completar
+                        Completar
                       </Link>
                     </div>
                   </li>

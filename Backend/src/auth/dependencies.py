@@ -20,10 +20,6 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl=TOKEN_URL)
 
 
 def get_token_from_cookie(request: Request) -> str:
-    """
-    Obtiene el JWT desde la cookie.
-    Si el token no existe, lanza la excepción NotAuthenticated()
-    """
     token = request.cookies.get(REFRESH_TOKEN_COOKIE_NAME)
 
     if not token:
@@ -35,7 +31,6 @@ async def get_current_user(
     db: Session = Depends(get_db),
     token: str = Depends(get_token_from_cookie),
 ):
-    """Obtiene el objeto User (DB) que está asociado al token."""
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_str = payload.get("sub")
@@ -54,7 +49,6 @@ async def get_current_user(
 async def valid_refresh_token(
     refresh_token: str,
 ) -> Dict[str, Any]:
-    """Verifica que el refresh_token es válido"""
     parsed_token = parse_refresh_token(refresh_token)
 
     if not _is_valid_refresh_token(parsed_token.expires_at):
@@ -67,7 +61,6 @@ async def valid_refresh_token_user(
     refresh_token: Dict[str, Any] = Depends(valid_refresh_token),
     db: Session = Depends(get_db),
 ) -> Dict[str, Any]:
-    """Verifica si el usuario dentro del refresh_token es un usuario válido (existe en la DB)"""
     user = users_service.get_user(db, refresh_token.user_id)
     if not user:
         raise exceptions.RefreshTokenNotValid()
@@ -80,10 +73,6 @@ async def has_role(
     db: Session = Depends(get_db),
     user: users_schemas.User = Depends(get_current_user),
 ) -> users_schemas.User:
-    """Verifica que un usuario tenga un rol con el nombre indicado por `role_name`.
-    Si es así, devuelve el objeto User.
-    Caso contrario, lanza una excepción PermissionDenied().
-    """
     role = db.scalar(
         select(users_models.Role).where(users_models.Role.name == role_name)
     )
@@ -96,7 +85,6 @@ async def has_admin_role(
     db: Session = Depends(get_db),
     user: users_schemas.User = Depends(get_current_user),
 ) -> users_schemas.User:
-    """Verifica que un usuario tenga rol "admin"."""
     return await has_role("admin", db, user)
 
 
@@ -104,28 +92,24 @@ async def tiene_rol_alumno(
     db: Session = Depends(get_db),
     user: users_schemas.User = Depends(get_current_user),
 ) -> users_schemas.User:
-    """Verifica que un usuario tenga rol "alumno"."""
     return await has_role("alumno", db, user)
 
 async def tiene_rol_docente(
     db: Session = Depends(get_db),
     user: users_schemas.User = Depends(get_current_user),
 ) -> users_schemas.User:
-    """Verifica que un usuario tenga rol "docente"."""
     return await has_role("docente", db, user)
 
 async def tiene_rol_departamento(
     db: Session = Depends(get_db),
     user: users_schemas.User = Depends(get_current_user),
 ) -> users_schemas.User:
-    """Verifica que un usuario tenga rol "departamento"."""
     return await has_role("departamento", db, user)
 
 async def tiene_rol_secretaria(
     db: Session = Depends(get_db),
     user: users_schemas.User = Depends(get_current_user),
 ) -> users_schemas.User:
-    """Verifica que un usuario tenga rol "secretaria"."""
     return await has_role("secretaria_academica", db, user)
 
 
@@ -133,9 +117,6 @@ async def has_access_to_user(
     user_id: int,
     auth_user: users_schemas.User = Depends(get_current_user),
 ) -> users_schemas.User:
-    """Verifica que un usuario tenga acceso a los datos del usuario con id = user_id.
-    Esto ocurre si el usuario autenticado (auth_user) tiene el mismo id que user_id o si auth_user es admin.
-    """
 
     if auth_user.is_admin or int(user_id) == auth_user.id:
         return user_id

@@ -1,8 +1,8 @@
 from pydantic import BaseModel
 from src.vinculaciones.models import Duracion
-from src.resultado_informe import schemas as respuestas_schemas
 from typing import List, Optional
-from src.respuestas_informe.schemas import RespuestaConPregunta
+from src.respuestas_informe.schemas import RespuestaConPregunta, RespuestaInformeBase
+from datetime import datetime
 
 class InformeCatedraCabecera(BaseModel):
     id: int
@@ -31,21 +31,26 @@ class InformeCatedraFinalizadoBase(BaseModel):
     aux_primera: Optional[str] = None
     aux_segunda: Optional[str] = None
 
+
 class InformeCatedraFinalizadoCreate(InformeCatedraFinalizadoBase):
     pass
 
+
 class InformeCatedraFinalizadoConRespuestasCreate(InformeCatedraFinalizadoBase):
-    respuestas: List[respuestas_schemas.RespuestaInformeBase]
-    
+    respuestas: List[RespuestaInformeBase]
+
+
 class InformeCatedraFinalizado(InformeCatedraFinalizadoBase):
     id: int
     model_config = {"from_attributes": True}
+
 
 class InformePendiente(BaseModel):
     asignatura_id: int
     asignatura_nombre: str
     asignatura_docente_id: int
     model_config = {"from_attributes": True}
+
 
 class InformeCatedraFinalizadoDetalle(InformeCatedraFinalizadoBase): 
     id: int
@@ -61,10 +66,21 @@ class InformeCatedraFinalizadoDetalle(InformeCatedraFinalizadoBase):
     model_config = {"from_attributes": True}
 
 
+class InformeCatedraFinalizadoUpdate(BaseModel):
+    titulo: Optional[str] = None
+    contenido: Optional[str] = None
+    observaciones: Optional[str] = None
+    estado: Optional[str] = None
+    fecha_modificacion: Optional[datetime] = None
+
+    model_config = {"extra": "ignore"}
+
+
 class RespuestaBorrador(BaseModel):
     pregunta_id: int
     opcion_id: Optional[int] = None
     texto_respuesta: Optional[str] = None
+
 
 class BorradorUpdate(BaseModel):
     respuestas: List[RespuestaBorrador]

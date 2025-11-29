@@ -489,30 +489,25 @@ def finalizar_informe(db: Session, informe_id: int):
     return {"ok": True}
 
 def obtener_informes_finalizados_cabecera(db: Session, docente_id: int):
-    informes = db.scalars(
-        select(InformeCatedraFinalizado)
-        .join(AsignaturaDocente, InformeCatedraFinalizado.asignatura_docente_id == AsignaturaDocente.id)
-        .join(Asignatura, AsignaturaDocente.asignatura_id == Asignatura.id)
-        .where(
-            AsignaturaDocente.docente_id == docente_id,
-            InformeCatedraFinalizado.estado == "finalizado"
+    stmt = (
+        select(
+            InformeCatedraFinalizado.id.label("informeId"),
+            InformeCatedraFinalizado.titulo,
+            InformeCatedraFinalizado.anio,
+            InformeCatedraFinalizado.duracion,
+            Asignatura.id.label("asignaturaId"),
+            Asignatura.nombre.label("asignaturaNombre"),
+            Asignatura.matricula.label("asignaturaCodigo"), 
+            Departamento.nombre.label("departamentoNombre"),
+            Departamento.id.label("departamentoId")
         )
-    ).all()
+        .join(AsignaturaDocente, AsignaturaDocente.id == InformeCatedraFinalizado.asignatura_docente_id)
+        .join(Asignatura, Asignatura.id == AsignaturaDocente.asignatura_id)
+        .join(Departamento, Departamento.id == Asignatura.departamento_id)
+        .where(AsignaturaDocente.docente_id == docente_id)
+    )
 
-    resultado = []
-    for inf in informes:
-        asignatura = inf.asignatura_docente.asignatura
-        resultado.append(
-            schemas.InformeCatedraCabecera(
-                id=inf.id,
-                asignatura_docente_id=inf.asignatura_docente_id,
-                informe_catedra_id=inf.informe_catedra_id,
-                titulo=inf.titulo,
-                anio=inf.anio,
-                duracion=inf.duracion,
-                estado=inf.estado,
-                asignaturaNombre=asignatura.nombre,
-                asignaturaCodigo=asignatura.matricula,
-            )
-        )
-    return resultado
+    resultados = db.execute(stmt).mappings().all()
+
+    return [dict(r) for r in resultados]
+

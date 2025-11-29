@@ -36,38 +36,6 @@ export const MisAsignaturas = () => {
     navigate(`/docente/asignatura/${asignaturaId}`);
   };
 
-  useEffect(() => {
-    const fetchAsignaturas = async () => {
-      try {
-        setLoading(true);
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        const AsignaturasData: Asignatura[] = [
-          {
-            id: 1,
-            nombre: "Álgebra",
-            codigo: "MA02",
-            carrera: "Analista Programador Universitario",
-            cantidadAlumnos: 45,
-            encuestasContestadas: 38,
-            porcentajeCompletado: 84,
-            fechaInicio: "2025-03-01",
-            fechaFin: "2025-07-15",
-            estadoEncuesta: 'completada'
-          },
-        ];
-        
-        setAsignaturas(AsignaturasData);
-        setAsignaturasFiltradas(AsignaturasData);
-        setLoading(false);
-      } catch (err) {
-        setError("Error al cargar las asignaturas");
-        setLoading(false);
-      }
-    };
-    fetchAsignaturas();
-  }, []);
-
   const aplicarFiltros = () => {
     let resultados = [...asignaturas];
     if (filtroAsignatura) {

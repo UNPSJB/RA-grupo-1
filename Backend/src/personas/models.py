@@ -18,3 +18,4 @@ class Persona(ModeloBase):
     rol = relationship("Rol", back_populates="personas")
     alumno = relationship("Alumno", back_populates="persona", uselist=False)
     docente = relationship("Docente", back_populates="persona", uselist=False)
+    cuil: Mapped[str] = mapped_column(String, nullable=False, unique=True)
