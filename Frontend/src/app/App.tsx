@@ -22,7 +22,6 @@ import { RegistroAlumno } from "../features/alumnos/components/RegistroAlumno";
 
 import InformeSinteticoCabeceraPage from '../features/departamentos/pages/InformeSinteticoCabeceraPage';
 import InformeSinteticoPreguntasPage from '../features/departamentos/pages/InformeSinteticoPreguntasPage';
-// 👇 NUEVO IMPORT
 import InformeSinteticoGuardadoPage from '../features/departamentos/pages/InformeSinteticoGuardadoPage';
 
 import { SecretariaLayout } from '../features/secretaria/components/SecretariaLayout';
@@ -69,12 +68,7 @@ function App() {
         <Route path="encuestas/:encuestaId/completar" element={<CompletarEncuesta />} />
         <Route path="completadas" element={<EncuestasCompletas />} />
         <Route path="encuesta/:id" element={<DetalleEncuesta />} />
-
-        {/* NUEVA RUTA PARA VER RESPUESTAS SIN EDITAR */}
-        <Route
-          path="/alumno/completada/:idEncuesta/:idAlumno"
-          element={<VerEncuestaCompleta />}
-        />
+        <Route path="completadas/:id" element={<VerEncuestaCompleta />} />
       </Route>
       
       {/* Rutas de docente */}

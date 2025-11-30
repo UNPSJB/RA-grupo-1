@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 const EncuestaCompletar: React.FC = () => {
   const { encuestaId } = useParams();  
 
-  const alumnoId = Number(localStorage.getItem("alumnoId"));
+  const alumnoId = Number(localStorage.getItem("alumno_id") || "1");
   const [encuesta, setEncuesta] = useState<any>(null);
   const [respuestas, setRespuestas] = useState<{ [key: number]: any }>({});
   const [cargando, setCargando] = useState(true);

@@ -394,48 +394,38 @@ def obtener_encuesta_para_completar(db: Session, encuesta_id: int) -> dict:
 
 
 def guardar_respuestas_encuesta(db: Session, respuestas_data: schemas.RespuestaEncuesta):
-    """
-    Guarda las respuestas de una encuesta finalizada por un alumno
-    """
+    print("🔥 EJECUTANDO guardar_respuestas_encuesta")
+
     from src.encuesta_finalizada.models import EncuestaFinalizada
     from src.respuestas.models import Respuesta
+    from datetime import datetime
     
-    # Verificar que la encuesta existe y está activa
+    # 1. Leer la encuesta
     encuesta = leer_encuesta(db, respuestas_data.encuesta_id)
-    if not (encuesta.activa and encuesta.estado == EstadoEncuesta.abierta
-        and encuesta.fecha_inicio <= datetime.utcnow() <= encuesta.fecha_fin):
-        raise exceptions.EncuestaNoDisponible()
-    
-    # Verificar que el alumno no haya ya completado esta encuesta
-    encuesta_finalizada_existente = db.scalar(
-        select(EncuestaFinalizada).where(
-            EncuestaFinalizada.encuesta_id == respuestas_data.encuesta_id,
-            EncuestaFinalizada.alumno_id == respuestas_data.alumno_id
-        )
-    )
-    
-    if encuesta_finalizada_existente:
-        raise exceptions.EncuestaYaRespondida()
-    
-    # Crear registro de encuesta finalizada
+
+    # 2. Crear registro de encuesta finalizada
     encuesta_finalizada = EncuestaFinalizada(
         encuesta_id=respuestas_data.encuesta_id,
         alumno_id=respuestas_data.alumno_id,
+        asignatura_id=encuesta.asignatura_id,
+        anio=encuesta.año,
+        duracion=encuesta.duracion,
         fecha_finalizada=datetime.utcnow(),
     )
+
     db.add(encuesta_finalizada)
-    db.flush()  # Para obtener el ID
-    
-    # Guardar cada respuesta
+    db.flush()  # Obtener ID para respuestas
+
+    # 3. Guardar cada respuesta
     for respuesta in respuestas_data.respuestas:
-        db_respuesta = Respuesta(
+        nueva = Respuesta(
+            alumno_id=respuestas_data.alumno_id,
             encuesta_finalizada_id=encuesta_finalizada.id,
             pregunta_id=respuesta.pregunta_id,
-            opcion_id=respuesta.get('opcion_id'),
-            texto_respuesta=respuesta.get('texto')
+            opcion_id=respuesta.opcion_id,
+            respuesta_texto=respuesta.texto
         )
-        db.add(db_respuesta)
-    
+        db.add(nueva)
+
     db.commit()
-    
     return {"message": "Encuesta finalizada exitosamente"}

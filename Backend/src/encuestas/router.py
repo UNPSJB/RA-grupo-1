@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from src.database import get_db
@@ -11,7 +11,7 @@ from src.asignaturas.models import Asignatura
 from src.docentes.models import Docente
 from src.encuestas.models import Encuesta
 from src.encuesta_finalizada.models import EncuestaFinalizada
-
+from src.respuestas.models import Respuesta
 from typing import List
 from src.encuestas.exceptions import (
     EncuestaNoEncontrada,
@@ -224,38 +224,114 @@ def guardar_respuestas(respuestas: schemas.RespuestaEncuesta, db: Session = Depe
         print("🔥 ERROR COMPLETO EN BACKEND:")
         traceback.print_exc(
         )
-@router.get("/alumno/{alumno_id}/finalizadas", response_model=list[schemas.EncuestaAlumnoInfo])
+@router.get("/alumno/{alumno_id}/finalizadas")
 def listar_encuestas_finalizadas(alumno_id: int, db: Session = Depends(get_db)):
     """
-    Devuelve todas las encuestas que el alumno ya completó.
+    Devuelve las encuestas que el alumno ya completó,
+    con datos listos para mostrar en la card de 'Encuestas Completadas'.
     """
-    encuestas_finalizadas = (
+    # Traemos todas las encuestas finalizadas de ese alumno
+    finalizadas = (
         db.query(EncuestaFinalizada)
         .filter(EncuestaFinalizada.alumno_id == alumno_id)
         .all()
     )
 
-    if not encuestas_finalizadas:
-        return []
-
     resultado = []
-    for finalizada in encuestas_finalizadas:
-        encuesta = db.query(Encuesta).filter(Encuesta.id == finalizada.encuesta_id).first()
-        if not encuesta:
-            continue
 
-        asignatura = db.query(Asignatura).filter(Asignatura.id == finalizada.asignatura_id).first()
-        docente = db.query(Docente).filter(Docente.id == finalizada.docente_id).first() if finalizada.docente_id else None
+    for f in finalizadas:
+        encuesta = f.encuesta        # relación a Encuesta
+        asignatura = f.asignatura    # relación a Asignatura
 
-        resultado.append({
-            "id": encuesta.id,
-            "nombre": encuesta.nombre,
-            "asignatura": asignatura.nombre if asignatura else "Desconocida",
-            "docente": f"{docente.nombre} {docente.apellido}" if docente else "No asignado",
-            "ciclo_lectivo": encuesta.ciclo_lectivo,
-            "fecha_inicio": encuesta.fecha_inicio,
-            "fecha_fin": encuesta.fecha_fin,
-            "estado": "cerrada",
-        })
+        # Nombre de la asignatura
+        asignatura_nombre = asignatura.nombre if asignatura else "Sin asignatura"
+
+        # Docente a cargo (usando la property docente de Asignatura)
+        docente_nombre = "No asignado"
+        if asignatura and asignatura.docente:
+            persona = asignatura.docente.persona if hasattr(asignatura.docente, "persona") else None
+            if persona:
+                nombre = getattr(persona, "nombre", "") or getattr(persona, "nombres", "")
+                apellido = getattr(persona, "apellido", "") or getattr(persona, "apellidos", "")
+                docente_nombre = f"{apellido}, {nombre}".strip(", ") or "Docente sin nombre"
+            else:
+                docente_nombre = "Docente sin persona"
+
+        # Ciclo lectivo tipo: "2025-anual"
+        ciclo_lectivo = f"{f.anio}-{f.duracion.value}"
+
+        resultado.append(
+            {
+                "id_finalizada": f.id,
+                "encuesta_id": f.encuesta_id,
+                "asignatura_id": f.asignatura_id,
+                "titulo": encuesta.titulo if encuesta else "",
+                "anio": f.anio,
+                "duracion": f.duracion.value,
+                "ciclo_lectivo": ciclo_lectivo,
+                "asignatura": asignatura_nombre,
+                "sede_id": encuesta.sede_id if encuesta else None,
+                "docente": docente_nombre,
+            }
+        )
 
     return resultado
+
+@router.get("/finalizadas/{encuesta_finalizada_id}")
+def obtener_detalle_encuesta_finalizada(
+    encuesta_finalizada_id: int, db: Session = Depends(get_db)
+):
+    """
+    Devuelve el detalle de una encuesta finalizada:
+    datos generales + preguntas y respuestas.
+    """
+    # Buscar la encuesta finalizada
+    f = db.query(EncuestaFinalizada).filter(EncuestaFinalizada.id == encuesta_finalizada_id).first()
+    if not f:
+        raise HTTPException(status_code=404, detail="Encuesta finalizada no encontrada")
+
+    encuesta = f.encuesta
+    asignatura = f.asignatura
+
+    # Docente (igual que antes)
+    docente_nombre = "No asignado"
+    if asignatura and asignatura.docente:
+        persona = asignatura.docente.persona if hasattr(asignatura.docente, "persona") else None
+        if persona:
+            nombre = getattr(persona, "nombre", "") or getattr(persona, "nombres", "")
+            apellido = getattr(persona, "apellido", "") or getattr(persona, "apellidos", "")
+            docente_nombre = f"{apellido}, {nombre}".strip(", ") or "Docente sin nombre"
+        else:
+            docente_nombre = "Docente sin persona"
+
+    ciclo_lectivo = f"{f.anio}-{f.duracion.value}"
+
+    # Cargar respuestas + texto de la pregunta + opción
+    respuestas_detalle = []
+    for r in f.respuestas:
+        pregunta = r.pregunta
+        opcion = r.opcion
+
+        respuestas_detalle.append(
+            {
+                "pregunta_id": r.pregunta_id,
+                "pregunta": pregunta.texto if pregunta else "",
+                "respuesta_texto": r.respuesta_texto,
+                "opcion_id": r.opcion_id,
+                "opcion_texto": opcion.texto if opcion else None,
+            }
+        )
+
+    return {
+        "id_finalizada": f.id,
+        "encuesta_id": f.encuesta_id,
+        "asignatura_id": f.asignatura_id,
+        "titulo": encuesta.titulo if encuesta else "",
+        "anio": f.anio,
+        "duracion": f.duracion.value,
+        "ciclo_lectivo": ciclo_lectivo,
+        "asignatura": asignatura.nombre if asignatura else "Sin asignatura",
+        "sede_id": encuesta.sede_id if encuesta else None,
+        "docente": docente_nombre,
+        "respuestas": respuestas_detalle,
+    }
