@@ -19,7 +19,6 @@ export const AlumnoLayout = ({ children }: AlumnoLayoutProps) => {
   });
 
   useEffect(() => {
-    // Cargar información del alumno desde localStorage
     const nombre = localStorage.getItem('alumno_nombre') || '';
     const apellido = localStorage.getItem('alumno_apellido') || '';
     const email = localStorage.getItem('alumno_email') || '';

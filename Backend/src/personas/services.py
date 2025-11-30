@@ -6,14 +6,16 @@ from src.alumnos.models import Alumno
 from src.docentes.models import Docente
 from src.personas import schemas, exceptions
 
+# services.py
 def crear_persona(db: Session, persona: schemas.PersonaCreate) -> Persona:
+
     existente = db.scalar(
         select(Persona).where(
             (Persona.dni == persona.dni) | (Persona.email == persona.email)
         )
     )
     if existente:
-        raise exceptions.PersonaDuplicada()
+        raise PersonaDuplicada()
 
     nueva = Persona(
         nombre=persona.nombre,
@@ -27,10 +29,15 @@ def crear_persona(db: Session, persona: schemas.PersonaCreate) -> Persona:
     db.add(nueva)
     db.flush()
 
-    if persona.rol_id == 1:
-        db.add(Docente(persona_id=nueva.id))
+    if persona.rol_id == 1:  # DOCENTE
+        docente = Docente(
+            persona_id=nueva.id,
+            usuario=persona.usuario,
+            clave=persona.clave
+        )
+        db.add(docente)
 
-    elif persona.rol_id == 2:
+    elif persona.rol_id == 2:  # ALUMNO
         alumno = Alumno(
             persona_id=nueva.id,
             CUIL=persona.CUIL,

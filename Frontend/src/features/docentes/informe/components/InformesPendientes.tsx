@@ -1,10 +1,10 @@
 import { Fragment} from "react"; 
-import Categoria2BInforme from "./CAT2B";
-import Categoria2CInforme from "./CAT2C";
-import Categoria3Informe from "./CAT3";
-import Categoria4Informe from "./CAT4";
-import CategoriaEquipamiento from "./CAT1";
-import TablaDatosEstadisticos from "../../datosEstadisticos/TablaDatosEstadisticos";
+import Categoria2BInforme from "./Categoria2B";
+import Categoria2CInforme from "./Categoria2C";
+import Categoria3Informe from "./Categoria3";
+import Categoria4Informe from "./Categoria4";
+import CategoriaEquipamiento from "./Categoria1";
+import TablaDatosEstadisticos from "../../../indicadores/components/TablaIndicadores";
 import CompletarInformeCatedraFuncion from "./CompletarInformeCatedraFuncion";
 import RespuestasAbiertas from "./RespuestasAbiertas";
 

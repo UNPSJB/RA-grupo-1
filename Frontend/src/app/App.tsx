@@ -1,3 +1,4 @@
+// App.tsx
 import { Routes, Route } from 'react-router-dom';
 import { RoleSelection } from '../features/inicio/components/RoleSelection';
 import { LoginAlumno } from '../features/alumnos/components/LoginAlumno';
@@ -7,7 +8,7 @@ import { AlumnoLayout } from '../features/alumnos/components/AlumnoLayout';
 import { AsignaturasCursadas } from '../features/alumnos/components/AsignaturasCursadas';
 import { AsignaturaDetalle } from '../features/alumnos/components/AsignaturaDetalle';
 import { DocenteLayout } from '../features/docentes/components/DocenteLayout';
-import { ReporteDocente }  from '../features/docentes/components/ReporteDocente';
+import { ReporteDocente } from '../features/docentes/components/ReporteDocente';
 import { EncuestasIncompletas } from '../features/encuestas/components/EncuestasIncompletas';
 import { EncuestasCompletas } from '../features/encuestas/components/EncuestasCompletas';
 import { PanelDocente } from '../features/docentes/components/PanelDocente';
@@ -19,12 +20,14 @@ import { PanelDepartamento } from '../features/departamentos/components/PanelDep
 import { GestionPreguntas } from '../features/secretaria/components/GestionPreguntas';
 import { GestionEncuestas } from '../features/secretaria/components/GestionEncuestas';
 import { RegistroAlumno } from "../features/alumnos/components/RegistroAlumno";
-
+import { LoginDocente } from "../features/docentes/components/LoginDocente";
+import { RegistroDocente } from "../features/docentes/components/RegistroDocente";
+import { ProtectedRouteDocente } from '../features/docentes/components/ProtectedRouteDocente';
 import InformeSinteticoCabeceraPage from '../features/departamentos/pages/InformeSinteticoCabeceraPage';
 import InformeSinteticoPreguntasPage from '../features/departamentos/pages/InformeSinteticoPreguntasPage';
-// 👇 NUEVO IMPORT
 import InformeSinteticoGuardadoPage from '../features/departamentos/pages/InformeSinteticoGuardadoPage';
-
+import InformesPendientesLista from "../features/docentes/informe/components/InformesPendientesLista";
+import CompletarInformeCatedra from "../features/docentes/informe/components/CompletarInformeCatedra";
 import { SecretariaLayout } from '../features/secretaria/components/SecretariaLayout';
 import { CrearEncuesta } from '../features/secretaria/components/CrearEncuesta';
 import { PanelEncuestas } from '../features/secretaria/components/PanelEncuestas';
@@ -36,7 +39,7 @@ import { NuevaEncuesta } from '../features/secretaria/components/NuevaEncuesta';
 import CompletarEncuesta from "../features/encuestas/components/CompletarEncuesta";
 import InformeSinteticoHistoricosPage from "../features/departamentos/pages/InformeSinteticoHistoricosPage";
 
-//Import que agregamos
+// Import que agregamos
 import VerEncuestaCompleta from '../features/encuestasCompletadas/components/VerEncuestaCompleta';
 
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -72,20 +75,36 @@ function App() {
 
         {/* NUEVA RUTA PARA VER RESPUESTAS SIN EDITAR */}
         <Route
-          path="/alumno/completada/:idEncuesta/:idAlumno"
+          path="completada/:idEncuesta/:idAlumno"
           element={<VerEncuestaCompleta />}
         />
       </Route>
       
-      {/* Rutas de docente */}
-      <Route path="/docente" element={<DocenteLayout />}>
-        <Route index element={<PanelDocente />} />
+      {/* RUTAS DOCENTE */}
+      <Route path="/docente/registro" element={<RegistroDocente />} />
+      <Route path="/docente/login" element={<LoginDocente />} />
+
+      <Route
+        path="/docente"
+        element={
+          <ProtectedRouteDocente>
+            <DocenteLayout />
+          </ProtectedRouteDocente>
+        }
+      >
+        {/* Dashboard del docente */}
+        <Route path="panel" element={<PanelDocente />} />
+
+        {/* Subrutas */}
         <Route path="reportes" element={<ReporteDocente />} />
-        <Route path="informes-finalizados" element={<InformesFinalizados />} />
         <Route path="mis-asignaturas" element={<MisAsignaturas />} />
+
+        {/* Rutas de informes */}
+        <Route path="informes-pendientes" element={<InformesPendientesLista />} />
+        <Route path="informes-finalizados" element={<InformesFinalizados />} />
         <Route
           path="informes-catedra/completar/:finalizadoId/:plantillaId"
-          element={<InformeCatedraDetalle />}
+          element={<CompletarInformeCatedra />}
         />
         <Route
           path="informes-catedra/ver/:finalizadoId/:plantillaId"
@@ -100,19 +119,9 @@ function App() {
         <Route path="informes/carreras" element={<PanelDepartamento />} />
         <Route path="gestion-preguntas" element={<GestionPreguntas />} />
         <Route path="gestion-encuestas" element={<GestionEncuestas />} />
-        <Route 
-          path="informe-sintetico/cabecera" 
-          element={<InformeSinteticoCabeceraPage />} 
-        />
-        <Route 
-          path="informe-sintetico/preguntas" 
-          element={<InformeSinteticoPreguntasPage />} 
-        />
-        {/* */}
-        <Route
-          path="informe-sintetico/guardado/:id"
-          element={<InformeSinteticoGuardadoPage />}
-        />
+        <Route path="informe-sintetico/cabecera" element={<InformeSinteticoCabeceraPage />} />
+        <Route path="informe-sintetico/preguntas" element={<InformeSinteticoPreguntasPage />} />
+        <Route path="informe-sintetico/guardado/:id" element={<InformeSinteticoGuardadoPage />} />
       </Route>
 
       {/* Rutas secretaría */}
@@ -121,7 +130,7 @@ function App() {
         <Route path="gestion-encuestas" element={<GestionEncuestas />} />
         <Route path="estadisticas/:encuestaId" element={<EstadisticasEncuesta />} />
         <Route path="ciclos" element={<CiclosPage />} />
-        <Route path="/secretaria/nueva-encuesta" element={<NuevaEncuesta />} />
+        <Route path="nueva-encuesta" element={<NuevaEncuesta />} />
       </Route>
     </Routes>
   );

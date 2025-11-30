@@ -3,6 +3,7 @@ import { Card, Button, Spinner, Alert, Row, Col, Container } from 'react-bootstr
 import { Informe, useInformes, EstadoInforme } from "../hooks/useInformes";
 import SeleccionCarrera from './SeleccionCarrera';
 import { Link } from "react-router-dom";
+import "../styles/PanelDepartamento.css";
 
 export const PanelDepartamento: React.FC = () => {
   const [carreraSeleccionada, setCarreraSeleccionada] = useState<{ id: number; nombre: string } | null>(null);
@@ -119,14 +120,6 @@ export const PanelDepartamento: React.FC = () => {
           ))}
         </ul>
       )}
-
-      {/* Botón actualizar */}
-      <div className="mt-3 text-end">
-        <Button variant="outline-secondary" onClick={() => refetch()}>
-          🔄 Actualizar
-        </Button>
-      </div>
-
     </Container>
   );
 };

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Search, CheckCircle2, Layers } from "lucide-react";
 
 type Carrera = {
   id: number;
@@ -43,9 +44,10 @@ export default function SeleccionCarrera() {
   const carrerasFiltradas = carreras.filter((c) => {
     const q = filtro.trim().toLowerCase();
     if (!q) return true;
-    const nombre = (c.nombre || "").toLowerCase();
-    const facultad = (c.facultad || "").toLowerCase();
-    return nombre.includes(q) || facultad.includes(q);
+    return (
+      (c.nombre || "").toLowerCase().includes(q) ||
+      (c.facultad || "").toLowerCase().includes(q)
+    );
   });
 
   const handleSelect = (c: Carrera) => {
@@ -63,51 +65,94 @@ export default function SeleccionCarrera() {
   };
 
   return (
-    <div className="flex justify-center mt-20">
-      <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-xl">
-
-        {/* Título */}
-        <h2 className="text-3xl font-bold text-center mb-6">
-          Seleccionar carrera
-        </h2>
-
-        {/* Buscador */}
-        <input
-          className="border p-3 rounded-lg w-full mb-6 shadow-sm focus:ring-2 focus:ring-blue-400"
-          placeholder="Buscar por nombre o facultad..."
-          value={filtro}
-          onChange={(e) => setFiltro(e.target.value)}
-        />
-
-        {mensaje && <div className="mb-3 text-red-600">{mensaje}</div>}
-
-        {/* GRID DE CARRERAS */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {carrerasFiltradas.map((c) => (
-            <div
-              key={c.id}
-              onClick={() => handleSelect(c)}
-              className={`
-                p-4 rounded-xl border cursor-pointer transition-all
-                hover:shadow-md hover:bg-blue-50
-                ${seleccionadaId === c.id 
-                  ? "border-blue-500 bg-blue-100 shadow" 
-                  : "border-gray-200"}
-              `}
-            >
-              <div className="font-semibold text-lg">{c.nombre}</div>
-              <div className="text-sm text-gray-600">Código: {c.id}</div>
-              {c.facultad && (
-                <div className="text-sm text-gray-600">
-                  Facultad: {c.facultad}
-                </div>
-              )}
-            </div>
-          ))}
+    <div className="w-full flex justify-center fade-in">
+      <div className="
+        bg-white/80 backdrop-blur-xl 
+        shadow-2xl border border-gray-200
+        rounded-2xl p-8 w-full max-w-2xl 
+        transition-all duration-300
+      ">
+        
+        {/* TITULO */}
+        <div className="flex items-center justify-center gap-3 mb-8">
+          <Layers size={32} className="text-blue-600 drop-shadow-sm" />
+          <h2 className="text-3xl font-bold tracking-tight text-gray-800">
+            Seleccionar Carrera
+          </h2>
         </div>
 
+        {/* BUSCADOR */}
+        <div className="relative mb-6">
+          <Search className="absolute left-4 top-3.5 text-gray-400" size={20} />
+          <input
+            className="
+              w-full pl-12 pr-4 py-3 rounded-xl 
+              bg-gray-100 focus:bg-white
+              border border-gray-300 
+              shadow-inner focus:ring-2 
+              focus:ring-blue-400 focus:border-transparent
+              transition-all
+            "
+            placeholder="Buscar por nombre o facultad..."
+            value={filtro}
+            onChange={(e) => setFiltro(e.target.value)}
+          />
+        </div>
+
+        {mensaje && (
+          <div className="mb-4 text-red-600 font-semibold bg-red-100 p-3 rounded-lg">
+            {mensaje}
+          </div>
+        )}
+
+        {/* LISTADO DE CARRERAS */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {carrerasFiltradas.map((c) => {
+            const active = seleccionadaId === c.id;
+
+            return (
+              <div
+                key={c.id}
+                onClick={() => handleSelect(c)}
+                className={`
+                  p-5 rounded-xl cursor-pointer 
+                  transition-all duration-300 border relative 
+                  ${
+                    active
+                      ? "border-blue-500 bg-blue-100 shadow-md scale-[1.02]"
+                      : "border-gray-200 hover:border-blue-300 hover:bg-blue-50"
+                  }
+                `}
+              >
+                {/* Ícono de seleccionado */}
+                {active && (
+                  <CheckCircle2
+                    size={24}
+                    className="absolute top-3 right-3 text-blue-600"
+                  />
+                )}
+
+                <div className="font-semibold text-lg text-gray-800">
+                  {c.nombre}
+                </div>
+
+                <div className="text-sm text-gray-600 mt-1">
+                  Código: {c.id}
+                </div>
+
+                {c.facultad && (
+                  <div className="text-sm text-gray-600 mt-1">
+                    Facultad: {c.facultad}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* SIN RESULTADOS */}
         {carrerasFiltradas.length === 0 && (
-          <div className="mt-4 text-gray-500 text-center">
+          <div className="mt-6 text-center text-gray-500">
             No hay carreras que coincidan con el filtro.
           </div>
         )}

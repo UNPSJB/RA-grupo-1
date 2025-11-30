@@ -1,0 +1,357 @@
+:root {
+  --uni-blue: #2B7CB8;  
+  --uni-yellow: #FDB913; 
+  --uni-dark: #1a1a1a;
+  --error-red: #dc3545;
+  --error-dark: #c82333;
+  --success-green: #28a745;
+  --success-dark: #218838;
+}
+
+.registro-docente-page {
+  background-image: url('/src/assets/fondo.png'); 
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh; 
+  position: relative; 
+  display: flex;
+  flex-direction: column;
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+}
+
+/* Overlay oscuro */
+.registro-docente-page::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(43, 124, 184, 0.8), rgba(0, 0, 0, 0.85));
+  z-index: 0;
+}
+
+.registro-docente-page > * {
+  position: relative;
+  z-index: 1; 
+}
+
+/* ========== POP-UPS MODERNOS ========== */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.popup {
+  background: white;
+  border-radius: 24px;
+  padding: 2.5rem 2rem;
+  max-width: 420px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  animation: popupSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+}
+
+.popup-icon {
+  margin-bottom: 1.5rem;
+  animation: iconPulse 0.6s ease-out;
+}
+
+.error-icon {
+  color: var(--error-red);
+}
+
+.success-icon {
+  color: var(--success-green);
+}
+
+.popup-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.popup-message {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.popup-submessage {
+  font-size: 0.9rem;
+  color: #999;
+  margin-bottom: 2rem;
+}
+
+.popup-btn {
+  border: none !important;
+  padding: 0.75rem 2.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.error-btn {
+  background-color: var(--error-red) !important;
+  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+.error-btn:hover {
+  background-color: var(--error-dark) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+}
+
+.success-btn {
+  background-color: var(--success-green) !important;
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.success-btn:hover {
+  background-color: var(--success-dark) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popupSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes iconPulse {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ========== HEADER ========== */
+.registro-header {
+  padding: 1.5rem 2rem;
+  display: flex;  
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.registro-login-btn {
+  background-color: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+  color: #ffffff !important;
+  padding: 0.5rem 1.5rem;
+  border-radius: 50px; 
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.registro-login-btn:hover {
+  background-color: var(--uni-yellow) !important;
+  border-color: var(--uni-yellow) !important;
+  color: #000 !important; 
+  transform: translateY(-2px);
+}
+
+.registro-title-section {
+  color: white;
+  max-width: 500px;
+}
+
+.registro-main-title {
+  font-size: 2rem;
+  font-weight: 200;
+  margin-bottom: 0.5rem;
+}
+
+/* ========== TARJETA ========== */
+.registro-card {
+  background: #fffffffa; 
+  border: none;
+  border-radius: 24px; 
+  width: 100%;
+  max-width: 580px; 
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3) !important;
+}
+
+.registro-logo {
+  width: 60px;
+  height: auto;
+}
+
+/* ========== FORMULARIO ========== */
+.registro-label {
+  font-weight: 600;
+  color: #444;
+  font-size: 0.85rem;
+  margin-bottom: 0.4rem;
+  margin-left: 4px;
+}
+
+.registro-input,
+.registro-input-password {
+  padding: 0.65rem 0.9rem;
+  border: 2px solid #eee;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  background-color: #f8f9fa;
+  transition: all 0.3s ease;
+}
+
+.registro-input:focus,
+.registro-input-password:focus {
+  border-color: var(--uni-blue);
+  background-color: #fff;
+  box-shadow: 0 0 0 4px rgba(43, 124, 184, 0.15);
+  outline: none;
+}
+
+/* Contenedor Password */
+.password-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.registro-input-password {
+  padding-right: 3rem;
+  width: 100%;
+}
+
+.eye-btn {
+  position: absolute;
+  right: 0.8rem;
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  transition: color 0.3s;
+  padding: 0.5rem;
+}
+
+.eye-btn:hover {
+  color: var(--uni-blue);
+}
+
+/* Botón Submit */
+.registro-submit-btn {
+  padding: 0.85rem;
+  background-color: var(--uni-blue) !important;
+  border: none !important;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(43, 124, 184, 0.3);
+}
+
+.registro-submit-btn:hover:not(:disabled) {
+  background-color: #205d8d !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(43, 124, 184, 0.4);
+}
+
+.registro-submit-btn:disabled {
+  background-color: #8cbce6 !important;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ========== ANIMACIONES DE ENTRADA ========== */
+.fade-in {
+  animation: fadeInGentle 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+  opacity: 0;
+  animation-delay: 0.1s;
+}
+
+@keyframes fadeInGentle {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0);
+  }
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+  .registro-card {
+    max-width: 95%;
+  }
+
+  .popup {
+    padding: 2rem 1.5rem;
+  }
+  
+  .popup-title {
+    font-size: 1.3rem;
+  }
+  
+  .popup-message {
+    font-size: 0.95rem;
+  }
+
+  .registro-main-title {
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .registro-header {
+    padding: 1rem 1.5rem;
+  }
+
+  .registro-card {
+    border-radius: 20px;
+  }
+
+  .registro-input,
+  .registro-input-password {
+    font-size: 0.9rem;
+    padding: 0.6rem 0.8rem;
+  }
+}

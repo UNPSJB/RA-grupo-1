@@ -8,7 +8,9 @@ class LoginRequest(BaseModel):
 class LoginResponse(BaseModel):
     token: str
     alumno_id: int
+    docente_id:int
     nombre: str
     apellido: str
     email: str
     mensaje: str
+    

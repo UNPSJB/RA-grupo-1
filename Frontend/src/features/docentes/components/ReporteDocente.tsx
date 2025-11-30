@@ -13,10 +13,10 @@ export const ReporteDocente = () => {
       nombre: "Info. General",
       icon: "bi-info-circle",
       preguntas: [
-        { texto: "¿Veces inscripto?", opciones: { "Una": 65, "Más de una": 35 } },
-        { texto: "Asistencia Teórica", opciones: { "0-50%": 20, "> 50%": 80 } },
-        { texto: "Asistencia Práctica", opciones: { "0-50%": 25, "> 50%": 75 } },
-        { texto: "Conocimientos previos", opciones: { "Escasos": 30, "Suficientes": 70 } }
+        { texto: "¿Veces inscripto?", opciones: { "Una": 0, "Más de una": 0 } },
+        { texto: "Asistencia Teórica", opciones: { "0-50%": 0, "> 50%": 0 } },
+        { texto: "Asistencia Práctica", opciones: { "0-50%": 0, "> 50%": 0} },
+        { texto: "Conocimientos previos", opciones: { "Escasos": 0, "Suficientes": 0 } }
       ]
     },
     {
@@ -24,9 +24,9 @@ export const ReporteDocente = () => {
       nombre: "Comunicación",
       icon: "bi-chat-left-text",
       preguntas: [
-        { texto: "Información inicio curso", opciones: { "Sí": 85, "No": 10, "NPO": 5 } },
-        { texto: "Bibliografía disponible", opciones: { "Sí": 78, "No": 12, "NPO": 10 } },
-        { texto: "Buena comunicación", opciones: { "Sí": 82, "No": 8, "NPO": 10 } }
+        { texto: "Información inicio curso", opciones: { "Sí": 0, "No": 0, "NPO": 0 } },
+        { texto: "Bibliografía disponible", opciones: { "Sí": 0, "No": 0, "NPO": 0 } },
+        { texto: "Buena comunicación", opciones: { "Sí": 0, "No": 0, "NPO": 0 } }
       ]
     },
     {
@@ -34,9 +34,9 @@ export const ReporteDocente = () => {
       nombre: "Metodología",
       icon: "bi-gear-wide-connected",
       preguntas: [
-        { texto: "Clases de apoyo", opciones: { "Sí": 75, "No": 15, "NPO": 10 } },
-        { texto: "Teoría corresponde práctica", opciones: { "Sí": 80, "No": 12, "NPO": 8 } },
-        { texto: "Utilidad laboratorio", opciones: { "Sí": 88, "No": 7, "NPO": 5 } }
+        { texto: "Clases de apoyo", opciones: { "Sí": 0, "No": 0, "NPO": 0 } },
+        { texto: "Teoría corresponde práctica", opciones: { "Sí": 0, "No": 0, "NPO": 0 } },
+        { texto: "Utilidad laboratorio", opciones: { "Sí": 0, "No": 0, "NPO": 0 } }
       ]
     },
     {
@@ -44,9 +44,9 @@ export const ReporteDocente = () => {
       nombre: "Evaluación",
       icon: "bi-clipboard-check",
       preguntas: [
-        { texto: "Relación Teoría-Práctica", opciones: { "Sí": 79, "No": 15, "NPO": 6 } },
-        { texto: "Temas evaluados vs dados", opciones: { "Sí": 72, "No": 19, "NPO": 9 } },
-        { texto: "Devolución resultados", opciones: { "Sí": 69, "No": 18, "NPO": 13 } }
+        { texto: "Relación Teoría-Práctica", opciones: { "Sí": 0, "No": 0, "NPO": 0 } },
+        { texto: "Temas evaluados vs dados", opciones: { "Sí": 0, "No": 0, "NPO": 0 } },
+        { texto: "Devolución resultados", opciones: { "Sí": 0, "No": 0, "NPO": 0 } }
       ]
     },
     {
@@ -54,12 +54,12 @@ export const ReporteDocente = () => {
       nombre: "Cátedra",
       icon: "bi-people-fill",
       preguntas: [
-        { texto: "Respeto planificación", opciones: { "Sí": 80, "No": 10, "NPO": 10 } },
-        { texto: "Puntualidad", opciones: { "Sí": 82, "No": 9, "NPO": 9 } },
-        { texto: "Ejemplos prácticos", opciones: { "Sí": 76, "No": 12, "NPO": 12 } },
-        { texto: "Recursos didácticos", opciones: { "Sí": 88, "No": 6, "NPO": 6 } },
-        { texto: "Espacio de dudas", opciones: { "Sí": 91, "No": 4, "NPO": 5 } },
-        { texto: "Claridad al explicar", opciones: { "Sí": 89, "No": 7, "NPO": 4 } }
+        { texto: "Respeto planificación", opciones: { "Sí": 0, "No": 0, "NPO": 0 } },
+        { texto: "Puntualidad", opciones: { "Sí": 0, "No": 0, "NPO": 0 } },
+        { texto: "Ejemplos prácticos", opciones: { "Sí": 0, "No": 0, "NPO": 0 } },
+        { texto: "Recursos didácticos", opciones: { "Sí": 0, "No": 0, "NPO": 0 } },
+        { texto: "Espacio de dudas", opciones: { "Sí": 0, "No": 0, "NPO": 0 } },
+        { texto: "Claridad al explicar", opciones: { "Sí": 0, "No": 0, "NPO": 0 } }
       ]
     },
     {
@@ -67,12 +67,12 @@ export const ReporteDocente = () => {
       nombre: "Institucional",
       icon: "bi-building",
       preguntas: [
-        { texto: "Atención administrativa", opciones: { "Sí": 72, "No": 15, "NPO": 13 } },
-        { texto: "Cordialidad", opciones: { "Sí": 81, "No": 9, "NPO": 10 } },
-        { texto: "Biblioteca adecuada", opciones: { "Sí": 70, "No": 20, "NPO": 10 } },
-        { texto: "Siu Guaraní útil", opciones: { "Sí": 85, "No": 5, "NPO": 10 } },
-        { texto: "Aulas adecuadas", opciones: { "Sí": 68, "No": 22, "NPO": 10 } },
-        { texto: "Recursos informáticos", opciones: { "Sí": 63, "No": 25, "NPO": 12 } }
+        { texto: "Atención administrativa", opciones: { "Sí": 0, "No": 0, "NPO": 0 } },
+        { texto: "Cordialidad", opciones: { "Sí": 0, "No": 0, "NPO": 0 } },
+        { texto: "Biblioteca adecuada", opciones: { "Sí": 0, "No": 0, "NPO": 0 } },
+        { texto: "Siu Guaraní útil", opciones: { "Sí": 0, "No": 0, "NPO": 0 } },
+        { texto: "Aulas adecuadas", opciones: { "Sí": 0, "No": 0, "NPO": 0 } },
+        { texto: "Recursos informáticos", opciones: { "Sí": 0, "No": 0, "NPO": 0 } }
       ]
     },
     {
@@ -80,7 +80,7 @@ export const ReporteDocente = () => {
       nombre: "Global",
       icon: "bi-star-fill",
       preguntas: [
-        { texto: "Experiencia global", opciones: { "Excelente (4)": 55, "Muy Buena (3)": 30, "Buena (2)": 10, "Mala (1)": 5 } }
+        { texto: "Experiencia global", opciones: { "Excelente (4)": 0, "Muy Buena (3)": 0, "Buena (2)": 0, "Mala (1)": 0 } }
       ]
     }
   ];

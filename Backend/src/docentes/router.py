@@ -83,3 +83,8 @@ def crear_docente_desde_persona(
             detail="No se pudo crear el docente. La persona no existe o ya es docente"
         )
     return {"mensaje": "Docente creado correctamente", "docente": resultado}
+
+@router.post("/", response_model=schemas.Docente)
+def crear_docente(docente: schemas.DocenteCreate, db: Session = Depends(get_db)):
+    nuevo_docente = services.crear_docente(db, docente)
+    return nuevo_docente

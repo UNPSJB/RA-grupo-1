@@ -31,7 +31,9 @@ class DocenteBase(BaseModel):
     )
 
 class DocenteCreate(DocenteBase):
-    pass
+    persona_id: int
+    usuario: str
+    clave: str
 
 class Docente(DocenteBase):
     id: int

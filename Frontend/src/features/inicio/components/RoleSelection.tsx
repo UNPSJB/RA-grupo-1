@@ -25,7 +25,7 @@ export const RoleSelection = () => {
       title: 'Docente',
       description: 'Accede a reportes y gestión académica.',
       icon: 'bi-person-workspace',
-      path: '/docente',
+      path: '/docente/login',
       variant: 'success'
     },
     {

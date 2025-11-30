@@ -1,4 +1,5 @@
 from typing import List, Optional
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy import delete, select, update
 from sqlalchemy.orm import Session, joinedload
 from . import models, schemas, exceptions
@@ -7,6 +8,7 @@ from src.vinculaciones.asignatura_docente.models import AsignaturaDocente
 from src.vinculaciones.models import asignatura_alumno, alumno_encuesta
 from src.personas.models import Persona
 from datetime import datetime
+from src.docentes.models import Docente
 
 def listar_docentes(db: Session) -> List[models.Docente]:
     # Lista todos los docentes con información de persona
@@ -133,3 +135,24 @@ def buscar_docente_por_persona(db: Session, persona_id: int) -> Optional[models.
         .where(models.Docente.persona_id == persona_id)
         .options(joinedload(models.Docente.persona))
     )
+
+from src.docentes.models import Docente
+
+def crear_docente(db: Session, docente_data: schemas.DocenteCreate):
+    # Verificar si la persona ya es docente
+    existente = db.query(Docente).filter(
+        Docente.persona_id == docente_data.persona_id
+    ).first()
+    if existente:
+        raise HTTPException(status_code=400, detail="La persona ya es docente")
+
+    nuevo = Docente(
+        persona_id=docente_data.persona_id,
+        usuario=docente_data.usuario,
+        clave=docente_data.clave
+    )
+
+    db.add(nuevo)
+    db.commit()
+    db.refresh(nuevo)
+    return nuevo
