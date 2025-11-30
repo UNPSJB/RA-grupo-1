@@ -279,20 +279,41 @@ def listar_encuestas_para_alumno(db: Session, alumno_id: int):
 
     resultado = []
     for encuesta in encuestas:
+        print("ASIGNATURA:", encuesta.asignatura)
+        print("DOCENTE:", encuesta.asignatura.docente if encuesta.asignatura else None)
+
+        # Docente
         docente_nombre = "No asignado"
         if encuesta.asignatura and encuesta.asignatura.docente:
-            docente_nombre = f"{encuesta.asignatura.docente.nombre} {encuesta.asignatura.docente.apellido}"
-        
+            persona = encuesta.asignatura.docente.persona if hasattr(encuesta.asignatura.docente, "persona") else None
+            if persona:
+                nombre = getattr(persona, "nombre", "") or getattr(persona, "nombres", "")
+                apellido = getattr(persona, "apellido", "") or getattr(persona, "apellidos", "")
+                docente_nombre = f"{apellido}, {nombre}".strip(", ")
+
+        # Año (campo de Encuesta)
+        anio = encuesta.año if hasattr(encuesta, "año") else encuesta.anio
+
+        # Duración (enum o string)
+        duracion = encuesta.duracion if isinstance(encuesta.duracion, str) else encuesta.duracion.value
+
+        # Ciclo lectivo estándar
+        ciclo_lectivo = f"{anio}-{duracion.lower().replace(' ', '_')}"
+
         resultado.append(
             schemas.EncuestaAlumnoInfo(
                 id=encuesta.id,
                 nombre=encuesta.titulo,
                 asignatura=encuesta.asignatura.nombre if encuesta.asignatura else "Sin asignatura",
                 docente=docente_nombre,
+                anio=encuesta.año,   # ← ESTE FALTABA
                 ciclo_lectivo=f"{encuesta.año}-{encuesta.duracion}"
             )
         )
+
+
     return resultado
+
 
 def obtener_encuesta_para_completar(db: Session, encuesta_id: int) -> dict:
     from src.docentes.models import Docente
@@ -304,11 +325,10 @@ def obtener_encuesta_para_completar(db: Session, encuesta_id: int) -> dict:
     if not encuesta:
         raise exceptions.EncuestaNoEncontrada()
 
-    # Verificar que esté activa
     if not encuesta.activa or encuesta.estado != EstadoEncuesta.abierta:
         raise exceptions.EncuestaNoDisponible()
 
-    # 2. Obtener asignatura
+    # 2. Asignatura
     asignatura = db.query(Asignatura).filter(
         Asignatura.id == encuesta.asignatura_id
     ).first()
@@ -316,14 +336,21 @@ def obtener_encuesta_para_completar(db: Session, encuesta_id: int) -> dict:
     if not asignatura:
         raise exceptions.EncuestaNoEncontrada("Asignatura no encontrada")
 
-    # 3. Obtener docente
-    docente = None
-    if getattr(asignatura, "docente_id", None):
-        docente = db.query(Docente).filter(
-            Docente.id == asignatura.docente_id
-        ).first()
+    # 3. Docente correcto (usando relación)
+    docente = asignatura.docente   # propiedad definida en modelo
+    if docente and docente.persona:
+        docente_nombre = f"{docente.persona.apellido}, {docente.persona.nombre}"
+    else:
+        docente_nombre = "No asignado"
 
-    # 4. Obtener categorías ordenadas
+    # 4. Duración legible
+    duracion_legible = {
+        "primer_cuat": "1er Cuatrimestre",
+        "segundo_cuat": "2do Cuatrimestre",
+        "anual": "Anual"
+    }.get(encuesta.duracion, encuesta.duracion)
+
+    # 5. Categorías + preguntas
     categorias = (
         db.query(Categoria)
         .filter(Categoria.encuesta_id == encuesta_id)
@@ -331,12 +358,9 @@ def obtener_encuesta_para_completar(db: Session, encuesta_id: int) -> dict:
         .all()
     )
 
-    # 5. Construir estructura final (ARREGLADO → sin duplicados)
     categorias_data = []
 
     for categoria in categorias:
-
-        # Obtener preguntas reales de esta categoría
         preguntas = (
             db.query(Pregunta)
             .filter(
@@ -349,47 +373,46 @@ def obtener_encuesta_para_completar(db: Session, encuesta_id: int) -> dict:
 
         preguntas_data = []
         for pregunta in preguntas:
-
             pregunta_dict = {
                 "id": pregunta.id,
                 "texto": pregunta.texto,
                 "tipo": pregunta.tipo,
-                "orden": getattr(pregunta, "orden", None)
+                "opciones": [
+                    {"id": o.id, "texto": o.contenido, "valor": None}
+                    for o in pregunta.opciones
+                ] if pregunta.tipo != "abierta" else []
             }
-
-            # Opciones si corresponde
-            if pregunta.tipo in ["opcion_multiple", "unica_opcion", "cerrada"]:
-                pregunta_dict["opciones"] = [
-                    {"id": opcion.id, "texto": opcion.contenido}
-                    for opcion in pregunta.opciones
-                ]
-            else:
-                pregunta_dict["opciones"] = []
-
             preguntas_data.append(pregunta_dict)
 
-        # AGREGAR CATEGORÍA UNA SOLA VEZ (antes estaba dentro del loop → duplicaba)
         categorias_data.append({
             "id": categoria.id,
             "codigo": categoria.codigo,
             "texto": categoria.texto,
-            "orden": categoria.orden,
             "preguntas": preguntas_data
         })
 
-    # 6. Construir respuesta final
+    # 6. Respuesta final corregida
     return {
         "id": encuesta.id,
         "titulo": encuesta.titulo,
         "asignatura": asignatura.nombre,
+        "docente": docente_nombre,
+
+        # LO QUE FALTABA
+        "anio": encuesta.año,
+
+        # duración bonita
+        "duracion": duracion_legible,
+
+        # ciclo lectivo correcto
+        "ciclo_lectivo": f"{encuesta.año}",
+
         "codigo_asignatura": getattr(asignatura, "codigo", "N/A"),
-        "docente": f"{docente.nombre} {docente.apellido}" if docente else "No asignado",
-        "ciclo_lectivo": str(encuesta.año),
         "carrera": encuesta.carrera,
-        "fecha_inicio": encuesta.fecha_inicio.isoformat(),
-        "fecha_fin": encuesta.fecha_fin.isoformat() if encuesta.fecha_fin else None,
-        "categorias": categorias_data
+        "categorias": categorias_data,
+        "preguntas_abiertas": []
     }
+
 
 
 

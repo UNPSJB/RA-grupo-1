@@ -141,6 +141,7 @@ class EncuestaAlumnoInfo(BaseModel):
     asignatura: str
     docente: str
     ciclo_lectivo: str
+    anio: int | None = None
     fecha_inicio: Optional[str] = None
     fecha_fin: Optional[str] = None
     estado: Optional[str] = None
@@ -148,16 +149,18 @@ class EncuestaAlumnoInfo(BaseModel):
     model_config = {"from_attributes": True}
 
 class EncuestaParaCompletar(BaseModel):
-    """Schema completo de encuesta para que el alumno complete"""
     id: int
     titulo: str
     asignatura: str
     docente: str
+    anio: int
+    duracion: str
     ciclo_lectivo: str
     codigo_asignatura: Optional[str] = None  
     carrera: Optional[str] = None  
     categorias: List[categoria_schemas.CategoriaConPreguntas] 
     preguntas_abiertas: List[PreguntaAbiertaEstudiante] = []
+
     
     model_config = ConfigDict(from_attributes=True)
 

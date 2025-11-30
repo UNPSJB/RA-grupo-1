@@ -131,12 +131,7 @@ export const EncuestasCompletas = () => {
                       <span className="ms-2">{encuesta.ciclo_lectivo}</span>
                     </div>
 
-                    <div className="detail-item">
-                      <strong>Sede:</strong>
-                      <span className="ms-2">
-                        {encuesta.sede_id ?? "Sin sede"}
-                      </span>
-                    </div>
+
 
                     <div className="detail-item">
                       <strong>Docente:</strong>

@@ -126,9 +126,6 @@ export const EncuestaCompletadaDetalle = () => {
               <strong>Ciclo lectivo:</strong> {detalle.ciclo_lectivo}
             </p>
             <p className="mb-1">
-              <strong>Sede:</strong> {detalle.sede_id ?? "Sin sede"}
-            </p>
-            <p className="mb-1">
               <strong>Docente:</strong> {detalle.docente}
             </p>
             <p className="mb-0">

@@ -89,7 +89,6 @@ export default function VerEncuestaCompleta() {
           <p><strong>Año:</strong> {detalle.anio}</p>
           <p><strong>Ciclo lectivo:</strong> {detalle.ciclo_lectivo}</p>
           <p><strong>Asignatura:</strong> {detalle.asignatura}</p>
-          <p><strong>Sede:</strong> {detalle.sede_id ?? "Sin sede"}</p>
           <p><strong>Docente:</strong> {detalle.docente}</p>
         </Card.Body>
       </Card>

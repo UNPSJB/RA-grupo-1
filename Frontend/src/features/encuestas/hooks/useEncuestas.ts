@@ -18,7 +18,7 @@ export interface Encuesta {
     asignatura: string;
     docente: string;
     ciclo_lectivo: string;
-    año?: number;
+    anio?: number;   
     cursado?: string;
     fecha_inicio?: string;
     fecha_fin?: string;
@@ -29,6 +29,7 @@ export interface Encuesta {
     estado?: EstadoEncuesta;
     activa?: boolean;
 }
+
 
 export const useEncuestas = (alumnoIdParam?: number) => {
   const [encuestas, setEncuestas] = useState<Encuesta[]>([]); 

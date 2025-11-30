@@ -2,6 +2,18 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 const EncuestaCompletar: React.FC = () => {
+  const formatearDuracion = (duracion: string) => {
+    if (!duracion) return "";
+
+    const d = duracion.toLowerCase();
+
+    if (d.includes("primer")) return "1er Cuatrimestre";
+    if (d.includes("segundo")) return "2do Cuatrimestre";
+    if (d.includes("anual")) return "Anual";
+
+    return duracion;
+  };
+
   const { encuestaId } = useParams();  
 
   const alumnoId = Number(localStorage.getItem("alumno_id") || "1");
@@ -89,7 +101,8 @@ const EncuestaCompletar: React.FC = () => {
       <p>
         <strong>Asignatura:</strong> {encuesta.asignatura} <br />
         <strong>Docente:</strong> {encuesta.docente} <br />
-        <strong>Ciclo lectivo:</strong> {encuesta.ciclo_lectivo}
+        <strong>Año:</strong> {encuesta.anio} <br />
+        <strong>Ciclo lectivo:</strong> {formatearDuracion(encuesta.duracion)}
       </p>
 
       <hr />

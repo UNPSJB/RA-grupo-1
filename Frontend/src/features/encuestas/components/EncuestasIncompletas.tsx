@@ -5,32 +5,32 @@ import { useEncuestas } from '../hooks/useEncuestas';
 import '../styles/Encuestas.css';
 
 export const EncuestasIncompletas = () => {
+
+    // Formatea el ciclo lectivo
+    const formatearDuracion = (ciclo: string) => {
+        if (!ciclo) return "";
+
+        const partes = ciclo.split("-");
+        if (partes.length < 2) return ciclo;
+
+        const duracion = partes[1].toLowerCase();
+
+        if (duracion.includes("primer")) return "1er Cuatrimestre";
+        if (duracion.includes("segundo")) return "2do Cuatrimestre";
+        if (duracion.includes("anual")) return "Anual";
+
+        return duracion;
+    };
+
     const navigate = useNavigate();
     const { encuestas, loading, error, refetch } = useEncuestas();
 
-    // Refrescar datos cuando el componente se monta
     useEffect(() => {
         refetch();
     }, []);
 
-    // Como el backend ya filtra por encuestas abiertas, usamos todas
     const encuestasIncompletas = encuestas;
-
-    // ID del alumno (temporal, debería venir de auth)
     const alumnoId = Number(localStorage.getItem("alumno_id") || "1");
-
-    const formatearCicloLectivo = (ciclo: string) => {
-        const partes = ciclo.split('-');
-        if (partes.length === 2) {
-            const año = partes[0];
-            const cuatrimestre = partes[1].trim();
-            
-            if (cuatrimestre.includes('PRIMER')) return `${año} - 1° Cuatrimestre`;
-            if (cuatrimestre.includes('SEGUNDO')) return `${año} - 2° Cuatrimestre`;
-            if (cuatrimestre.includes('ANUAL')) return `${año} - Anual`;
-        }
-        return ciclo;
-    };
 
     const handleCompletarEncuesta = (encuestaId: number, nombreEncuesta: string) => {
         navigate(`/alumno/encuestas/${encuestaId}/completar`, {
@@ -90,13 +90,13 @@ export const EncuestasIncompletas = () => {
                     <div className="empty-icon mb-3">
                         <i className="bi bi-check-circle text-success" style={{ fontSize: '4rem' }}></i>
                     </div>
-                    <h3>¡Todo al día!</h3>
+                    <h3>Todo al día</h3>
                     <p className="text-muted">No tienes encuestas pendientes en este momento.</p>
                 </div>
             ) : (
                 <Row>
                     {encuestasIncompletas.map((encuesta) => (
-                        <Col md={6} lg={4} key={encuesta.id} className="mb-4">
+                        <Col md={12} lg={6} key={encuesta.id} className="mb-4">
                             <Card className="encuesta-card h-100 shadow-sm border-0">
                                 <Card.Header className="bg-primary text-white">
                                     <div className="d-flex justify-content-between align-items-center">
@@ -115,20 +115,24 @@ export const EncuestasIncompletas = () => {
                                     
                                     <div className="encuesta-details">
                                         <div className="detail-item mb-3 p-3 bg-light rounded">
-                                            <div className="mb-2">
+
+                                            {/* Docente */}
+                                            <div className="mb-3">
                                                 <i className="bi bi-person-fill me-2 text-primary"></i>
-                                                <strong>Docente:</strong>
-                                                <div className="ms-4 text-muted">
-                                                    {encuesta.docente}
-                                                </div>
+                                                <strong>Docente:</strong> {encuesta.docente}
                                             </div>
-                                            
-                                            <div>
+
+                                            {/* Año */}
+                                            <div className="mb-3">
+                                                <i className="bi bi-calendar me-2 text-primary"></i>
+                                                <strong>Año:</strong> {encuesta.anio}
+                                            </div>
+
+                                            {/* Ciclo Lectivo */}
+                                            <div className="mb-1">
                                                 <i className="bi bi-calendar-event me-2 text-primary"></i>
-                                                <strong>Ciclo lectivo:</strong>
-                                                <div className="ms-4 text-muted">
-                                                    {formatearCicloLectivo(encuesta.ciclo_lectivo)}
-                                                </div>
+                                                <strong>Ciclo lectivo:</strong> {formatearDuracion(encuesta.ciclo_lectivo)}
+
                                             </div>
                                         </div>
                                     </div>
@@ -139,10 +143,12 @@ export const EncuestasIncompletas = () => {
                                         <Button 
                                             variant="primary"
                                             size="lg"
-                                            onClick={() => handleCompletarEncuesta(
-                                                encuesta.id, 
-                                                encuesta.nombre
-                                            )}
+                                            onClick={() =>
+                                                handleCompletarEncuesta(
+                                                    encuesta.id, 
+                                                    encuesta.nombre
+                                                )
+                                            }
                                         >
                                             <i className="bi bi-pencil-square me-2"></i>
                                             Completar Encuesta

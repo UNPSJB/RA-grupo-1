@@ -258,7 +258,18 @@ def listar_encuestas_finalizadas(alumno_id: int, db: Session = Depends(get_db)):
                 docente_nombre = "Docente sin persona"
 
         # Ciclo lectivo tipo: "2025-anual"
-        ciclo_lectivo = f"{f.anio}-{f.duracion.value}"
+        # Formato humano de duración
+        if f.duracion.value == "primer_cuat":
+            duracion_humana = "1er Cuatrimestre"
+        elif f.duracion.value == "segundo_cuat":
+            duracion_humana = "2do Cuatrimestre"
+        elif f.duracion.value == "anual":
+            duracion_humana = "Anual"
+        else:
+            duracion_humana = f.duracion.value
+
+        # Ciclo lectivo: solo texto (no 2025-anual)
+        ciclo_lectivo = duracion_humana
 
         resultado.append(
             {
@@ -267,11 +278,12 @@ def listar_encuestas_finalizadas(alumno_id: int, db: Session = Depends(get_db)):
                 "asignatura_id": f.asignatura_id,
                 "titulo": encuesta.titulo if encuesta else "",
                 "anio": f.anio,
-                "duracion": f.duracion.value,
+                "duracion": duracion_humana,
                 "ciclo_lectivo": ciclo_lectivo,
                 "asignatura": asignatura_nombre,
-                "sede_id": encuesta.sede_id if encuesta else None,
+                # SE ELIMINA: "sede_id": encuesta.sede_id
                 "docente": docente_nombre,
+                "fecha_finalizada": f.fecha_finalizada.isoformat() if f.fecha_finalizada else None,
             }
         )
 
