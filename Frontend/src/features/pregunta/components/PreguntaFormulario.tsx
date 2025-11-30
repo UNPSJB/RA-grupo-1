@@ -32,7 +32,7 @@ export default function PreguntaFormulario() {
   }, []);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/encuestas/1/categorias") //HARCODEADO USAR LA API
+    fetch("http://127.0.0.1:8000/encuestas/1/categorias") 
       .then((res) => res.json())
       .then((data) => setCategorias(Array.isArray(data) ? data : []))
       .catch((err) => console.error("Error cargando categorias:", err));

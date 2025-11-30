@@ -88,7 +88,7 @@ export default function InformeCatedraVerDetalle() {
 
         // 3 primeras preguntas (por ID)
         const todas = cats.flatMap((c) => c.preguntas);
-        const primeras = todas.slice(0, 3); // ← YA NO USA nro_pregunta
+        const primeras = todas.slice(0, 3);
         setPreguntasHeader(primeras);
       } finally {
         alive && setLoading(false);
