@@ -17,10 +17,11 @@ export const SecretariaLayout: React.FC = () => {
     { to: "/secretaria", label: "Panel Principal" },
     { to: "/secretaria/gestion-encuestas", label: "Gestion Encuestas" },
     { to: "/secretaria/gestion-preguntas", label: "Gestion Preguntas"},
-    { to: "/secretaria/ciclos", label: "Ciclos" }, 
+    { to: "/secretaria/ciclos", label: "Ciclos" },
+    { to: "/secretaria/informes-sinteticos", label: "Informes Sintéticos" },
     { to: "#", label: "Cerrar Sesión", onClick: handleLogout }
-
   ];
+
   const metricas = [
     { titulo: 'Encuestas Activas', valor: 3, icono: 'bi-clipboard-data', type: 'primary', descripcion: 'En curso actualmente' },
     { titulo: 'Preguntas Disponibles', valor: 15, icono: 'bi-archive', type: 'secondary', descripcion: 'Banco de preguntas' },
@@ -28,10 +29,11 @@ export const SecretariaLayout: React.FC = () => {
     { titulo: 'Categorías', valor: 7, icono: 'bi-tags', type: 'neutral', descripcion: 'Secciones activas' }
   ];
 
-  const isDashboard = location.pathname === "/secretaria"; 
+  const isDashboard = location.pathname === "/secretaria";
 
   return (
     <div className="secretaria-layout">
+
       <Navbar 
         navLinks={secretariaNavLinks} 
         showUserInfo={false} 
@@ -50,6 +52,8 @@ export const SecretariaLayout: React.FC = () => {
 
       <main className="secretaria-main-content">
         <Container className="py-4 content-wrapper">
+
+          {/* Dashboard solo en /secretaria */}
           {isDashboard && (
             <Row className="mb-5 g-4">
               {metricas.map((metrica, index) => (
@@ -76,10 +80,15 @@ export const SecretariaLayout: React.FC = () => {
               ))}
             </Row>
           )}
+
+          {/* Aquí se renderizan TODAS las páginas hijas */}
+          {!isDashboard && <Outlet />}
+
         </Container>
       </main>
-      
+
       <Footer />
+
     </div>
   );
 };

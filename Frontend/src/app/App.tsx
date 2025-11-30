@@ -34,6 +34,8 @@ import DetalleEncuesta from '../features/encuestas/components/DetalleEncuesta';
 import { NuevaEncuesta } from '../features/secretaria/components/NuevaEncuesta';
 import CompletarEncuesta from "../features/encuestas/components/CompletarEncuesta";
 import InformeSinteticoHistoricosPage from "../features/departamentos/pages/InformeSinteticoHistoricosPage";
+import DetalleInformeSinteticoSecretaria from "../features/secretaria/pages/DetalleInformeSinteticoSecretaria";
+import InformesSinteticosLista from "../features/secretaria/components/InformesSinteticosLista";
 
 //Import que agregamos
 import VerEncuestaCompleta from '../features/encuestasCompletadas/components/VerEncuestaCompleta';
@@ -110,13 +112,21 @@ function App() {
       </Route>
 
       {/* Rutas secretaría */}
-      <Route path="/secretaria" element={<SecretariaLayout />}>
-        <Route path="gestion-preguntas" element={<GestionPreguntas />} />
-        <Route path="gestion-encuestas" element={<GestionEncuestas />} />
-        <Route path="estadisticas/:encuestaId" element={<EstadisticasEncuesta />} />
-        <Route path="ciclos" element={<CiclosPage />} />
-        <Route path="/secretaria/nueva-encuesta" element={<NuevaEncuesta />} />
-      </Route>
+        <Route path="/secretaria" element={<SecretariaLayout />}>
+          <Route path="gestion-preguntas" element={<GestionPreguntas />} />
+          <Route path="gestion-encuestas" element={<GestionEncuestas />} />
+          <Route path="estadisticas/:encuestaId" element={<EstadisticasEncuesta />} />
+          <Route path="ciclos" element={<CiclosPage />} />
+          <Route path="informes-sinteticos" element={<InformesSinteticosLista />} />
+          <Route path="informes-sinteticos/:id" element={<DetalleInformeSinteticoSecretaria />} />
+          <Route path="nueva-encuesta" element={<NuevaEncuesta />} />
+
+          {/* NUEVA RUTA PARA VER INFORME SINTÉTICO */}
+          <Route
+            path="informes-sinteticos/:id"
+            element={<DetalleInformeSinteticoSecretaria />}
+          />
+        </Route>
     </Routes>
   );
 }
