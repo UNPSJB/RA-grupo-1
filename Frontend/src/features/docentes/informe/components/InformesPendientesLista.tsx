@@ -1,24 +1,38 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { InformePendienteCabecera } from "../../services/informeService";
 import axios from "axios";
+
+export interface InformePendienteCabecera {
+  id: number;
+  asignaturaNombre: string;
+  anio: number;
+  duracion: number;
+}
 
 export default function InformesPendientesLista() {
   const [informes, setInformes] = useState<InformePendienteCabecera[]>([]);
   const navigate = useNavigate();
+
   const user = JSON.parse(localStorage.getItem("user") || "{}");
-  const docenteId = user?.id;
+  const docenteId = Number(user?.id); // ✅ Convertir a número
 
   useEffect(() => {
     if (!docenteId) return;
 
-    axios.get(
-  `http://127.0.0.1:8000/informe-catedra-finalizado/docente/${docenteId}/pendientes-cabecera`
+    axios
+      .get(
+        `http://127.0.0.1:8000/informe-catedra-finalizado/docente/${docenteId}/pendientes`, 
+        {
+          params: {
+            anio: 2025,     
+          },
+        }
       )
-      .then((res) => {
-        setInformes(res.data);
-      })
-      .catch((err) => console.error("ERROR cargando informes:", err));
+      .then((res) => setInformes(res.data))
+      .catch((err) => {
+        console.error("ERROR cargando informes:", err);
+        alert("No se pudieron cargar los informes. Revisa la consola.");
+      });
   }, [docenteId]);
 
   const abrirInforme = (informe: InformePendienteCabecera) => {
