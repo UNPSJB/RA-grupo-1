@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Frontend/src/features/encuestasCompletadas/components/PageEncuestaCompletada.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1762783554153,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1762783554153,
+            "name": "Commit-0",
+            "content": "import { useState, useEffect } from \"react\";\r\nimport EncuestasCompletadas from \"./EncuestasCompletadas\";\r\n\r\ntype Respuesta = {\r\n  id: number;\r\n  pregunta_id: number;\r\n  opcion_id: number[];\r\n  texto_respuesta: string;\r\n  encuesta_finalizada_id: number;\r\n}\r\n\r\ntype EncuestaFinalizada = {\r\n  id: number;\r\n  alumno_id: number;\r\n  encuesta_id: number;\r\n  asignatura_id: number;\r\n  anio: number;\r\n  duracion: string;\r\n  respuestas: Respuesta[];\r\n};\r\n\r\nexport default function EncuestasCompletadasPage() {\r\n  const alumnoId = 3; \r\n  const [encuestas, setEncuestas] = useState<EncuestaFinalizada[]>([]);\r\n\r\n  useEffect(() => {\r\n    fetch(`http://127.0.0.1:8000/encuesta-completada/alumno/${alumnoId}`)\r\n      .then((res) => res.json())\r\n      .then((data: EncuestaFinalizada[]) => setEncuestas(data))\r\n      .catch((err) => {\r\n        console.error(\"Error al obtener encuestas:\", err);\r\n        setEncuestas([]);\r\n      });\r\n  }, [alumnoId]);\r\n\r\n  return (\r\n    <div className=\"container py-4\">\r\n        <div className=\"card\">\r\n          <div className=\"card-header bg-primary text-white\">\r\n            <h1 className=\"h4 mb-0\">Alumno {alumnoId}</h1>\r\n          </div>\r\n          <div className=\"card-body\">\r\n            <h2 className=\"h5 mb-3\">Encuestas completadas:</h2>\r\n            <EncuestasCompletadas\r\n              encuestas={encuestas}\r\n              />\r\n          </div>\r\n        </div>\r\n      </div>\r\n  );\r\n\r\n}"
+        }
+    ]
+}
