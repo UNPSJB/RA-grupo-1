@@ -1,502 +1,236 @@
-import { useEffect, useMemo, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
-import { fetchInformeCatedraConPreguntas,} from "../services/informeCatedraServices";
-import { guardarBorradorInforme, finalizarInforme, getInformeById } from "../services/informeService";
-import { Container, Card, Button, Form, Alert, Badge, Row, Col, ProgressBar as BSProgressBar } from 'react-bootstrap';
-import { ArrowLeft } from 'react-bootstrap-icons';
+import { useParams, Link } from "react-router-dom";
+import { useEffect, useState, useMemo } from "react";
+import ROUTES from "../../../paths";
+import ContenidoPasos from "../../docente/informe/ContenidoPasos";
 
-
-type TipoPregunta = "abierta" | "opcion_multiple" | "unica_opcion" | "booleana";
-type Opcion = { 
-  id: number; 
-  texto: string 
-};
-type Pregunta = {
+interface Categoria {
   id: number;
   texto: string;
-  tipo: TipoPregunta;
-  opciones: Opcion[];
-};
-type Categoria = {
+  cod: string;
+}
+
+interface Pregunta {
+  id: number;
+  enunciado: string;
+  tipo: string;
+  categoria_id: number;
+  categoria: Categoria;
+}
+
+interface RespuestaConPregunta {
+  id: number;
+  texto_respuesta: string | null;
+  opcion_id: number | null;
+  pregunta: Pregunta;
+}
+
+interface InformeCompletadoDetalle {
+  id: number;
+  titulo: string | null;
+  contenido: string | null;
+  anio: number | null;
+  duracion: string | null;
+  respuestas_informe: RespuestaConPregunta[];
+  cantidadAlumnos: number;
+  cantidadComisionesTeoricas: number;
+  cantidadComisionesPracticas: number;
+  JTP: string | null;
+  aux_primera: string | null;
+  aux_segunda: string | null;
+  asignaturasNombre?: string;
+  asignaturasCodigo?: string;
+  sede?: string;
+  docenteResponsable?: string;
+  asignaturasId: number;
+  docente_asignaturas_id: number;
+  informe_catedra_base_id: number;
+}
+
+interface CategoriaConPreguntas {
   id: number;
   codigo: string;
   texto: string;
   preguntas: Pregunta[];
+}
+
+type RespuestaValor = {
+  opcion_id: number | null;
+  texto_respuesta: string | null;
 };
-type InformeCabecera = {
-  id: number;
-  titulo: string;
-  anio: number;
-  cantidadAlumnos: number;
-  asignaturaNombre: string;
-  asignaturaCodigo: string;
-  docenteResponsable: string;
-};
-type Respuesta = {
-  preguntaId: number;
-  opcionSeleccionada?: string;
-  textoRespuesta?: string;
-  subrespuestas?: Map<string, string>;  
-};
-type RespuestaLocal =
-  | { tipo: "abierta"; texto: string }
-  | { tipo: "unica_opcion" | "booleana"; opcionId: number | null }
-  | { tipo: "opcion_multiple"; opcionIds: number[] };
 
-const convertirRespuestasParaBackend = (
-  respuestas: Record<number, RespuestaLocal>
-) => {
-  const resultado: any[] = [];
-
-  for (const [preguntaId, r] of Object.entries(respuestas)) {
-    const pid = Number(preguntaId);
-
-    if (r.tipo === "abierta") {
-      resultado.push({
-        pregunta_id: pid,
-        texto_respuesta: r.texto || null,
-        opcion_id: null,
-      });
-      continue;
-    }
-
-    if (r.tipo === "unica_opcion" || r.tipo === "booleana") {
-      resultado.push({
-        pregunta_id: pid,
-        opcion_id: r.opcionId,
-        texto_respuesta: null,
-      });
-      continue;
-    }
-
-    if (r.tipo === "opcion_multiple") {
-      for (const opcionId of r.opcionIds) {
-        resultado.push({
-          pregunta_id: pid,
-          opcion_id: opcionId,
-          texto_respuesta: null,
-        });
-      }
-      continue;
-    }
-  }
-
-  return resultado;
-};
 export default function InformeCatedraDetalle() {
-  const { finalizadoId, plantillaId } = useParams<{
-    finalizadoId: string;
-    plantillaId: string;
-  }>();
-  const navigate = useNavigate();
-  const finalId = Number(finalizadoId);
-  const baseId = Number(plantillaId);
-
+  const { id } = useParams<{ id: string }>();
+  const [informe, setInforme] = useState<InformeCompletadoDetalle | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [cabecera, setCabecera] = useState<InformeCabecera | null>(null);
-  const [categorias, setCategorias] = useState<Categoria[]>([]);
-  const [respuestas, setRespuestas] = useState<Record<number, RespuestaLocal>>({});
+  const [currentStep, setCurrentStep] = useState(1);
+  const [gruposBase, setGruposBase] = useState<CategoriaConPreguntas[]>([]);
 
-  const [categoriaIndex, setCategoriaIndex] = useState(0);
+  const steps = [
+    { id: 1, name: "Datos Generales" },
+    { id: 2, name: "1. Recursos" },
+    { id: 3, name: "2. Desarrollo Curricular" },
+    { id: 4, name: "3. Actividades del Equipo" },
+    { id: 5, name: "4. Valoración" }
+  ];
+
+  const goToStep = (id: number) => setCurrentStep(id);
 
   useEffect(() => {
-  let alive = true;
-  (async () => {
-    try {
-      setError(null);
-      setLoading(true);
-
-      const [cab, catsRaw] = await Promise.all([
-        getInformeById(finalId),
-        fetchInformeCatedraConPreguntas(baseId),
-      ]);
-
-      if (!alive) return;
-
-      setCabecera(cab);
-
-      const cats: Categoria[] = (catsRaw ?? [])
-        .slice()
-        .sort((a: Categoria, b: Categoria) => (a.id ?? 0) - (b.id ?? 0))
-        .map((c: Categoria) => ({
-          ...c,
-          preguntas: (c.preguntas ?? []).slice(), 
-        }));
-
-      setCategorias(cats);
-      setCategoriaIndex(0);
-      
-    } catch (e: any) {
-      setError(e?.message ?? "No se pudo cargar el informe");
-    } finally {
-      alive && setLoading(false);
+    if (!id) {
+      setError("ID de informe no proporcionado");
+      setLoading(false);
+      return;
     }
-  })();
 
-  return () => {
-    alive = false;
-  };
-}, [finalId, baseId]);
+    const cargar = async () => {
+      try {
+        const res = await fetch(`http://127.0.0.1:8000/informe-catedra-completado/${id}`);
+        if (!res.ok) throw new Error("Error al obtener el informe");
+        const dataInforme: InformeCompletadoDetalle = await res.json();
 
-  const setAbierta = (preguntaId: number, texto: string) =>
-    setRespuestas((r) => ({ ...r, [preguntaId]: { tipo: "abierta", texto } }));
+        setInforme(dataInforme);
 
-  const toggleMultiple = (preguntaId: number, opcionId: number) =>
-    setRespuestas((r) => {
-      const prev = r[preguntaId];
-      const actuales =
-        prev && prev.tipo === "opcion_multiple" ? [...prev.opcionIds] : [];
-      const i = actuales.indexOf(opcionId);
-      i >= 0 ? actuales.splice(i, 1) : actuales.push(opcionId);
-      return {
-        ...r,
-        [preguntaId]: { tipo: "opcion_multiple", opcionIds: actuales },
+        const resBase = await fetch(
+          `http://127.0.0.1:8000/informes_catedra/${dataInforme.informe_catedra_base_id}/categorias_con_preguntas`
+        );
+        if (!resBase.ok) throw new Error("Error cargando la estructura base");
+
+        const dataBase: CategoriaConPreguntas[] = await resBase.json();
+        const ordenado = [...dataBase].sort((a, b) =>
+          a.codigo.localeCompare(b.codigo, "es", { sensitivity: "base" })
+        );
+
+        ordenado.forEach((cat) => {
+          cat.preguntas.sort((a, b) => a.id - b.id);
+        });
+
+        setGruposBase(ordenado);
+
+      } catch (err: any) {
+        console.error(err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    cargar();
+  }, [id]);
+
+  const respuestasFormateadas = useMemo(() => {
+    if (!informe) return {};
+    const map: Record<number, RespuestaValor> = {};
+
+    informe.respuestas_informe.forEach((r) => {
+      map[r.pregunta.id] = {
+        opcion_id: r.opcion_id,
+        texto_respuesta: r.texto_respuesta
       };
     });
 
-  const setUnica = (preguntaId: number, opcionId: number) =>
-    setRespuestas((r) => ({
-      ...r,
-      [preguntaId]: { tipo: "unica_opcion", opcionId },
-    }));
+    return map;
+  }, [informe]);
 
-  const setBooleana = (preguntaId: number, opcionId: number) =>
-    setRespuestas((r) => ({
-      ...r,
-      [preguntaId]: { tipo: "booleana", opcionId },
-    }));
-
+  const datosGenerales = useMemo(() => {
+    if (!informe) return {};
+    return {
+      cicloLectivo: informe.anio,
+      duracion: informe.duracion,
+      cantidadAlumnos: informe.cantidadAlumnos,
+      cantidadComisionesTeoricas: informe.cantidadComisionesTeoricas,
+      cantidadComisionesPracticas: informe.cantidadComisionesPracticas,
+      JTP: informe.JTP,
+      aux1: informe.aux_primera,
+      aux2: informe.aux_segunda,
+      actividadCurricular: informe.asignaturasNombre,
+      codigoActividadCurricular: informe.asignaturasCodigo,
+      sede: informe.sede,
+      docenteResponsable: informe.docenteResponsable
+    };
+  }, [informe]);
 
   if (loading)
     return (
-      <Container className="container py-5 text-center">
-        <div className="spinner-border text-primary" role="status" />
-        <p className="mt-3">Cargando informe de cátedra…</p>
-      </Container>
+      <div className="container py-4 text-center">
+        <div className="spinner-border text-primary"></div>
+      </div>
     );
+
   if (error)
     return (
-      <div className="container py-4 text-danger">
-        Error: {error}
+      <div className="container py-4">
+        <div className="alert alert-danger">{error}</div>
+        <Link to={ROUTES.INFORMES_CATEDRA} className="btn btn-outline-danger">
+          Volver
+        </Link>
       </div>
     );
-  if (!cabecera) return null;
 
-  const todasOrdenadas: Pregunta[] = categorias.flatMap((c) => c.preguntas);
-  const headerIds = new Set(preguntasHeader.map((q) => q.id));
-
-  const totalCategorias = categorias.length;
-  const categoriaActual = categorias[categoriaIndex];
-  const progreso = totalCategorias > 0 ? Math.round(((categoriaIndex + 1) / totalCategorias) * 100): 0;
-
-  const renderControl = (p: Pregunta) => {
-    const r = respuestas[p.id];
-
-    if (p.tipo === "abierta") {
-      return (
-        <textarea
-          className="form-control"
-          rows={3}
-          value={(r && r.tipo === "abierta" && r.texto) || ""}
-          onChange={(e) => setAbierta(p.id, e.target.value)}
-          placeholder="Escriba su respuesta"
-        />
-      );
-    }
-
-    if (p.tipo === "unica_opcion") {
-      return (
-        <div className="form-check-group">
-          {(p.opciones ?? []).map((op) => (
-            <div key={op.id} className="form-check mb-1">
-              <input
-                className="form-check-input"
-                type="radio"
-                name={`p-${p.id}`}
-                checked={
-                  !!(r && r.tipo === "unica_opcion" && r.opcionId === op.id)
-                }
-                onChange={() => setUnica(p.id, op.id)}
-                id={`p-${p.id}-op-${op.id}`}
-              />
-              <label
-                htmlFor={`p-${p.id}-op-${op.id}`}
-                className="form-check-label"
-              >
-                {op.texto}
-              </label>
-            </div>
-          ))}
-        </div>
-      );
-    }
-
-    if (p.tipo === "booleana") {
-      return (
-        <div className="form-check-group">
-          {(p.opciones ?? []).map((op) => (
-            <div key={op.id} className="form-check form-check-inline">
-              <input
-                className="form-check-input"
-                type="radio"
-                name={`p-${p.id}`}
-                checked={!!(r && r.tipo === "booleana" && r.opcionId === op.id)}
-                onChange={() => setBooleana(p.id, op.id)}
-                id={`p-${p.id}-op-${op.id}`}
-              />
-              <label
-                htmlFor={`p-${p.id}-op-${op.id}`}
-                className="form-check-label"
-              >
-                {op.texto}
-              </label>
-            </div>
-          ))}
-        </div>
-      );
-    }
-
-    // opcion_multiple
+  if (!informe)
     return (
-      <div className="form-check-group">
-        {(p.opciones ?? []).map((op) => {
-          const checked =
-            r &&
-            r.tipo === "opcion_multiple" &&
-            (r.opcionIds || []).includes(op.id);
-          return (
-            <div key={op.id} className="form-check mb-1">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                checked={!!checked}
-                onChange={() => toggleMultiple(p.id, op.id)}
-                id={`p-${p.id}-op-${op.id}`}
-              />
-              <label
-                htmlFor={`p-${p.id}-op-${op.id}`}
-                className="form-check-label"
-              >
-                {op.texto}
-              </label>
-            </div>
-          );
-        })}
+      <div className="container py-4">
+        <div className="alert alert-warning">No se encontró el informe solicitado.</div>
+        <Link to={ROUTES.INFORMES_CATEDRA} className="btn btn-secondary">
+          Volver
+        </Link>
       </div>
     );
-  };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
-      }}
-    >
-      {/* HEADER SUPERIOR */}
-      <div
-        className="py-3 mb-4 shadow-sm"
-        style={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          borderBottom: '4px solid #5a67d8',
-        }}
-      >
-        <Container>      
-            <div className="d-flex align-items-center mb-1">
-              <Link
-                to="/docente"
-                className="btn btn-outline-light btn-sm me-3"
-              >
-                <ArrowLeft size={24} />
-                <span className="ms-2">Volver</span>
-              </Link>
-              <div className="flew-grow-1">
-                <h4 className="mb-0 text-white d-flex align-items-center">
-                  <i className="bi bi-mortarboard-fill me-2"></i>
-                  Informe de Actividad Curricular
-                </h4>
-                <p style={{ color: "rgba(255,255,255,0.8)" }}>
-                  {cabecera.asignaturaNombre} · Ciclo {cabecera.anio}
-                </p>
-              </div>
-            </div>
-
-            {/* Barra de progreso + datos de la asignatura */}
-            {totalCategorias > 0 && (
-              <div style={{ minWidth: 260 }}>
-                <div className="d-flex justify-content-between mb-2">
-                  <small className="text-white">
-                    Progreso de la encuesta
-                  </small>
-                  <small className="text-white">
-                    Sección {categoriaIndex + 1} de {totalCategorias}
-                  </small>
-                </div>
-                <BSProgressBar 
-                  now={progreso} 
-                  style={{height: '8px', backgroundColor: 'rgba(255,255,255,0.3)'}}
-                  className="rounded"
-                />
-              </div>
-            )}          
-        </Container>
-      </div>
-
-      {/* CONTENIDO */}
-      <div className="container pb-5">
-        <div className="mx-auto" style={{ maxWidth: 900 }}>
-          {/* CUADRO CABECERA SOLO EN LA PRIMERA SECCIÓN */}
-          {categoriaIndex === 0 && (
-            <div className="card mb-4 shadow-sm">
-              <div className="card-header bg-light border-bottom">
-                <strong>Datos generales de la actividad</strong>
-              </div>
-              
-              <div className="card-body p-0">
-                <table className="table table-sm table-bordered mb-0">
-                  <tbody>
-
-                    <tr>
-                      <th style={{ width: 280 }}>Sede</th>
-                      <td>{"Trelew"}</td>
-                    </tr>
-                    <tr>
-                      <th>Ciclo lectivo</th>
-                      <td>{cabecera.anio}</td>
-                    </tr>
-                    <tr>
-                      <th>Actividad curricular</th>
-                      <td>{cabecera.asignaturaNombre}</td>
-                    </tr>
-                    <tr>
-                      <th>Código de la actividad curricular</th>
-                      <td>{cabecera.asignaturaCodigo}</td>
-                    </tr>
-                    <tr>
-                      <th>Docente responsable</th>
-                      <td>{cabecera.docenteResponsable}</td>
-                    </tr>
-
-                    {/* 3 primeras preguntas en el cuadro */}
-                    {preguntasHeader.map((p) => (
-                    <tr key={p.id}>
-                      <th>{p.texto}</th>
-                      <td>{renderControl(p)}</td>
-                    </tr>
-                  ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
-          {/* CATEGORÍAS PAGINADAS EN TARJETAS PEQUEÑAS */}
-          {categoriaIndex !== 0 && categoriaActual && (
-            <Card className="shadow-sm mb-4">
-              <Card.Header
-                className="p-4"
-                style={{
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  color: 'none',
-                }}
-              >
-                <div className="d-flex align-items-center">
-                  <h5>
-                    <span className="badge bg-light text-primary me-2">
-                      {categoriaActual.codigo}
-                    </span>
-                    <strong className="mb-0 text-white">{categoriaActual.texto}</strong>
-                  </h5>
-                </div>
-              </Card.Header>
-              <div
-                className="card-body"
-                style={{ backgroundColor: "#f9fafb" }}
-              >
-                {(() => {
-                  const preguntasResto = (categoriaActual.preguntas ?? []).filter(
-                    (p) => !headerIds.has(p.id)
-                  );
-
-                  if (preguntasResto.length === 0) {
-                    return (
-                      <p className="text-muted mb-0">
-                        Esta categoría no tiene preguntas adicionales.
-                      </p>
-                    );
-                  }
-                })()}
-              </div>
-            </Card>
-          )}
-
-          {/* CONTROLES DE PÁGINA + BOTONES FINALES */}
-          <div className="d-flex justify-content-between align-items-center mt-3">
-            <button
-              className="btn btn-outline-secondary"
-              disabled={categoriaIndex <= 0}
-              onClick={async () => {
-                const payload = convertirRespuestasParaBackend(respuestas);
-                await guardarBorradorInforme(finalId, { respuestas: payload });
-
-                setCategoriaIndex((idx) => Math.max(0, idx - 1));
-              }}
-            >
-              ← Anterior
-            </button>
-
-            <small className="text-muted">
-              Sección {categoriaIndex + 1} de {totalCategorias}
-            </small>
-
-            <button
-              className="btn btn-outline-primary"
-              disabled={categoriaIndex >= totalCategorias - 1}
-              onClick={async () => {
-                const payload = convertirRespuestasParaBackend(respuestas);
-                await guardarBorradorInforme(finalId, { respuestas: payload });
-
-                setCategoriaIndex((idx) =>
-                  Math.min(totalCategorias - 1, idx + 1)
-                );
-              }}
-            >
-              Siguiente →
-            </button>
+    <div className="bg-light">
+      <div className="container-lg py-4">
+        <div className="card shadow-sm">
+          <div className="card-header bg-unpsjb-header">
+            <h1 className="h5 mb-0 text-center">{informe.titulo}</h1>
           </div>
 
-          <hr className="my-4" />
+          <div className="card-body p-4">
+            <ul className="nav nav-pills nav-fill mb-4">
+              {steps.map((step) => (
+                <li key={step.id} className="nav-item">
+                  <a
+                    href="#"
+                    className={`nav-link ${currentStep === step.id ? "active" : ""}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      goToStep(step.id);
+                    }}
+                  >
+                    {step.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
 
-          <div className="d-flex justify-content-between">
+            <div style={{ height: "500px", overflowY: "auto", paddingRight: "15px" }}>
+              <ContenidoPasos
+                currentStep={currentStep}
+                categoriasConPreguntas={gruposBase}
+                respuestas={respuestasFormateadas}
+                manejarCambio={() => {}}
+                onDatosGenerados={() => {}}
+                isReadOnly={true}
+                nombresFuncion={{
+                  JTP: informe.JTP,
+                  aux1: informe.aux_primera,
+                  aux2: informe.aux_segunda
+                }}
+                datosIniciales={datosGenerales}
+              />
+            </div>
+          </div>
+
+          <div className="card-footer d-flex justify-content-between">
+            <Link to={ROUTES.INFORMES_CATEDRA} className="btn btn-outline-secondary">
+              Volver al listado
+            </Link>
             <button
-              type="button"
-              className="btn btn-light border"
-              onClick={() => navigate("/docente")}
+              className="btn btn-theme-primary"
+              disabled={currentStep === steps.length}
+              onClick={() => goToStep(currentStep + 1)}
             >
-              Volver al panel de docente
-            </button>
-
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={async () => {
-                try {
-                  const payload = convertirRespuestasParaBackend(respuestas);
-
-                  // Guardado final del borrador
-                  await guardarBorradorInforme(finalId, { respuestas: payload });
-
-                  // Cambiar estado a finalizado
-                  await finalizarInforme(finalId);
-
-                  navigate("/docente");
-                } catch (e) {
-                  console.error("Error al completar informe", e);
-                }
-              }}
-            >
-              Completar
+              Siguiente
             </button>
           </div>
         </div>

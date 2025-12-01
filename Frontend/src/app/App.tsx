@@ -96,7 +96,7 @@ function App() {
         <Route path="mis-asignaturas" element={<MisAsignaturas />} />
 
         <Route
-          path="informes-catedra/completar/:finalizadoId/:plantillaId"
+          path="informes-catedra/completar/:id/:informe_catedra_id"
           element={<CompletarInformeCatedra />}
         />
 
