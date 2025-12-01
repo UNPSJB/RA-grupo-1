@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from src.database import get_db
 from src.ciclos import services, schemas
-
+from typing import List
 router = APIRouter(prefix="/ciclos", tags=["ciclos encuesta"])
 
 @router.post("/", response_model=schemas.CicloOut)
@@ -20,6 +20,10 @@ def get_ciclo(ciclo_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Ciclo no encontrado")
     return db_ciclo
 
+@router.put("/{ciclo_id}/encuestas")
+def asignar_encuestas_a_ciclo(ciclo_id: int, encuestas: List[int], db: Session = Depends(get_db)):
+    return services.asignar_encuestas(db, ciclo_id, encuestas)
+
 @router.put("/{ciclo_id}", response_model=schemas.CicloOut)
 def update_ciclo(ciclo_id: int, ciclo: schemas.CicloUpdate, db: Session = Depends(get_db)):
     db_ciclo = services.update_ciclo(db, ciclo_id, ciclo)
@@ -33,3 +37,7 @@ def delete_ciclo(ciclo_id: int, db: Session = Depends(get_db)):
     if not db_ciclo:
         raise HTTPException(status_code=404, detail="Ciclo no encontrado")
     return {"ok": True, "message": "Ciclo eliminado"}
+
+@router.get("/{ciclo_id}/encuestas_asignadas")
+def obtener_encuestas_asignadas(ciclo_id: int, db: Session = Depends(get_db)):
+    return services.obtener_encuestas_asignadas(db, ciclo_id)

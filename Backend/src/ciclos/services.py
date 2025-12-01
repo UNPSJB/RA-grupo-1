@@ -1,5 +1,7 @@
 from sqlalchemy.orm import Session
 from . import models, schemas
+from src.encuestas.models import Encuesta
+from typing import List
 
 def create_ciclo(db: Session, ciclo: schemas.CicloCreate):
     db_ciclo = models.CicloEncuesta(**ciclo.dict())
@@ -31,3 +33,24 @@ def delete_ciclo(db: Session, ciclo_id: int):
     db.delete(db_ciclo)
     db.commit()
     return db_ciclo
+
+def asignar_encuestas(db: Session, ciclo_id: int, encuestas_ids: List[int]):
+    ciclo = db.query(models.CicloEncuesta).filter(models.CicloEncuesta.id == ciclo_id).first()
+    if not ciclo:
+        return None
+
+    # limpiar asignaciones viejas
+    db.query(Encuesta).filter(Encuesta.ciclo_id == ciclo_id).update({Encuesta.ciclo_id: None})
+
+    # asignar nuevas
+    db.query(Encuesta).filter(Encuesta.id.in_(encuestas_ids)).update(
+        {Encuesta.ciclo_id: ciclo_id},
+        synchronize_session=False
+    )
+
+    db.commit()
+    return {"ok": True, "message": "Encuestas asignadas al ciclo"}
+
+def obtener_encuestas_asignadas(db: Session, ciclo_id: int):
+    encuestas = db.query(Encuesta.id).filter(Encuesta.ciclo_id == ciclo_id).all()
+    return [e.id for e in encuestas]

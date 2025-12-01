@@ -224,17 +224,33 @@ def listar_encuestas_para_alumno(db: Session, alumno_id: int):
     from src.asignaturas.models import Asignatura
     from src.vinculaciones.models import asignatura_alumno
     from src.encuesta_finalizada.models import EncuestaFinalizada
+    from src.ciclos.models import CicloEncuesta
 
     ahora = datetime.utcnow()
 
-    # DEBUG 1: Ver asignaturas del alumno
+    # DEBUG: asignaturas del alumno
     asignaturas_alumno = db.scalars(
         select(asignatura_alumno.c.asignatura_id)
         .where(asignatura_alumno.c.alumno_id == alumno_id)
     ).all()
     print(f"DEBUG - Asignaturas del alumno {alumno_id}: {asignaturas_alumno}")
-    
-    # DEBUG 2: Ver todas las encuestas activas
+
+    # ==========================
+    # CICLO ACTIVO (VALIDACIÓN)
+    # ==========================
+    ciclo_activo = (
+        db.query(CicloEncuesta)
+        .filter(CicloEncuesta.activo == True)
+        .first()
+    )
+
+    if not ciclo_activo:
+        print("DEBUG - No hay ciclo activo, no se muestran encuestas al alumno")
+        return []
+
+    print(f"DEBUG - Ciclo activo encontrado: {ciclo_activo.id}")
+
+    # DEBUG: encuestas activas
     todas_encuestas = db.scalars(
         select(Encuesta)
         .where(Encuesta.activa == True)
@@ -242,24 +258,23 @@ def listar_encuestas_para_alumno(db: Session, alumno_id: int):
         .where(Encuesta.fecha_inicio <= ahora)
         .where(Encuesta.fecha_fin >= ahora)
     ).all()
-    print(f"DEBUG - Total encuestas activas: {len(todas_encuestas)}")
-    for e in todas_encuestas:
-        print(f"  - Encuesta {e.id}: {e.titulo}, Asignatura ID: {e.asignatura_id}")
+    print(f"DEBUG - Total encuestas activas por fecha: {len(todas_encuestas)}")
 
-    # DEBUG 3: Ver encuestas finalizadas por el alumno
+    # Encuestas finalizadas por alumno
     finalizadas = db.scalars(
         select(EncuestaFinalizada.encuesta_id)
         .where(EncuestaFinalizada.alumno_id == alumno_id)
     ).all()
     print(f"DEBUG - Encuestas finalizadas por alumno: {finalizadas}")
 
-    # Subconsulta
     subquery_finalizadas = (
         select(EncuestaFinalizada.encuesta_id)
         .where(EncuestaFinalizada.alumno_id == alumno_id)
     )
 
-    # Consulta principal
+    # ==========================
+    # CONSULTA PRINCIPAL
+    # ==========================
     stmt = (
         select(Encuesta)
         .join(Asignatura, Encuesta.asignatura_id == Asignatura.id)
@@ -269,36 +284,26 @@ def listar_encuestas_para_alumno(db: Session, alumno_id: int):
         .where(Encuesta.estado == EstadoEncuesta.abierta)
         .where(Encuesta.fecha_inicio <= ahora)
         .where(Encuesta.fecha_fin >= ahora)
+        .where(Encuesta.ciclo_id == ciclo_activo.id)   # FILTRO CENTRAL
         .where(Encuesta.id.notin_(subquery_finalizadas))
-        .options(selectinload(Encuesta.asignatura))
         .distinct()
+        .options(selectinload(Encuesta.asignatura))
     )
 
     encuestas = db.scalars(stmt).all()
-    print(f"DEBUG - Encuestas disponibles resultantes: {len(encuestas)}")
+    print(f"DEBUG - Encuestas que pasan todos los filtros (final): {len(encuestas)}")
 
     resultado = []
-    for encuesta in encuestas:
-        print("ASIGNATURA:", encuesta.asignatura)
-        print("DOCENTE:", encuesta.asignatura.docente if encuesta.asignatura else None)
 
+    for encuesta in encuestas:
         # Docente
         docente_nombre = "No asignado"
         if encuesta.asignatura and encuesta.asignatura.docente:
-            persona = encuesta.asignatura.docente.persona if hasattr(encuesta.asignatura.docente, "persona") else None
+            persona = encuesta.asignatura.docente.persona
             if persona:
                 nombre = getattr(persona, "nombre", "") or getattr(persona, "nombres", "")
                 apellido = getattr(persona, "apellido", "") or getattr(persona, "apellidos", "")
                 docente_nombre = f"{apellido}, {nombre}".strip(", ")
-
-        # Año (campo de Encuesta)
-        anio = encuesta.año if hasattr(encuesta, "año") else encuesta.anio
-
-        # Duración (enum o string)
-        duracion = encuesta.duracion if isinstance(encuesta.duracion, str) else encuesta.duracion.value
-
-        # Ciclo lectivo estándar
-        ciclo_lectivo = f"{anio}-{duracion.lower().replace(' ', '_')}"
 
         resultado.append(
             schemas.EncuestaAlumnoInfo(
@@ -306,11 +311,10 @@ def listar_encuestas_para_alumno(db: Session, alumno_id: int):
                 nombre=encuesta.titulo,
                 asignatura=encuesta.asignatura.nombre if encuesta.asignatura else "Sin asignatura",
                 docente=docente_nombre,
-                anio=encuesta.año,   # ← ESTE FALTABA
+                anio=encuesta.año,
                 ciclo_lectivo=f"{encuesta.año}-{encuesta.duracion}"
             )
         )
-
 
     return resultado
 

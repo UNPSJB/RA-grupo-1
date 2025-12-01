@@ -13,6 +13,8 @@ from src.encuestas.models import Encuesta
 from src.encuesta_finalizada.models import EncuestaFinalizada
 from src.respuestas.models import Respuesta
 from typing import List
+from src.ciclos.models import CicloEncuesta
+
 from src.encuestas.exceptions import (
     EncuestaNoEncontrada,
     FechasEncuestaInvalidas, 

@@ -39,7 +39,8 @@ class Encuesta(ModeloBase):
         "Asignatura",
         back_populates="encuestas"
     )
-
+    ciclo_id = Column(Integer, ForeignKey("ciclos_encuesta.id"), nullable=True)
+    ciclo = relationship("CicloEncuesta")
     alumnos: Mapped[List["Alumno"]] = relationship(
         "Alumno", secondary=alumno_encuesta, back_populates="encuestas"
     )

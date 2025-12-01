@@ -91,9 +91,7 @@ const CicloCard: React.FC<CicloCardProps> = ({ ciclo, onUpdate, onDuplicate }) =
               Actualizar
             </Button>
           )}
-          <Button variant="info" onClick={() => onDuplicate(ciclo)}>
-            Duplicar
-          </Button>
+
         </div>
       </Card.Body>
     </Card>
