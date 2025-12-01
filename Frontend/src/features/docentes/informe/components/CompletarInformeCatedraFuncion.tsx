@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ANIO_ACTUAL } from "../../../constants";
-import ROUTES from "../../../paths";
+import { ANIO_ACTUAL } from "../../../../constants";
+import ROUTES from "../../../../paths";
 import ContenidoPasos from "./ContenidoPasos";
 
 interface Pregunta {

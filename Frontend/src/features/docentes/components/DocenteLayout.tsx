@@ -15,17 +15,21 @@ export const DocenteLayout = () => {
   const handleLogout = () => navigate('/');
 
   const docenteNavLinks = [
-    { to: "/docente", label: "Panel Principal" },
-    { to: "/docente/reportes", label: "Reportes" },
-    { to: "/docente/informes-finalizados", label: "Informes Finalizados" },
-    { to: "/docente/mis-asignaturas", label: "Mis Asignaturas" },
-  ];
+  { to: "/docente", label: "Panel Principal" },
+  { label: "Informes", dropdown: [
+      { to: "/docente/informes-pendientes", label: "Informes Pendientes" },
+      { to: "/docente/informes-finalizados", label: "Informes Finalizados" }
+    ]
+  },
+  { to: "/docente/mis-asignaturas", label: "Mis Asignaturas" },
+  { to: "/docente/reportes", label: "Historicos" },
+];
 
   const metricas = [
-    { titulo: 'Mis Asignaturas', valor: 3, icono: 'bi-journal-text', type: 'primary', descripcion: 'Dictadas este ciclo' },
-    { titulo: 'Total Alumnos', valor: 105, icono: 'bi-people', type: 'secondary', descripcion: 'Inscriptos activos' },
-    { titulo: 'Encuestas Listas', valor: 85, icono: 'bi-check2-all', type: 'accent', descripcion: 'Respuestas recibidas' },
-    { titulo: 'Promedio', valor: '4.2', icono: 'bi-star', type: 'neutral', descripcion: 'Calificación general' }
+    { titulo: 'Mis Asignaturas', valor: 0, icono: 'bi-journal-text', type: 'primary', descripcion: 'Dictadas este ciclo' },
+    { titulo: 'Total Alumnos', valor: 0, icono: 'bi-people', type: 'secondary', descripcion: 'Inscriptos activos' },
+    { titulo: 'Encuestas Listas', valor: 0, icono: 'bi-check2-all', type: 'accent', descripcion: 'Respuestas recibidas' },
+    { titulo: 'Promedio', valor: '0', icono: 'bi-star', type: 'neutral', descripcion: 'Calificación general' }
   ];
 
   return (

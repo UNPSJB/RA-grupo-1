@@ -1,0 +1,405 @@
+/* ============================================
+   VARIABLES INSTITUCIONALES
+   ============================================ */
+:root {
+    --uni-primary: #3682C5;
+    --uni-primary-dark: #2a6db0;
+    --uni-primary-light: #4a94d6;
+    --uni-accent: #FDB913;
+    --uni-accent-dark: #e5a70f;
+    
+    --text-primary: #1a1a1a;
+    --text-secondary: #4a4a4a;
+    --text-muted: #6c757d;
+    
+    --bg-page: #f5f7fa;
+    --bg-card: #ffffff;
+    --bg-hover: #f8fcff;
+    --bg-selected: #eaf3ff;
+    
+    --border-color: #e1e8ed;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 8px 32px rgba(54, 130, 197, 0.15);
+}
+
+/* ============================================
+   CONTENEDOR PRINCIPAL
+   ============================================ */
+.flex.justify-center.mt-20 {
+    display: flex;
+    justify-content: center;
+    margin-top: 0 !important;
+    padding: 1rem;
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* ============================================
+   CARD PRINCIPAL
+   ============================================ */
+.bg-white.shadow-xl.rounded-xl {
+    background: var(--bg-card);
+    border-radius: 16px;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 48rem;
+    box-shadow: var(--shadow-lg);
+    border: 2px solid var(--border-color);
+    transition: all 0.3s ease;
+    animation: slideUp 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.bg-white.shadow-xl.rounded-xl:hover {
+    box-shadow: 0 12px 48px rgba(54, 130, 197, 0.18);
+}
+
+/* ============================================
+   TÍTULO
+   ============================================ */
+.text-3xl.font-bold.text-center {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--uni-primary);
+    letter-spacing: -0.5px;
+    position: relative;
+    padding-bottom: 1rem;
+}
+
+.text-3xl.font-bold.text-center::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--uni-primary) 0%, var(--uni-accent) 100%);
+    border-radius: 2px;
+}
+
+/* ============================================
+   INPUT BUSCADOR
+   ============================================ */
+.border.p-3.rounded-lg {
+    border: 2px solid var(--border-color);
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    width: 100%;
+    margin-bottom: 2rem;
+    font-size: 1.05rem;
+    color: var(--text-primary);
+    background: var(--bg-card);
+    transition: all 0.25s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.border.p-3.rounded-lg::placeholder {
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+.border.p-3.rounded-lg:hover {
+    border-color: var(--uni-primary-light);
+    box-shadow: 0 4px 12px rgba(54, 130, 197, 0.12);
+}
+
+.border.p-3.rounded-lg:focus {
+    outline: none;
+    border-color: var(--uni-primary);
+    box-shadow: 0 0 0 4px rgba(54, 130, 197, 0.1),
+                0 4px 16px rgba(54, 130, 197, 0.15);
+    transform: translateY(-1px);
+}
+
+/* ============================================
+   MENSAJE DE ERROR
+   ============================================ */
+.mb-3.text-red-600 {
+    margin-bottom: 1.5rem;
+    color: #dc3545;
+    background: #fff5f5;
+    border: 2px solid #feb2b2;
+    border-left: 5px solid #dc3545;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    animation: shakeError 0.5s ease;
+}
+
+@keyframes shakeError {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* ============================================
+   GRID DE CARRERAS
+   ============================================ */
+.grid.grid-cols-1 {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1.25rem;
+}
+
+@media (min-width: 640px) {
+    .grid.sm\:grid-cols-2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ============================================
+   CARD DE CARRERA
+   ============================================ */
+.p-4.rounded-xl.border {
+    padding: 1.5rem;
+    border-radius: 14px;
+    border: 2px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--bg-card);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efecto de brillo al hover */
+.p-4.rounded-xl.border::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(54, 130, 197, 0.05) 50%, 
+        transparent 100%);
+    transition: left 0.5s ease;
+}
+
+.p-4.rounded-xl.border:hover::before {
+    left: 100%;
+}
+
+.p-4.rounded-xl.border:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 8px 24px rgba(54, 130, 197, 0.18);
+    border-color: var(--uni-primary-light);
+    background: var(--bg-hover);
+}
+
+.p-4.rounded-xl.border:active {
+    transform: translateY(-2px) scale(1.01);
+}
+
+/* Carrera SELECCIONADA */
+.border-blue-500.bg-blue-100 {
+    border-color: var(--uni-primary) !important;
+    background: linear-gradient(135deg, var(--bg-selected) 0%, #f0f7ff 100%) !important;
+    box-shadow: 0 6px 20px rgba(54, 130, 197, 0.2),
+                inset 0 1px 3px rgba(54, 130, 197, 0.1);
+    position: relative;
+}
+
+/* Indicador visual de selección */
+.border-blue-500.bg-blue-100::after {
+    content: '✓';
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 28px;
+    height: 28px;
+    background: var(--uni-primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1rem;
+    box-shadow: 0 2px 8px rgba(54, 130, 197, 0.3);
+    animation: checkmark 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes checkmark {
+    0% {
+        transform: scale(0) rotate(-45deg);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2) rotate(5deg);
+    }
+    100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+}
+
+.border-blue-500.bg-blue-100:hover {
+    border-color: var(--uni-primary-dark) !important;
+    box-shadow: 0 10px 32px rgba(54, 130, 197, 0.25),
+                inset 0 1px 3px rgba(54, 130, 197, 0.15);
+}
+
+/* ============================================
+   CONTENIDO DE LA CARD
+   ============================================ */
+.font-semibold.text-lg {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+}
+
+.border-blue-500.bg-blue-100 .font-semibold.text-lg {
+    color: var(--uni-primary-dark);
+    font-weight: 700;
+}
+
+.text-sm.text-gray-600 {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-top: 0.35rem;
+    line-height: 1.5;
+}
+
+.border-blue-500.bg-blue-100 .text-sm.text-gray-600 {
+    color: #2a6db0;
+    font-weight: 500;
+}
+
+/* ============================================
+   MENSAJE "NO HAY CARRERAS"
+   ============================================ */
+.mt-4.text-gray-500.text-center {
+    margin-top: 2rem;
+    color: var(--text-muted);
+    text-align: center;
+    font-size: 1.05rem;
+    padding: 2.5rem 1.5rem;
+    background: var(--bg-hover);
+    border-radius: 12px;
+    border: 2px dashed var(--border-color);
+    animation: fadeIn 0.5s ease;
+}
+
+.mt-4.text-gray-500.text-center::before {
+    content: '🔍';
+    display: block;
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.6;
+}
+
+/* ============================================
+   ANIMACIONES DE ENTRADA PARA LAS CARDS
+   ============================================ */
+.grid.grid-cols-1 > .p-4.rounded-xl.border {
+    animation: cardFadeIn 0.4s ease forwards;
+    opacity: 0;
+}
+
+.grid.grid-cols-1 > .p-4.rounded-xl.border:nth-child(1) { animation-delay: 0.05s; }
+.grid.grid-cols-1 > .p-4.rounded-xl.border:nth-child(2) { animation-delay: 0.1s; }
+.grid.grid-cols-1 > .p-4.rounded-xl.border:nth-child(3) { animation-delay: 0.15s; }
+.grid.grid-cols-1 > .p-4.rounded-xl.border:nth-child(4) { animation-delay: 0.2s; }
+.grid.grid-cols-1 > .p-4.rounded-xl.border:nth-child(5) { animation-delay: 0.25s; }
+.grid.grid-cols-1 > .p-4.rounded-xl.border:nth-child(6) { animation-delay: 0.3s; }
+.grid.grid-cols-1 > .p-4.rounded-xl.border:nth-child(n+7) { animation-delay: 0.35s; }
+
+@keyframes cardFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+   RESPONSIVIDAD
+   ============================================ */
+@media (max-width: 768px) {
+    .bg-white.shadow-xl.rounded-xl {
+        padding: 2rem;
+    }
+
+    .text-3xl.font-bold.text-center {
+        font-size: 1.75rem;
+    }
+
+    .border.p-3.rounded-lg {
+        padding: 0.875rem 1.25rem;
+        font-size: 1rem;
+    }
+
+    .p-4.rounded-xl.border {
+        padding: 1.25rem;
+    }
+
+    .font-semibold.text-lg {
+        font-size: 1.05rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .flex.justify-center.mt-20 {
+        padding: 0.5rem;
+    }
+
+    .bg-white.shadow-xl.rounded-xl {
+        padding: 1.5rem;
+        border-radius: 12px;
+    }
+
+    .text-3xl.font-bold.text-center {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .border.p-3.rounded-lg {
+        margin-bottom: 1.5rem;
+        font-size: 0.95rem;
+    }
+
+    .grid.grid-cols-1 {
+        gap: 1rem;
+    }
+
+    .p-4.rounded-xl.border {
+        padding: 1rem;
+    }
+
+    .border-blue-500.bg-blue-100::after {
+        width: 24px;
+        height: 24px;
+        font-size: 0.875rem;
+        top: 0.5rem;
+        right: 0.5rem;
+    }
+}

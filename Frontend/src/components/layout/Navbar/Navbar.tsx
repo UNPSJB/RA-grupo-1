@@ -6,9 +6,10 @@ import './Navbar.css';
 
 interface NavbarProps {
   navLinks?: Array<{
-    to: string;
+    to?: string;
     label: string;
     onClick?: () => void;
+    dropdown?: Array<{ to: string; label: string }>;
   }>;
   showUserInfo?: boolean;
   rol?: string;
@@ -35,7 +36,7 @@ export const Navbar = ({
   return (
     <BSNavbar bg="light" variant="light" expand="lg" className="shadow-sm navbar-custom">
       <Container>
-        {/* Se quita el texto del sistema SOLO para departamento_alumnos */}
+        {/* Logo y nombre del sistema */}
         <BSNavbar.Brand className="fw-bold brand-custom d-flex align-items-center">
           <a 
             target="_blank"
@@ -47,50 +48,53 @@ export const Navbar = ({
               alt="UNPSJB Logo" 
               className="navbar-logo"
             />
-
-            {/*Se muestra el texto SOLO si el rol NO es departamento_alumnos */}
             {rol !== "departamento_alumnos" && (
               <span className="brand-text">Sistema de encuestas UNPSJB</span>
             )}
           </a>
         </BSNavbar.Brand>
+
         <BSNavbar.Toggle aria-controls="basic-navbar-nav" />
         <BSNavbar.Collapse id="basic-navbar-nav">
+
+          {/* Links de navegación */}
           {navLinks.length > 0 && (
             <Nav className="me-auto">
-              {navLinks.map((link) => {
-                if (link.label === "Informes") {
+              {navLinks.map((link, index) => {
+                if (link.dropdown) {
                   return (
-                    <Dropdown key="informes" className="me-2">
+                    <Dropdown key={index} className="me-2">
                       <Dropdown.Toggle 
                         variant="light"
-                        id="dropdown-informes"
-                        className={`nav-link-custom ${rol === 'departamento_alumnos' ? 'depto-alumnos-nav-link' : ''}`}
+                        id={`dropdown-${index}`}
+                        className={`nav-link-custom ${rol === 'docente' ? 'docente-nav-link' : ''}`}
                       >
-                        Informes
+                        {link.label}
                       </Dropdown.Toggle>
 
                       <Dropdown.Menu>
-                        <Dropdown.Item as={Link} to="/departamento/informes/sinteticos">
-                          Informe Sintético
-                        </Dropdown.Item>
-
-                        <Dropdown.Item as={Link} to="/departamento/informes/catedra">
-                          Informe de Cátedra
-                        </Dropdown.Item>
+                        {link.dropdown.map((item, subIndex) => (
+                          <Dropdown.Item 
+                            key={subIndex} 
+                            as={Link} 
+                            to={item.to}
+                            onClick={() => setShowDropdown(false)}
+                          >
+                            {item.label}
+                          </Dropdown.Item>
+                        ))}
                       </Dropdown.Menu>
                     </Dropdown>
                   );
                 }
+
                 return (
                   <Nav.Link 
-                    key={link.to}
+                    key={index}
                     as={link.onClick ? 'button' : Link} 
                     to={link.onClick ? undefined : link.to} 
                     onClick={link.onClick} 
-                    className={`nav-link-custom 
-                      ${rol === 'docente' ? 'docente-nav-link' : ''} 
-                      ${rol === 'departamento_alumnos' ? 'depto-alumnos-nav-link' : ''}`}
+                    className={`nav-link-custom ${rol === 'docente' ? 'docente-nav-link' : ''}`}
                     style={link.onClick ? { cursor: 'pointer' } : {}}
                   >
                     {link.label}
@@ -99,6 +103,8 @@ export const Navbar = ({
               })}
             </Nav>
           )}
+
+          {/* Información del usuario */}
           {showUserInfo && (
             <Nav className="ms-auto">
               {loading ? (

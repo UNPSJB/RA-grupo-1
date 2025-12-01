@@ -1,5 +1,5 @@
 import { useEffect, useState, Fragment } from "react";
-import { ANIO_ACTUAL, duracion_ACTUAL } from "../../../constants";
+import { ANIO_ACTUAL, DURACION_ACTUAL } from "../../../../constants";
 
 interface DatosAbiertosPregunta {
   id_pregunta: number;

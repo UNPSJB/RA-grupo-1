@@ -43,18 +43,7 @@ export const MisAsignaturas = () => {
         await new Promise(resolve => setTimeout(resolve, 800));
         
         const AsignaturasData: Asignatura[] = [
-          {
-            id: 1,
-            nombre: "Álgebra",
-            codigo: "MA02",
-            carrera: "Analista Programador Universitario",
-            cantidadAlumnos: 45,
-            encuestasContestadas: 38,
-            porcentajeCompletado: 84,
-            fechaInicio: "2025-03-01",
-            fechaFin: "2025-07-15",
-            estadoEncuesta: 'completada'
-          },
+          
         ];
         
         setAsignaturas(AsignaturasData);

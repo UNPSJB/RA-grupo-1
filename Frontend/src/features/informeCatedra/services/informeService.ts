@@ -1,4 +1,5 @@
 import axios from "axios";
+import api from "../../../services/api";
 
 const API_URL = "http://127.0.0.1:8000/informe-catedra-finalizado";
 
@@ -7,6 +8,16 @@ export enum Duracion {
   primer_cuat = "primer_cuat",
   segundo_cuat = "segundo_cuat"
 }
+
+const listarPendientes = (docenteId?: number) => {
+  const params = docenteId ? `?docente_id=${docenteId}` : "";
+  return api.get(`/informe_catedra/pending${params}`);
+};
+
+export default {
+  listarPendientes,
+};
+
 export const normalizarDuracion = (d: string): Duracion => {
   if (!d) return d as Duracion;
 
@@ -119,4 +130,3 @@ export const createInforme = async (informe: InformeCreate): Promise<InformeCate
     const response = await axios.post(API_URL, informe);
     return response.data;
 };
-
