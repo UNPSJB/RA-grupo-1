@@ -11,6 +11,7 @@ class PreguntaBase(BaseModel):
     categoria_id: Optional[int] = None
     encuesta_id: Optional[int] = None
     informe_id: Optional[int] = None
+    nro_pregunta: Optional[int] = Field(default=None, ge=1)
 
 class Pregunta(PreguntaBase):
     id: int
@@ -48,6 +49,7 @@ class PreguntaUpdate(BaseModel):
     categoria_id: Optional[int] = None
     encuesta_id: Optional[int] = None
     informe_id: Optional[int] = None
+    nro_pregunta: Optional[int] = Field(default=None, ge=1)
 
 class PreguntaDelete(BaseModel):
     id: int

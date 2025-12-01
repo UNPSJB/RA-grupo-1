@@ -12,9 +12,10 @@ class Categoria(ModeloBase):
     codigo: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     texto: Mapped[str] = mapped_column(String, nullable=False)
     orden: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+
     encuesta_id: Mapped[int] = mapped_column(
         ForeignKey("encuestas.id")
-    )  
+    )
 
     encuesta: Mapped["Encuesta"] = relationship(
         "src.encuestas.models.Encuesta", back_populates="categorias"
@@ -26,13 +27,11 @@ class Categoria(ModeloBase):
     )
 
     informe_catedra_id: Mapped[Optional[int]] = mapped_column(
-    ForeignKey("informe_catedra.id")
+        ForeignKey("informe_catedra.id"),
+        nullable=True
     )
 
     informe_catedra: Mapped[Optional["InformeCatedra"]] = relationship(
-    "src.informe_catedra.models.InformeCatedra",
-    back_populates="categorias"
+        "src.informe_catedra.models.InformeCatedra",
+        back_populates="categorias"
     )
-
-
-    

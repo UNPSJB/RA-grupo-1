@@ -26,3 +26,13 @@ class CategoriaConPreguntas(CategoriaBase):
 
     class Config:
         from_attributes = True
+
+class InformePendienteCabecera(BaseModel):
+    id: int
+    titulo: str
+    asignaturaNombre: str
+    anio: int
+    duracion: str
+
+    class Config:
+        from_attributes = True

@@ -1,39 +1,37 @@
-from typing import List
-from sqlalchemy import select
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, status
-
-from src.departamentos.models import Departamento
-from src.departamentos.schemas import DepartamentoBase
-from src.carreras.models import Carrera
-import src.departamentos.exceptions as exceptions
+from typing import List
+from . import schemas
+from .models import Departamento
+from src.sedes.models import Sede
 
 
-def leer_departamento(db: Session, departamento_id: int):
-    departamento = db.scalar(
-        select(Departamento).where(Departamento.id == departamento_id)
+def crear_departamento(db: Session, departamento: schemas.DepartamentoBase) -> Departamento:
+    nuevo = Departamento(
+        nombre=departamento.nombre,
+        sede_id=departamento.sede_id,
+        profesor_a_cargo=departamento.profesor_a_cargo
     )
-    if departamento is None:
-        raise exceptions.DepartamentoNoEncontrado()
-    return departamento
-
-
-def listar_departamentos(db: Session):
-    return db.scalars(select(Departamento)).all()
-
-
-def crear_departamento(db: Session, departamento: DepartamentoBase):
-    nuevo = Departamento(**departamento.model_dump())
     db.add(nuevo)
     db.commit()
     db.refresh(nuevo)
     return nuevo
 
 
-def get_carreras_por_departamento(db: Session, departamento_id: int):
-    stmt = (
-        select(Carrera)
-        .where(Carrera.departamento_id == departamento_id)
-        .order_by(Carrera.nombre)
-    )
-    return db.scalars(stmt).all()
+def listar_departamentos(db: Session) -> List[schemas.DepartamentoOut]:
+    departamentos = db.query(Departamento).all()
+    return departamentos
+
+
+def leer_departamento(db: Session, departamento_id: int) -> schemas.DepartamentoOut:
+    departamento = db.query(Departamento).filter(Departamento.id == departamento_id).first()
+    return departamento
+
+
+def eliminar_departamento(db: Session, departamento_id: int) -> bool:
+    departamento = db.query(Departamento).filter(Departamento.id == departamento_id).first()
+    if not departamento:
+        return False
+
+    db.delete(departamento)
+    db.commit()
+    return True

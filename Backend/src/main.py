@@ -6,6 +6,7 @@ from src.database import engine
 from src.models import ModeloBase
 from fastapi.middleware.cors import CORSMiddleware
 
+# IMPORTACIÓN DE MODELOS (solo para creación de tablas)
 from src.roles.models import Rol
 from src.departamentos.models import Departamento
 from src.carreras.models import Carrera
@@ -18,16 +19,12 @@ from src.preguntas.models import Pregunta
 from src.asignaturas.models import Asignatura
 from src.encuestas.models import Encuesta
 from src.sedes.models import Sede
-#from src.informes.models import Informe
 
-
-# Tablas de vinculación van al final
-from src.vinculaciones.models import pregunta_opcion
+from src.vinculaciones.models import pregunta_opcion, asignatura_alumno, asignatura_carrera
 from src.vinculaciones.asignatura_docente.models import AsignaturaDocente
-from src.vinculaciones.models import asignatura_alumno
 from src.vinculaciones.asignatura_departamento_sede.models import AsignaturaDepartamentoSede
 
-# Routers
+# ROUTERS
 from src.personas.router import router as personas_router
 from src.encuestas.router import router as encuestas_router
 from src.docentes.router import router as docentes_router
@@ -51,11 +48,8 @@ from src.informe_sintetico_finalizado.router import router as informe_sintetico_
 from src.pregunta_informe_sintetico.router import router as pregunta_informe_sintetico_router
 from src.respuestas_informe.router import router as respuestas_informe_router
 from src.auth.router import router as auth_router
-from src.personas.router import router as personas_router
 from src.sedes.router import router as sedes_router
 
-
-from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
@@ -71,15 +65,9 @@ async def db_creation_lifespan(app: FastAPI):
 
 app = FastAPI(root_path=ROOT_PATH, lifespan=db_creation_lifespan)
 
-origins = [
-    "http://localhost:5173", 
-    "http://127.0.0.1:5173",
-]
-
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],   
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -101,17 +89,16 @@ app.include_router(preguntas_router)
 app.include_router(respuestas_router)
 app.include_router(roles_router)
 app.include_router(ciclos_router)
-app.include_router(informe_catedra_finalizado_router)
+app.include_router(informe_catedra_finalizado_router)   
 app.include_router(informe_sintetico_router)
 app.include_router(resultado_informe_router)
 app.include_router(informe_sintetico_finalizado_router)
 app.include_router(pregunta_informe_sintetico_router)
 app.include_router(respuestas_informe_router)
 app.include_router(auth_router)
-app.include_router(personas_router)
 app.include_router(sedes_router)
+
 
 @app.get("/")
 def read_root():
     return {"message": "Backend de Reporte de encuestas 🚀"}
-  

@@ -6,13 +6,20 @@ import axios from "axios";
 export default function InformesPendientesLista() {
   const [informes, setInformes] = useState<InformePendienteCabecera[]>([]);
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const docenteId = user?.id;
 
   useEffect(() => {
-    axios
-      .get("http://127.0.0.1:8000/informe-catedra-pendiente")
-      .then((res) => setInformes(res.data))
-      .catch((err) => console.error(err));
-  }, []);
+    if (!docenteId) return;
+
+    axios.get(
+  `http://127.0.0.1:8000/informe-catedra-finalizado/docente/${docenteId}/pendientes-cabecera`
+      )
+      .then((res) => {
+        setInformes(res.data);
+      })
+      .catch((err) => console.error("ERROR cargando informes:", err));
+  }, [docenteId]);
 
   const abrirInforme = (informe: InformePendienteCabecera) => {
     navigate("/docente/completar-informe", { state: { ...informe } });

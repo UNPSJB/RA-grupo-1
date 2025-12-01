@@ -42,3 +42,7 @@ def read_categorias_con_preguntas(informe_id: int, db: Session = Depends(get_db)
     except Exception as e:
         print(f"Error inesperado al obtener categorías con preguntas: {e}") 
         raise HTTPException(status_code=500, detail="Error interno del servidor")
+
+@router.get("/pendientes/{docente_id}", response_model=List[schemas.InformePendienteCabecera])
+def get_pendientes(docente_id: int, db: Session = Depends(get_db)):
+    return services.get_informes_pendientes_por_docente(db, docente_id)

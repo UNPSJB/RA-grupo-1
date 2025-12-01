@@ -1,58 +1,15 @@
-from sqlalchemy.orm import Session, selectinload
-from sqlalchemy import select
-from src.informe_catedra import models, schemas, exceptions
-from src.informe_catedra_finalizado.models import InformeCatedraFinalizado
+from sqlalchemy.orm import Session
+from src.informe_catedra.models import InformeCatedra
 from src.asignaturas.models import Asignatura
-from src.categorias.models import Categoria
-from src.preguntas.models import Pregunta
+from src.vinculaciones.asignatura_docente.models import AsignaturaDocente
 
- # Crea un único InformeCatedra
-def crear_informe_catedra(db: Session, informe: schemas.InformeCatedraCreate):
-    db_informe = models.InformeCatedra(
-        titulo=informe.titulo,
-        asignatura_id=informe.asignatura_id
+
+def obtener_informes_pendientes_por_docente(db: Session, docente_id: int):
+    return (
+        db.query(InformeCatedra)
+        .join(Asignatura)
+        .join(AsignaturaDocente, AsignaturaDocente.asignatura_id == Asignatura.id)
+        .filter(AsignaturaDocente.docente_id == docente_id)
+        .filter(InformeCatedra.estado == "pendiente")
+        .all()
     )
-    db.add(db_informe)
-    db.flush()
-    db.commit()
-    db.refresh(db_informe)
-    return db_informe
-
-def get_informe_catedra(db: Session, informe_id: int):
-    informe = db.query(models.InformeCatedra).filter(models.InformeCatedra.id == informe_id).first()
-    if informe is None:
-        raise exceptions.InformeNoEncontrado()
-    return informe
-
-def get_informes_catedra(db: Session):
-    return db.query(models.InformeCatedra).all()
-
-def get_informes_catedra_finalizados(db: Session, informe_id: int):
-    informe = db.query(models.InformeCatedra).filter(models.InformeCatedra.id == informe_id).first()
-    if not informe:
-        raise exceptions.InformeNoEncontrado()
-    informes_por_asignaturas = []
-    for asignatura in informe.asignaturas:
-        informe_finalizado = db.query(InformeCatedraFinalizado).filter_by(
-            asignatura_id=asignatura.id,
-            informe_catedra_id=informe.id
-        ).first()
-        if informe_finalizado:
-            informes_por_asignaturas.append(informe_finalizado)
-    return informes_por_asignaturas
-
-def get_categorias_con_preguntas_por_informe(db: Session, informe_id: int):
-
-    informe = get_informe_catedra(db, informe_id) 
-
-    stmt = (
-        select(Categoria)
-        .options(selectinload(Categoria.preguntas)
-        .selectinload(Pregunta.opciones) 
-        )
-        .where(Categoria.informe_base_id == informe_id) 
-
-    )
-    categorias_con_preguntas = db.scalars(stmt).unique().all()
-    
-    return categorias_con_preguntas

@@ -59,3 +59,7 @@ def finalizar_informe(informe_id: int, db: Session = Depends(get_db)):
 @router.get("/docente/{docente_id}/finalizados-cabecera", response_model=List[schemas.InformeCatedraCabecera])
 def listar_informes_finalizados_cabecera(docente_id: int, db: Session = Depends(get_db)):
     return services.obtener_informes_finalizados_cabecera(db, docente_id)
+
+@router.get("/docente/{docente_id}/pendientes-cabecera")
+def pendientes_docente(docente_id: int, db: Session = Depends(get_db)):
+    return services.obtener_pendientes_por_docente(db, docente_id)
