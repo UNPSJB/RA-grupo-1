@@ -15,7 +15,7 @@ export const SecretariaLayout: React.FC = () => {
 
   const secretariaNavLinks = [
     { to: "/secretaria", label: "Panel Principal" },
-    { to: "/secretaria/gestion-encuestas", label: "Gestion Encuestas" },
+   //VER MAS ADELANTE //{ to: "/secretaria/gestion-encuestas", label: "Gestion Encuestas" },
     { to: "/secretaria/gestion-preguntas", label: "Gestion Preguntas"},
     { to: "/secretaria/ciclos", label: "Ciclos" },
     { to: "/secretaria/informes-sinteticos", label: "Informes Sintéticos" },
@@ -23,10 +23,10 @@ export const SecretariaLayout: React.FC = () => {
   ];
 
   const metricas = [
-    { titulo: 'Encuestas Activas', valor: 3, icono: 'bi-clipboard-data', type: 'primary', descripcion: 'En curso actualmente' },
-    { titulo: 'Preguntas Disponibles', valor: 15, icono: 'bi-archive', type: 'secondary', descripcion: 'Banco de preguntas' },
-    { titulo: 'Respuestas Totales', valor: 245, icono: 'bi-people', type: 'accent', descripcion: 'Participación estudiantil' },
-    { titulo: 'Categorías', valor: 7, icono: 'bi-tags', type: 'neutral', descripcion: 'Secciones activas' }
+    //{ titulo: 'Encuestas Activas', valor: 3, icono: 'bi-clipboard-data', type: 'primary', descripcion: 'En curso actualmente' },
+    //{ titulo: 'Preguntas Disponibles', valor: 15, icono: 'bi-archive', type: 'secondary', descripcion: 'Banco de preguntas' },
+    //{ titulo: 'Respuestas Totales', valor: 245, icono: 'bi-people', type: 'accent', descripcion: 'Participación estudiantil' },
+    //{ titulo: 'Categorías', valor: 7, icono: 'bi-tags', type: 'neutral', descripcion: 'Secciones activas' }
   ];
 
   const isDashboard = location.pathname === "/secretaria";

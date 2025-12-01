@@ -12,7 +12,7 @@ interface Pregunta {
 }
 
 interface CategoriaConPreguntas { 
-  cod: string; 
+  codigo: string; 
   texto: string; 
   preguntas: Pregunta[]; 
   id: number; 

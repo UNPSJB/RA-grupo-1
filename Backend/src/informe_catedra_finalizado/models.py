@@ -3,6 +3,8 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.models import ModeloBase
 from src.vinculaciones.models import Duracion, Estado
 from typing import List, Optional, TYPE_CHECKING
+from sqlalchemy import Enum as SQLEnum
+
 
 if TYPE_CHECKING:
     from src.vinculaciones.asignatura_docente.models import AsignaturaDocente
@@ -22,7 +24,9 @@ class InformeCatedraFinalizado(ModeloBase):
    cantidadAlumnos: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
    
    anio: Mapped[int] = mapped_column(Integer, nullable=True)
-   duracion: Mapped[Duracion] = mapped_column(Enum(Duracion), nullable=True)
+   duracion: Mapped[Duracion] = mapped_column(
+    SQLEnum(Duracion, values_callable=lambda x: [e.value for e in x]),
+    nullable=True )
    cantidadComisionesTeoricas: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
    cantidadComisionesPracticas: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
 

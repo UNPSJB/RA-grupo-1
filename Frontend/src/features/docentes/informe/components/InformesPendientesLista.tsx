@@ -1,21 +1,61 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { InformePendienteCabecera } from "../../services/informeService";
 import axios from "axios";
 
+const DocenteId = 1;
+
+interface InformePendienteCabecera {
+  id: number;
+  asignatura_docente_id: number;
+  informe_catedra_id: number;
+  titulo: string;
+  anio: number;
+  duracion: string;
+  estado: string;
+  asignaturaNombre: string;
+  asignaturaCodigo: string;
+  asignaturaId: number;     // ← agregado
+}
+
 export default function InformesPendientesLista() {
-  const [informes, setInformes] = useState<InformePendienteCabecera[]>([]);
   const navigate = useNavigate();
+  const [informes, setInformes] = useState<InformePendienteCabecera[]>([]);
 
   useEffect(() => {
     axios
-      .get("http://127.0.0.1:8000/informe-catedra-pendiente")
-      .then((res) => setInformes(res.data))
-      .catch((err) => console.error(err));
+      .get(
+        `http://127.0.0.1:8000/informe-catedra-finalizado/docente/${DocenteId}/pendientes`,
+        {
+          params: {
+            anio: 2025,
+            duracion: "anual",
+          },
+        }
+      )
+      .then((res) => {
+        console.log("Pendientes recibidos del backend:", res.data); // ← log 1
+        setInformes(res.data);
+      })
+      .catch((err) => console.error("Error cargando pendientes:", err));
   }, []);
 
-  const abrirInforme = (informe: InformePendienteCabecera) => {
-    navigate("/docente/completar-informe", { state: { ...informe } });
+  console.log("Informes pendientes procesados:", informes); // ← log 2
+
+  const abrirInforme = (inf: InformePendienteCabecera) => {
+    navigate(
+      `/docente/informes-catedra/completar/${inf.id}/${inf.informe_catedra_id}`,
+      {
+        state: {
+          id: inf.id,
+          asignatura_docente_id: inf.asignatura_docente_id,
+          asignaturaId: inf.asignaturaId, // ← ahora se pasa bien
+          asignaturaNombre: inf.asignaturaNombre,
+          anio: inf.anio,
+          duracion: inf.duracion,
+          informe_catedra_id: inf.informe_catedra_id,
+        },
+      }
+    );
   };
 
   return (

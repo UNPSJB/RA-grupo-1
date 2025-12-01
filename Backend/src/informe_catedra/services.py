@@ -47,12 +47,13 @@ def get_categorias_con_preguntas_por_informe(db: Session, informe_id: int):
 
     stmt = (
         select(Categoria)
-        .options(selectinload(Categoria.preguntas)
-        .selectinload(Pregunta.opciones) 
+        .options(
+            selectinload(Categoria.preguntas)
+            .selectinload(Pregunta.opciones)
         )
-        .where(Categoria.informe_base_id == informe_id) 
-
+        .where(Categoria.informe_catedra_id == informe_id) 
     )
+
     categorias_con_preguntas = db.scalars(stmt).unique().all()
     
     return categorias_con_preguntas

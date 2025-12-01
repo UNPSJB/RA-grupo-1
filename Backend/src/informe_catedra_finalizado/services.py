@@ -12,21 +12,30 @@ from src.resultado_informe import services as respuestas_services
 from src.resultado_informe.models import ResultadoInforme  
 from src.respuestas_informe.models import RespuestaInforme
 from src.preguntas.models import Pregunta
+from sqlalchemy import select, func
 
 def obtener_informes_pendientes(db: Session, docente_id: int, anio: int, duracion: Duracion):
 
+    # Aseguramos que tengamos un string simple ("anual", "primer_cuatrimestre", etc.)
+    duracion_str = duracion.value if isinstance(duracion, Duracion) else str(duracion)
+
     informes = db.scalars(
         select(InformeCatedraFinalizado)
-        .join(AsignaturaDocente, InformeCatedraFinalizado.asignatura_docente_id == AsignaturaDocente.id)
+        .join(
+            AsignaturaDocente,
+            InformeCatedraFinalizado.asignatura_docente_id == AsignaturaDocente.id,
+        )
         .where(
             AsignaturaDocente.docente_id == docente_id,
             InformeCatedraFinalizado.anio == anio,
-            InformeCatedraFinalizado.duracion == duracion,
-            InformeCatedraFinalizado.estado == "pendiente"
+            # Comparo en minúsculas para que funcione aunque en la DB esté "ANUAL"
+            func.lower(InformeCatedraFinalizado.duracion) == duracion_str.lower(),
+            InformeCatedraFinalizado.estado == "pendiente",
         )
         .options(
-            selectinload(InformeCatedraFinalizado.resultado_informe)
-                .selectinload(ResultadoInforme.pregunta)
+            selectinload(InformeCatedraFinalizado.resultado_informe).selectinload(
+                ResultadoInforme.pregunta
+            )
         )
     ).all()
 

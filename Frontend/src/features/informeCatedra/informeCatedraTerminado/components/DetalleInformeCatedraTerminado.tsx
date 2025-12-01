@@ -48,7 +48,7 @@ interface InformeCompletadoDetalle {
 
 interface CategoriaConPreguntas {
   id: number;
-  cod: string;
+  codigo: string;
   texto: string;
   preguntas: Pregunta[];
 }

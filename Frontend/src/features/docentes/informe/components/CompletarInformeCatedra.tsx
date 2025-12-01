@@ -12,7 +12,7 @@ interface Pregunta {
 
 interface CategoriaConPreguntas {
   id: number;
-  cod: string;
+  codigo: string;
   texto: string;
   preguntas: Pregunta[];
 }
@@ -57,8 +57,23 @@ export default function CompletarInformeCatedra() {
   const [aux1, SetAux1] = useState("");
   const [aux2, SetAux2] = useState("");
   
-  const { docenteasignaturasId, asignaturasId, asignaturasNombre, anio, duracion, informeBaseId = 3 } =
-    location.state || {};
+  const {
+    id,
+    asignatura_docente_id,
+    asignaturaId,
+    asignaturaNombre,
+    anio,
+    duracion,
+    informe_catedra_id
+  } = location.state || {};
+
+  const finalizadoId = id;
+  const docenteasignaturasId = asignatura_docente_id;
+  const asignaturasId = asignaturaId ?? asignatura_docente_id ?? null;
+  const asignaturasNombre = asignaturaNombre;
+  const informeBaseId = informe_catedra_id;
+
+
 
   const [currentStep, setCurrentStep] = useState(1);
 
@@ -95,7 +110,7 @@ export default function CompletarInformeCatedra() {
       })
       .then((data: CategoriaConPreguntas[]) => {
         const dataOrdenada = [...data].sort((a, b) =>
-          a.cod.localeCompare(b.cod, "es", { sensitivity: "base" })
+          a.codigo.localeCompare(b.codigo, "es", { sensitivity: "base" })
         );
         setCategoriasConPreguntas(dataOrdenada);
       })

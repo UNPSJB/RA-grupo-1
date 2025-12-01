@@ -22,7 +22,8 @@ export const DocenteLayout = () => {
     ]
   },
   { to: "/docente/mis-asignaturas", label: "Mis Asignaturas" },
-  { to: "/docente/reportes", label: "Historicos" },
+  //VER MAS ADELANTE ESO ERA LAS ESTADISTICAS PERO NO SE LLEGARON A IMPLEMENTAR
+  //  { to: "/docente/reportes", label: "Historicos" },
 ];
 
   const metricas = [
